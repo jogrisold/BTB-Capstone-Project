@@ -1,13 +1,14 @@
-
-import './App.css';
 import { useEffect } from 'react';
+import Map from './Map';
 
-function App() {
+const App = () => {
+
   useEffect(()=>{
     fetch("/test")
       .then(res => res.json())
       .then(data=> console.log(data))
   },[])
+
   return (
     <div className="App">
       <header className="App-header">
@@ -23,6 +24,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <Map />
     </div>
   );
 }

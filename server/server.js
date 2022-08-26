@@ -1,12 +1,11 @@
 // Import Express
 const express = require("express");
+const { getGBFS, getDistanceFromGBFS } = require("./gbfs-handlers");
 
 // Call express to use for endpoints below
 express()
 
-    .get("/test", (req, res) => {
-        res.status(200).json({status: 200, message: "success"})
-    })
+    .get("/stations", getGBFS)
 
     // Create an endpoint to create a user in the database
     // .post("/add-user", createUser)

@@ -12,61 +12,6 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlY
  
 const Map = () => {
     // *****************************************************
-    // Initial work:
-    // *****************************************************
-    // const [stations, setStations] = useState([]);
-    // mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
-    // const map = new mapboxgl.Map({
-    //     container: 'map',
-    //     style: 'mapbox://styles/mapbox/streets-v11'
-    // });
-
-    // // Retrieve the user's location if they allow access
-    // map.addControl(new mapboxgl.GeolocateControl({
-    //     positionOptions: {
-    //     enableHighAccuracy: true
-    //     },
-    //     trackUserLocation: true,
-    //     showUserHeading: true
-    //     }))
-
-
-    // // Retrieve stations from
-    // useEffect(() => {
-    //     console.log("use effect")
-    //     fetch("/stations")
-    //         .then((res) => {
-    //             console.log(res);
-    //             res.json()
-    //         })
-    //         .then((json) => {
-    //             // Store the station data in a state
-    //             console.log(json);
-    //             setStations(json.data);
-    //             // Call the function that will add the stations to the map
-    //             // addStations
-    //             // Tell 
-    //             // setLoaded(true);
-    //         })
-    // },[])
-    
-
-    
-    // // Add a point to the map
-    // // const addStations = () => {
-    //     stations.forEach((station) => {
-    //         let marker = new mapboxgl.Marker()
-    //         console.log(station.position)
-    //         marker.setLngLat(station.position)
-    //         marker.addTo(map);
-    //     })
-    // // }
-
-    // *****************************************************
-    // Post react implementation
-    // *****************************************************
-
-    // *****************************************************
     // States required by mapbox base
     // *****************************************************
     const mapContainer = useRef(null);
@@ -78,7 +23,12 @@ const Map = () => {
     // *****************************************************
     // States for customization
     // *****************************************************
+    // Create a state to hold map initialization for easier
+    // useEffect customization implementation
     const [mapInit, setMapInit] = useState(false);
+    // Create a state to hold the data from the backend
+    // returning the bike station data
+    const [bikeStations, setBikeStations] = useState([]);
 
     // *****************************************************
     // useEffects required by mapbox base - DO NOT EDIT
@@ -110,21 +60,51 @@ const Map = () => {
     // Mapbox essentials end
     // *****************************************************
 
-
+    // Retrieve stations from backend
+    useEffect(() => {
+        fetch("/stations")
+            .then((res) => res.json())
+            .then((json) => {
+                // Store the station data in a state
+                setBikeStations(json.data);
+                console.log(bikeStations);
+            });
+        },[])
+        
     // Customization useEffect to avoid multiple elements 
     useEffect(() => {
         // wait for map to initialize
         if (mapInit === true) {
-// TO DO: Write am if statement to only render the followingon desktop
-// TO DO: if(screenwidth >700px){}
+             // Retrieve the user's location if they allow access
+            mapRef.current.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                enableHighAccuracy: true
+                },
+                trackUserLocation: true,
+                showUserHeading: true
+                }))
+            // Add bike stations
+            console.log(bikeStations);
+            
+            // let marker = new mapboxgsl.Marker()
+            // marker.setLngLat([-73.5674,45.5019]])
+            // marker.addTo(mapRef);
 
+            // TO DO: Write am if statement to only render the followingon desktop
+            // TO DO: if(screenwidth >700px){}
             // Add navigation + / - for easier desktop useability
             mapRef.current.addControl(new mapboxgl.NavigationControl());
-            
+
         } 
     },[mapInit]);
- 
 
+    bikeStations.forEach((station) => {
+        let marker = new mapboxgl.Marker()
+        console.log(station.position)
+        marker.setLngLat(station.position)
+        marker.addTo(mapRef.current);
+    })
+ 
 
     // Allow fullscreen mode    
     // mapRef.addControl(new mapboxgl.FullscreenControl({container: mapContainer.current}));

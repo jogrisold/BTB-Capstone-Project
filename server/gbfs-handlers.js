@@ -8,7 +8,7 @@ const request = require('request-promise');
 // Utility to reduce (200) status: 200 fatigue
 const { sendResponse } = require("./utils");
 
-const requestGBFS = (URI) => {
+const requestGBFS = () => {
   return new Promise (resolve => {
     request("https://gbfs.velobixi.com/gbfs/en/station_information.json")
       .then((response) => {
@@ -47,10 +47,10 @@ const requestGBFS = (URI) => {
 const getGBFS = async (req,res) => {
   try {
     const response = await requestGBFS();
-    // sendResponse(res, 200, response, "Bike stations loaded");
-    sendResponse(res, 100, "test", "test")
+    console.log(response);
+    return sendResponse(res, 200, response, "Bike stations loaded");
   } catch (err) {
-    console.log('Error: ', err.message);
+    console.log('Error: ', err);
   }
 };
 
@@ -58,10 +58,9 @@ const getGBFS = async (req,res) => {
 // Create a function that will retrieve the closest station
 const getDistanceFromGBFS = async (req, res) => {
   try{
-
     sendResponse(res, 200, "test");
   } catch (err){
-    sendResponse(res, 500, "test failed");
+    sendResponse(res, 500, "data goes here", err.message);
   }
     // lookup nodejs-promises: exercise-3.4
 }

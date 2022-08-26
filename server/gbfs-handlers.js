@@ -47,9 +47,10 @@ const requestGBFS = (URI) => {
 const getGBFS = async (req,res) => {
   try {
     const response = await requestGBFS();
-    sendResponse(res, 200, response, "Bike stations loaded");
+    // sendResponse(res, 200, response, "Bike stations loaded");
+    sendResponse(res, 100, "test", "test")
   } catch (err) {
-    console.log('Error: ', err);
+    console.log('Error: ', err.message);
   }
 };
 

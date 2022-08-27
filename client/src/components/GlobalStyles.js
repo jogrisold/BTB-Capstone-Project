@@ -11,7 +11,7 @@ const GlobalStyles = createGlobalStyle`
     // in all of our styled components
     :root {
         --color-primary: #BFBA9F; /* #C6C9C0;*/
-        --color-secondary: #474E6A;
+        --color-secondary: #BFCCFF;
         --color-tertiary: #5D5B67 ;
         --color-quarternary: #BF9663; /* #6A6A5F;*/
         --color-gold:#BF9663;

@@ -53,7 +53,6 @@ const Map = () => {
             setLng(mapRef.current.getCenter().lng.toFixed(4));
             setLat(mapRef.current.getCenter().lat.toFixed(4));
             setZoom(mapRef.current.getZoom().toFixed(2));
-            
         });
     },[]);
     // *****************************************************
@@ -83,12 +82,10 @@ const Map = () => {
                 trackUserLocation: true,
                 showUserHeading: true
                 }))
-            // Add bike stations
-            console.log(bikeStations);
             
-            // let marker = new mapboxgsl.Marker()
-            // marker.setLngLat([-73.5674,45.5019]])
-            // marker.addTo(mapRef);
+
+           // Allow fullscreen mode    
+            mapRef.current.addControl(new mapboxgl.FullscreenControl({container: mapContainer.current}));
 
             // TO DO: Write am if statement to only render the followingon desktop
             // TO DO: if(screenwidth >700px){}
@@ -98,33 +95,31 @@ const Map = () => {
         } 
     },[mapInit]);
 
+    // Add bike stations
     bikeStations.forEach((station) => {
-        let marker = new mapboxgl.Marker()
-        console.log(station.position)
-        marker.setLngLat(station.position)
-        marker.addTo(mapRef.current);
-    })
- 
-
-    // Allow fullscreen mode    
-    // mapRef.addControl(new mapboxgl.FullscreenControl({container: mapContainer.current}));
+                let marker = new mapboxgl.Marker()
+                marker.setLngLat(station.position)
+                marker.addTo(mapRef.current);
+            })
 
     return(
-             <div>
+             <Wrapper>
                 <div className="sidebar">
                 Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
                 </div>
-                <div ref={mapContainer} className="map-container" />
-            </div>
+                <MapContainer ref={mapContainer} className="map-container" />
+            </Wrapper>
     )
 };
 
 export default Map;
 
 const Wrapper = styled.div`
-    display: flex;
-    justify-content: center;
+    
 `;
 const Mapbox = styled.div`
     
+`;
+const MapContainer = styled.div`
+    height: 900px;
 `;

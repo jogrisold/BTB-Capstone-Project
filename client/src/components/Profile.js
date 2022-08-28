@@ -1,4 +1,8 @@
+const Profile = () => {
+    return <></>
+}
 
+export default Profile;
 
 
 // Fetch user information based on ID

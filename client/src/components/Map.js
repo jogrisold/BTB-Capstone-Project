@@ -20,6 +20,7 @@ const Map = () => {
     const [lng, setLng] = useState(-73.5674);
     const [lat, setLat] = useState(45.5019);
     const [zoom, setZoom] = useState(9);
+
     
     // *****************************************************
     // States for customization
@@ -33,6 +34,9 @@ const Map = () => {
     // For rendering the waypoints only once, and only after data 
     // has been fetched
     const [bikeDataRetrieved, setBikeDataRetrieved] = useState(false);
+    // Create a state to hold the markers added to the map to remove 
+    // them on submission of addRoute
+    const [currentMarkers, setCurrentMarkers] = useState([]);
     
 
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
@@ -121,14 +125,30 @@ const Map = () => {
         if (bikeDataRetrieved === true && mapInit === true){
             bikeStations.forEach((station) => {
                 let marker = new mapboxgl.Marker()
-                marker.setLngLat(station.position)
+                marker.setLngLat(station.position);
                 marker.addTo(mapRef.current);
+                // Store the markers in an array in order to clear the map 
+                // when a user submits getDirections and it calls removeMarkers();
+                setCurrentMarkers(currentMarkers =>[...currentMarkers, marker])
             })
             // Set the retrieval trigger false to avoid
             // additional re-rendering on map navigation
             setBikeDataRetrieved(false);
         }
     },[bikeDataRetrieved])
+
+    // Create a function that will remove all markers when a user submits the form
+    // in NavSearch, triggering getDirections();
+    const removeMarkers = () => {
+        console.log("removemarkers")
+        console.log(currentMarkers);
+        if (currentMarkers!==null) {
+            for (var i = currentMarkers.length - 1; i >= 0; i--) {
+              currentMarkers[i].remove();
+            }
+        }
+    }
+       
 
     // Function to add the route as a layer to the map
     // From mapbox instructions:
@@ -184,44 +204,99 @@ const Map = () => {
     // as a mapbox layer
     const addRouteLayer = () =>{
 
-    // Call the function that returns the route
-    // getRoute(origin, destination);
-    getRoute([-73.607000, 45.529730], [-73.507000, 45.429730]);
-    
-    // Add origin point to the map
-    mapRef.current.addLayer({
-        id: 'point',
-        type: 'circle',
-        source: {
-            type: 'geojson',
-            data: {
-            type: 'FeatureCollection',
-            features: [
-                {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                    type: 'Point',
-                    coordinates: origin,
+        // !!!!!! To do !!!!!!!!!!!    
+        // Set the origin and destination based on the user
+        // input in the form
+
+        // Then try and retrieve origin based on location services
+        
+        // !!!!!! To do !!!!!!!!!!! 
+
+
+        // Test origin and destination
+        const origin =[-73.607000, 45.529730];
+        const destination = [-73.507000, 45.429730];
+        // Call the function that returns the route
+        // getRoute(origin, destination);
+        getRoute(origin, destination);
+        
+        // Add origin point to the map
+        mapRef.current.addLayer({
+            id: 'point',
+            type: 'circle',
+            source: {
+                type: 'geojson',
+                data: {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: origin,
+                    }
+                    }
+                ]
                 }
-                }
-            ]
+            },
+            paint: {
+                'circle-radius': 10,
+                'circle-color': '#3887be'
             }
-        },
-        paint: {
-            'circle-radius': 10,
-            'circle-color': '#3887be'
-        }
-    });
+        });
     // this is where the code from the next step will go
     };
 
-    // Add route useEffect 
-    useEffect(()=>{
-        if(mapInit === true){
-            
-        }
-    },[mapInit])
+    // Create a function that will center the map on the 
+    // origin when the user submits the form that calls
+    // getDirections
+    const centerMapOnOrigin = (origin, destination) => {
+        const start = {
+            center: destination,
+            zoom: 1,
+            pitch: 0,
+            bearing: 0
+            };
+        const end = {
+            center: origin,
+            zoom: 16.5,
+            bearing: 0,
+            pitch: 0
+        };
+
+
+            // Custom atmosphere styling
+            mapRef.current.setFog({
+            'color': 'rgb(220, 159, 159)', // Pink fog / lower atmosphere
+            'high-color': 'rgb(36, 92, 223)', // Blue sky / upper atmosphere
+            'horizon-blend': 0.4 // Exaggerate atmosphere (default is .1)
+            });
+             
+            mapRef.current.addSource('mapbox-dem', {
+            'type': 'raster-dem',
+            'url': 'mapbox://mapbox.terrain-rgb'
+            });
+             
+            mapRef.current.setTerrain({
+            'source': 'mapbox-dem',
+            'exaggeration': 1.5
+            });
+
+             
+            let isAtStart = true;
+             
+            const target = isAtStart ? end : start;
+            isAtStart = !isAtStart;
+             
+            mapRef.current.flyTo({
+            ...target, // Fly to the selected target
+            duration: 10000, // Animate over 10 seconds
+            essential: true // This animation is considered essential with
+            //respect to prefers-reduced-motion
+            });
+
+    }
 
     return(
                 <Wrapper>
@@ -231,6 +306,9 @@ const Map = () => {
                 <NavSearch 
                     bikeStations = {bikeStations}
                     addRouteLayer = {addRouteLayer}
+                    mapboxgl = {mapboxgl}
+                    removeMarkers = {removeMarkers}
+                    centerMapOnOrigin = {centerMapOnOrigin}
                 />
                 <MapContainer ref={mapContainer} className="map-container" />
             </Wrapper>

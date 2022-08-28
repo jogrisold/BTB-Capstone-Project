@@ -37,7 +37,9 @@ const Map = () => {
     // Create a state to hold the markers added to the map to remove 
     // them on submission of addRoute
     const [currentMarkers, setCurrentMarkers] = useState([]);
-    
+    // For triggering the remove markers function if the user 
+    // moves the map to improve efficiency
+    const [removeOnMove, setRemoveOnMove] = useState(false);
 
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -148,7 +150,7 @@ const Map = () => {
             }
         }
     }
-       
+
 
     // Function to add the route as a layer to the map
     // From mapbox instructions:

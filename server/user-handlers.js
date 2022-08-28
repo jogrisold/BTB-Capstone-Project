@@ -16,11 +16,12 @@ const options = {
 };
 const { MONGO_URI } = process.env;
 
+
 //*************************************************************** */
 // SERVER HANDLERS
 //*************************************************************** */
-// COMPLETE
-// Returns an array of all Flight Numbers
+
+
 const getFlights = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   try {
@@ -45,3 +46,12 @@ const getFlights = async (req, res) => {
   }
   client.close();
 };
+
+
+//*************************************************************** */
+// Export our handlers
+//*************************************************************** */
+module.exports = {
+  getFlights
+};
+//*************************************************************** */

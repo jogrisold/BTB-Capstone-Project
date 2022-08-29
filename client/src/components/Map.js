@@ -17,8 +17,8 @@ const Map = () => {
     // *****************************************************
     const mapContainer = useRef(null);
     const mapRef = useRef(null);
-    const [lng, setLng] = useState(-73.5674);
-    const [lat, setLat] = useState(45.5019);
+    const [lng, setLng] = useState(-73.5674); // !!!! Need to gain these from user 
+    const [lat, setLat] = useState(45.5019); // !!!! location or input city form
     const [zoom, setZoom] = useState(9);
 
     
@@ -38,6 +38,7 @@ const Map = () => {
     // them on submission of addRoute
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
+    // set a state for origin and destination, or you could use a useContext file
 
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -155,50 +156,50 @@ const Map = () => {
 
     // create a function to make a directions request
     const getRoute = async(origin, destination) => {
-    // make a directions request using cycling profile
-    // an arbitrary origin, will always be the same
-    // only the destination or destination will change
-    const query = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/cycling/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-        { method: 'GET' }
-    );
-    const json = await query.json();
-    const data = json.routes[0];
-    const route = data.geometry.coordinates;
-    const geojson = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'LineString',
-        coordinates: route
-      }
-    };
-    // if the route already exists on the map, we'll reset it using setData
-    if (mapRef.current.getSource('route')) {
-      mapRef.current.getSource('route').setData(geojson);
-    }
-    // otherwise, we'll make a new request
-    else {
-      mapRef.current.addLayer({
-        id: 'route',
-        type: 'line',
-        source: {
-          type: 'geojson',
-          data: geojson
-        },
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#3887be',
-          'line-width': 5,
-          'line-opacity': 0.75
+        // make a directions request using cycling profile
+        // an arbitrary origin, will always be the same
+        // only the destination or destination will change
+        const query = await fetch(
+            `https://api.mapbox.com/directions/v5/mapbox/cycling/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+            { method: 'GET' }
+        );
+        const json = await query.json();
+        const data = json.routes[0];
+        const route = data.geometry.coordinates;
+        const geojson = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'LineString',
+            coordinates: route
         }
-      });
-    }
+        };
+        // if the route already exists on the map, we'll reset it using setData
+        if (mapRef.current.getSource('route')) {
+        mapRef.current.getSource('route').setData(geojson);
+        }
+        // otherwise, we'll make a new request
+        else {
+            mapRef.current.addLayer({
+                id: 'route',
+                type: 'line',
+                source: {
+                type: 'geojson',
+                data: geojson
+                },
+                layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+                },
+                paint: {
+                'line-color': '#3887be',
+                'line-width': 5,
+                'line-opacity': 0.75
+                }
+            });
+        }
     // add turn instructions here at the destination
-  }
+    }
   
     // Define a function to add the route to the map 
     // as a mapbox layer
@@ -249,8 +250,7 @@ const Map = () => {
     };
 
     // Create a function that will center the map on the 
-    // origin when the user submits the form that calls
-    // getDirections
+    // origin when the user submits the getDirections form
     const centerMapOnOrigin = (origin, destination) => {
         const start = {
             center: destination,
@@ -264,26 +264,7 @@ const Map = () => {
             bearing: 0,
             pitch: 0
         };
-
-
-            // Custom atmosphere styling
-            mapRef.current.setFog({
-            'color': 'rgb(220, 159, 159)', // Pink fog / lower atmosphere
-            'high-color': 'rgb(36, 92, 223)', // Blue sky / upper atmosphere
-            'horizon-blend': 0.4 // Exaggerate atmosphere (default is .1)
-            });
-             
-            mapRef.current.addSource('mapbox-dem', {
-            'type': 'raster-dem',
-            'url': 'mapbox://mapbox.terrain-rgb'
-            });
-             
-            mapRef.current.setTerrain({
-            'source': 'mapbox-dem',
-            'exaggeration': 1.5
-            });
-
-             
+  
             let isAtStart = true;
              
             const target = isAtStart ? end : start;

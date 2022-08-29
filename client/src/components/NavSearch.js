@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 
+// React icon to toggle search
+import { FcSearch } from "react-icons/fc";
+import { UserContext } from "./UserContext";
 
 const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
@@ -8,6 +11,17 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     // returning the directions from origin to destination
     const [directions, setDirections] = useState({});
     let distanceArray = []
+
+    // State for origin and destionation
+    const [originInput, setOriginInput] = useState([-73.607000, 45.529730])
+    const [destinationInput, setDestinationInput] = useState([-73.507000, 45.429730])
+
+    // Use context to access states initialized in UserContext
+    // search, SetSearch: for conditional rendering of the search form
+    const {
+        search, 
+        setSearch
+    } = useContext(UserContext);
 
     // Function to calculate the distance between two points
     const getDistance = (origin, destination) => {
@@ -47,7 +61,8 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
 
 
     // Then once the stations have been chosen, we need to get the directions
-    const getDirections = () => {
+    const getDirections = (e) => {
+        e.preventDefault();
         // 0. (test) Total route directions
         fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
             .then((res)=>res.json())
@@ -76,39 +91,130 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // in the fetch above, and that the map has been rendered
         removeMarkers();
         // Test origin and destination
-        const origin =[-73.607000, 45.529730];
-        const destination = [-73.507000, 45.429730];
+        const origin =[-73.607000, 45.529730]; // this needs to be a setState
+        const destination = [-73.507000, 45.429730]; // in order to update in Map
         centerMapOnOrigin(origin, destination);
     }
     
     if (directions.routes !== undefined){
         console.log('directions.routes: '+ directions.routes[0].distance)
     }
-    
-    
-    
 
+    const toggleSearch = () => {
+        if (search === true){
+            setSearch(false);
+        } else {
+            setSearch(true);
+        }
+    }
+    
     return (
-
-            <Submit
-                onClick = {getDirections}>
-                Let's go!
-            </Submit>
-
-
+            <>
+            <ToggleSearch
+                onClick={toggleSearch}>
+                <GetDirectionsText>
+                    <FcSearch  size = {50}/>
+                </GetDirectionsText>
+                <GetDirectionsText>Where to?</GetDirectionsText>
+            </ToggleSearch>
+            {search 
+                ?   <GetDirectionsForm 
+                        onSubmit={getDirections}>
+                    
+                    <Label htmlFor='origin'>Origin</Label>
+                        <Input
+                            autoFocus
+                            type="text"
+                            placeholder="Origin"
+                            value={originInput}
+                            required={true}
+                            onChange={(e) => setOriginInput(e.target.value)}
+                        />
+                        <Label htmlFor='last-name'>Destination</Label>
+                        <Input
+                            type="text"
+                            placeholder="Destination"
+                            value={destinationInput}
+                            required={true}
+                            onChange={(e) => setDestinationInput(e.target.value)}
+                        />
+                        <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
+                    </GetDirectionsForm>
+                : <></>
+            }
+        
+            </>
     )
 }
 
 export default NavSearch;
+// Button to toggle getDirectionsForm search 
+const ToggleSearch = styled.button`
+    display: flex;
+    justify-content: left;
+    width: 100%;
+    font-family: var(--font-heading);
+    font-weight: bold;
+    color: var(--color-quarternary);
+    background-color: whitesmoke;
+    font-size: 24px;
+    border-radius: 5px;
+    border: none;
+`
+// Styling fo the header
+const GetDirectionsText = styled.div`
+    color: var(--color-secondary);
+    font-size: 38px;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    margin: 10px 0 0 25px;
+`;
 
-const Submit = styled.button`
+// Create our form
+const GetDirectionsForm = styled.form`
     position: absolute;
-    z-index: 1;
-    top: 100;
-    left: 100;
-
+        z-index: 5;
+        top: 100;
+        left: 100;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 `;
-const SearchRouteForm = styled.form`
 
-
+// Create our label styling
+const Label = styled.label`
+    font-size: 1rem;
+    color: var(--color-secondary);
+    background-color: white;
+    text-align: left;
+    font-size: 24px;
+    width: 100%;
 `;
+// Same for inpiut
+const Input = styled.input`
+    font-size: 24px;
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: none;
+`;
+// Button for form submission
+const GetDirectionsSubmit = styled.button`
+  font-family: var(--font-heading);
+  font-weight: bold;
+  color: var(--color-quarternary);
+  background-color: whitesmoke;
+  font-size: 24px;
+  border-radius: 5px;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+    transition: ease-in-out 100ms;
+    &:hover{
+      transform: scale(1.02);
+    }
+    &:active{
+        transform: scale(.8);
+        background-color: lightgray;
+    }
+`

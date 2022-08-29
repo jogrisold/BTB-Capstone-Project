@@ -9,13 +9,10 @@ import { useNavigate } from "react-router-dom";
 // Local dependencies
 import logo from "../assets/logo.png";
 
-
 // Icons
-import { BsCartDash } from "react-icons/bs";
-import { BsCartCheckFill } from "react-icons/bs";
 import { FaRegUser } from "react-icons/fa";
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import { UserContext } from "./UserContext";
 
 // The Header is an element that will sit at the top of 
 // all pages, it is defined as a constant here and passed
@@ -26,8 +23,18 @@ const Header = () => {
     // Constants
     //**************************************************************** */
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [currentUser, setCurrentUser] = useState(false)
+    // Use context to access states initialized in UserContext
+    // search, SetSearch: for conditional rendering of the search form
+    // isLoggedIn : for conditional rendering of the login/logout buttons
+    const {
+        search, 
+        setSearch,
+        isLoggedIn, 
+        setIsLoggedIn,
+        currentUser, 
+        setCurrentUser
+    } = useContext(UserContext);
+   
     
     // Define a navigator to allow us to use Navigate to move
     // the user to the desired page without them clicking on 
@@ -39,11 +46,11 @@ const Header = () => {
         navigate(`/${routename}`)
     }
 
+    
     // Create a function to handle click of logot button
     const handleClickLogOut = () => {
-        setCurrentUser(null);
+        setCurrentUser(null); // ?? backend ??
         setIsLoggedIn(false);
-
     }
 
     //**************************************************************** */
@@ -94,7 +101,7 @@ export default Header;
 const Wrapper = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
     align-items: center;
     background-color: var(--color-secondary);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
@@ -107,14 +114,13 @@ const LogoAndSearch = styled.div`
 const FlexRow = styled.div`
     width: 100%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-evenly;
+    justify-content: right;
     align-items: center;
+    margin: 0 20px 0 0;
 `;
 const Logo = styled.img`
-    width: 150px;
-    margin: 0 0 0 20px;
+    width: 100px;
+    margin: 5px 0 5px 20px;
 `;
 const ProfileBtn = styled.button`
     color: white;
@@ -137,8 +143,9 @@ const LogIn = styled.button`
     color: white;
     font-size: 20px;
     border: 2px solid white;
-    border-radius: 10px;
-    padding: 8px 10px;
+    border-radius:50px;
+    height: 75px;
+    width: 75px;
     align-items: left;
     text-align: center;
     background-color: var(--color-secondary);
@@ -164,7 +171,6 @@ const LogOut = styled.button`
     border-radius: 10px;
     padding: 8px 10px;
     color: white;
-    margin: 0 20px;
     align-items: center;
     text-align: center;
     background-color: var(--color-secondary);

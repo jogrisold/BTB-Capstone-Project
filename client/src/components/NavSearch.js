@@ -13,8 +13,8 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     let distanceArray = []
 
     // State for origin and destionation
-    const [originInput, setOriginInput] = useState([-73.607000, 45.529730])
-    const [destinationInput, setDestinationInput] = useState([-73.507000, 45.429730])
+    const [originInput, setOriginInput] = useState([])
+    const [destinationInput, setDestinationInput] = useState([])
 
     // Use context to access states initialized in UserContext
     // search, SetSearch: for conditional rendering of the search form
@@ -25,8 +25,6 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
 
     // Function to calculate the distance between two points
     const getDistance = (origin, destination) => {
-
-        
         // Calculate the euclidian distance between two points: 
         // d = √[(x2 – x1)2 + (y2 – y1)2].
         // We could use the haversine method, but for the purposes of micromobility,
@@ -36,17 +34,14 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             // an array e.g. geojsondatapoint = [longitude, latidute] 
             Math.pow(origin[1] - destination[1], 2) + Math.pow(origin[0] - destination[0], 2)
             );
-
         const distKm = distEucl * 11.1
         return distKm
     };
 
     // First we will need to run getDistance on the station data to find the closest one
-
     const nearestStationCalc = () => {
         const testAddress = [-73.607000, 45.529730]
         bikeStations.map((station)=> {
-            let distCalc = getDistance(testAddress, station.position)
             distanceArray = [...distanceArray, {"station_id": station.station_id , "distance": getDistance(testAddress, station.position)}]
             return distanceArray = [...distanceArray, getDistance(testAddress, station.position)]
         })
@@ -64,17 +59,24 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     const getDirections = (e) => {
         e.preventDefault();
         // 0. (test) Total route directions
-        fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
-            .then((res)=>res.json())
-            .then((data)=> {
-                console.log('data is: ' + Object.keys(data))
-                console.log('data is: ' + data.routes[0].distance)
-                setDirections(data);
-            })
+        // fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
+        //     .then((res)=>res.json())
+        //     .then((data)=> {
+        //         console.log('data is: ' + Object.keys(data))
+        //         console.log('data is: ' + data.routes[0].distance)
+        //         setDirections(data);
+        //     })
         
         // test directions layer add
-        
-        addRouteLayer();
+        // const origin =[-73.607000, 45.529730];
+        // const destination = [-73.507000, 45.429730];
+        console.log(originInput)
+        console.log(destinationInput)
+        // const origin = originInput;
+        // const destination = destinationInput;
+        const origin = [-73.607000, 45.529730];
+        const destination = [-73.507000, 45.429730];
+        addRouteLayer(origin, destination);
         
 
         // 1. Reqest the walking directions to the closest station (originStation)
@@ -84,15 +86,11 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // 3. Request the walking directions from the closest station to the destination (destinationStation)
 
         // 4. Remove the other stations from the map
-        // Add bike stations
-
-        // 112: bikestations triggered
-        // Check that the station data has been retrieved successfully
-        // in the fetch above, and that the map has been rendered
         removeMarkers();
+        // 5. Add the originStation and destinationStation to map
+
         // Test origin and destination
-        const origin =[-73.607000, 45.529730]; // this needs to be a setState
-        const destination = [-73.507000, 45.429730]; // in order to update in Map
+
         centerMapOnOrigin(origin, destination);
     }
     

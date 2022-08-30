@@ -6,6 +6,7 @@ import styled from "styled-components";
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import NavSearch from "./NavSearch";
+import { addRouteLayerObject } from "./LayerObjects";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -86,7 +87,6 @@ const Map = () => {
             });
         },[])
 
-
     // Customization useEffect to avoid multiple elements 
     useEffect(() => {
         // console.log('81: customization useeffect start');
@@ -141,8 +141,7 @@ const Map = () => {
     // Create a function that will remove all markers when a user submits the form
     // in NavSearch, triggering getDirections();
     const removeMarkers = () => {
-        console.log("removemarkers")
-        console.log(currentMarkers);
+        console.log("removemarkers starts")
         if (currentMarkers!==null) {
             for (var i = currentMarkers.length - 1; i >= 0; i--) {
               currentMarkers[i].remove();
@@ -150,12 +149,9 @@ const Map = () => {
         }
     }
        
-
-    // Function to add the route as a layer to the map
-    // From mapbox instructions:
-
-    // create a function to make a directions request
+    // Create a function to make a directions request
     const getRoute = async(origin, destination) => {
+        console.log("getroute starts")
         // make a directions request using cycling profile
         // an arbitrary origin, will always be the same
         // only the destination or destination will change
@@ -198,54 +194,18 @@ const Map = () => {
                 }
             });
         }
-    // add turn instructions here at the destination
+    // add turn instructions here at the destination - mapbox next steps
     }
   
     // Define a function to add the route to the map 
     // as a mapbox layer
-    const addRouteLayer = () =>{
-
-        // !!!!!! To do !!!!!!!!!!!    
-        // Set the origin and destination based on the user
-        // input in the form
-
-        // Then try and retrieve origin based on location services
-        
-        // !!!!!! To do !!!!!!!!!!! 
-
-
-        // Test origin and destination
-        const origin =[-73.607000, 45.529730];
-        const destination = [-73.507000, 45.429730];
+    const addRouteLayer = (origin, destination) =>{
         // Call the function that returns the route
         // getRoute(origin, destination);
         getRoute(origin, destination);
         
         // Add origin point to the map
-        mapRef.current.addLayer({
-            id: 'point',
-            type: 'circle',
-            source: {
-                type: 'geojson',
-                data: {
-                type: 'FeatureCollection',
-                features: [
-                    {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                        type: 'Point',
-                        coordinates: origin,
-                    }
-                    }
-                ]
-                }
-            },
-            paint: {
-                'circle-radius': 10,
-                'circle-color': '#3887be'
-            }
-        });
+        mapRef.current.addLayer(addRouteLayerObject);
     // this is where the code from the next step will go
     };
 
@@ -276,7 +236,6 @@ const Map = () => {
             essential: true // This animation is considered essential with
             //respect to prefers-reduced-motion
             });
-
     }
 
     return(

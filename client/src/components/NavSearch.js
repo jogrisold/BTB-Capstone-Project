@@ -12,13 +12,14 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     const [directions, setDirections] = useState({});
     let distanceArray = []
 
-    // State for origin and destionation
+    // State for origin and destination input by user in the form
     const [originInput, setOriginInput] = useState("")
     const [destinationInput, setDestinationInput] = useState("")
 
-    // const [fetchOrigin, setFetchOrigin] = useState("")
-     
-    const [originConverted, setOriginConverted] = useState(false)
+    // State to handle our function calls based on whether the opencage fetch
+    // has successfully returned our input as geoJSON array format
+    const [inputConverted, setInputConverted] = useState(false)
+
     // Use context to access states initialized in UserContext
     // search, SetSearch: for conditional rendering of the search form
     const {
@@ -61,16 +62,11 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     // Then we will need to do the same for the destination address
 
 
-
-
-
     // Then once the stations have been chosen, we need to get the directions
     const getDirections = (e) => {
         // Prevent the page from refreshing
         e.preventDefault();
         
-
-
         // 0. (test) Total route directions
         // fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
         //     .then((res)=>res.json())
@@ -80,40 +76,26 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         //         setDirections(data);
         //     })
         
-        // test directions layer add
-        // const origin =[-73.607000, 45.529730];
-        // const destination = [-73.507000, 45.429730];
-        console.log(originInput)
-        console.log(destinationInput)
-
-
-        const testOrigin = originInput;
-
-        const fetchOrigin = JSON.stringify(testOrigin.replaceAll(" ", "&"));
-        const testDestination = destinationInput;
-
-        const fetchDestination = JSON.stringify(testDestination.replaceAll(" ", "&"));
+        // Convert the input strings to a format that can be passed as a param
+        const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
+        const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
         
+        // Fetch the opencage .get endpoint
         fetch(`/get-position/${fetchOrigin}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data.data)
                 setOrigin(data.data)
                 fetch(`/get-position/${fetchDestination}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log(data.data)
-                    setDestination(data.data)
-                    console.log(origin);
-                    console.log(destination);
-                    setOriginConverted(true);
+                    setDestination(data.data);
+                    // Set a state to trigger the addRouteLayer function
+                    // as the origin and destination states will not be 
+                    // accessible until the end of the getDirections function
+                    setInputConverted(true);
                 });
             });
             
-        console.log(origin);
-        console.log(originConverted);
-        
-        
         // 1. Reqest the walking directions to the closest station (originStation)
 
         // 2. Request the biking directions from originStation to destinationStation
@@ -125,11 +107,11 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
 
     }
 
-    if (originConverted){
+    if (inputConverted){
         addRouteLayer();
         removeMarkers();
         centerMapOnOrigin();
-        setOriginConverted(false);
+        setInputConverted(false);
     }
 
     if (directions.routes !== undefined){

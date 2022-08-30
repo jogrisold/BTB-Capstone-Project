@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 
 // const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
@@ -7,6 +7,7 @@ import styled from "styled-components";
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import NavSearch from "./NavSearch";
 import { addRouteLayerObject } from "./LayerObjects";
+import { UserContext } from "./UserContext";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -40,7 +41,7 @@ const Map = () => {
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
     // set a state for origin and destination, or you could use a useContext file
-
+    const {origin, setOrigin, destination, setDestination} = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
     // *****************************************************
@@ -150,11 +151,12 @@ const Map = () => {
     }
        
     // Create a function to make a directions request
-    const getRoute = async(origin, destination) => {
+    const getRoute = async() => {
         console.log("getroute starts")
         // make a directions request using cycling profile
         // an arbitrary origin, will always be the same
         // only the destination or destination will change
+        
         const query = await fetch(
             `https://api.mapbox.com/directions/v5/mapbox/cycling/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
             { method: 'GET' }
@@ -163,12 +165,12 @@ const Map = () => {
         const data = json.routes[0];
         const route = data.geometry.coordinates;
         const geojson = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-            type: 'LineString',
-            coordinates: route
-        }
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: route
+            }
         };
         // if the route already exists on the map, we'll reset it using setData
         if (mapRef.current.getSource('route')) {
@@ -199,10 +201,12 @@ const Map = () => {
   
     // Define a function to add the route to the map 
     // as a mapbox layer
-    const addRouteLayer = (origin, destination) =>{
+    const addRouteLayer = () =>{
+        console.log("addRouteLayer starts")
+        console.log(origin);
         // Call the function that returns the route
         // getRoute(origin, destination);
-        getRoute(origin, destination);
+        getRoute();
         
         // Add origin point to the map
         mapRef.current.addLayer(addRouteLayerObject);
@@ -211,7 +215,7 @@ const Map = () => {
 
     // Create a function that will center the map on the 
     // origin when the user submits the getDirections form
-    const centerMapOnOrigin = (origin, destination) => {
+    const centerMapOnOrigin = () => {
         const start = {
             center: destination,
             zoom: 1,
@@ -239,19 +243,19 @@ const Map = () => {
     }
 
     return(
-                <Wrapper>
-                <div className="sidebar">
-                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </div>
-                <NavSearch 
-                    bikeStations = {bikeStations}
-                    addRouteLayer = {addRouteLayer}
-                    mapboxgl = {mapboxgl}
-                    removeMarkers = {removeMarkers}
-                    centerMapOnOrigin = {centerMapOnOrigin}
-                />
-                <MapContainer ref={mapContainer} className="map-container" />
-            </Wrapper>
+        <Wrapper>
+        <div className="sidebar">
+            Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+        </div>
+        <NavSearch 
+            bikeStations = {bikeStations}
+            addRouteLayer = {addRouteLayer}
+            mapboxgl = {mapboxgl}
+            removeMarkers = {removeMarkers}
+            centerMapOnOrigin = {centerMapOnOrigin}
+        />
+        <MapContainer ref={mapContainer} className="map-container" />
+    </Wrapper>
     )
 };
 export default Map;

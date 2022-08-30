@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 // React icon to toggle search
@@ -13,18 +13,25 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     let distanceArray = []
 
     // State for origin and destionation
-    const [originInput, setOriginInput] = useState([])
-    const [destinationInput, setDestinationInput] = useState([])
+    const [originInput, setOriginInput] = useState("")
+    const [destinationInput, setDestinationInput] = useState("")
 
+    // const [fetchOrigin, setFetchOrigin] = useState("")
+     
+    const [originConverted, setOriginConverted] = useState(false)
     // Use context to access states initialized in UserContext
     // search, SetSearch: for conditional rendering of the search form
     const {
         search, 
-        setSearch
+        setSearch,
+        origin, 
+        setOrigin,
+        destination,
+        setDestination
     } = useContext(UserContext);
 
     // Function to calculate the distance between two points
-    const getDistance = (origin, destination) => {
+    const getDistance = () => {
         // Calculate the euclidian distance between two points: 
         // d = √[(x2 – x1)2 + (y2 – y1)2].
         // We could use the haversine method, but for the purposes of micromobility,
@@ -52,12 +59,18 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         return distanceArray
     }
     // Then we will need to do the same for the destination address
-    nearestStationCalc();
+
+
+
 
 
     // Then once the stations have been chosen, we need to get the directions
     const getDirections = (e) => {
+        // Prevent the page from refreshing
         e.preventDefault();
+        
+
+
         // 0. (test) Total route directions
         // fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
         //     .then((res)=>res.json())
@@ -74,11 +87,42 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         console.log(destinationInput)
         // const origin = originInput;
         // const destination = destinationInput;
-        const origin = [-73.607000, 45.529730];
-        const destination = [-73.507000, 45.429730];
-        addRouteLayer(origin, destination);
-        
 
+
+        const testOrigin = "6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3"
+       
+        const fetchOrigin = JSON.stringify(testOrigin.replaceAll(" ", "&"))
+        fetch(`/get-position/${fetchOrigin}`)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.data)
+                setOrigin(data.data)
+                setOriginConverted(true);
+            });
+
+        const testDestination = "275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6"
+        const fetchDestination = JSON.stringify(testDestination.replaceAll(" ", "&"))
+        fetch(`/get-position/${fetchDestination}`)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.data)
+                setDestination(data.data)
+            });
+
+            
+        console.log(origin);
+        console.log(originConverted);
+        // if (originConverted === true) {
+            // const origin = origin;
+        // }
+        // const origin = [-73.607000, 45.529730];
+        // const destination = [-73.507000, 45.429730];
+        if (origin !== null && destination !== null){
+            addRouteLayer();
+            removeMarkers();
+            centerMapOnOrigin();
+        }
+        
         // 1. Reqest the walking directions to the closest station (originStation)
 
         // 2. Request the biking directions from originStation to destinationStation
@@ -86,12 +130,10 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // 3. Request the walking directions from the closest station to the destination (destinationStation)
 
         // 4. Remove the other stations from the map
-        removeMarkers();
         // 5. Add the originStation and destinationStation to map
 
         // Test origin and destination
 
-        centerMapOnOrigin(origin, destination);
     }
     
     if (directions.routes !== undefined){
@@ -107,41 +149,50 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     }
     
     return (
-            <>
-            <ToggleSearch
-                onClick={toggleSearch}>
-                <GetDirectionsText>
-                    <FcSearch  size = {50}/>
-                </GetDirectionsText>
-                <GetDirectionsText>Where to?</GetDirectionsText>
-            </ToggleSearch>
-            {search 
-                ?   <GetDirectionsForm 
-                        onSubmit={getDirections}>
-                    
-                    <Label htmlFor='origin'>Origin</Label>
-                        <Input
-                            autoFocus
-                            type="text"
-                            placeholder="Origin"
-                            value={originInput}
-                            required={true}
-                            onChange={(e) => setOriginInput(e.target.value)}
-                        />
-                        <Label htmlFor='last-name'>Destination</Label>
-                        <Input
-                            type="text"
-                            placeholder="Destination"
-                            value={destinationInput}
-                            required={true}
-                            onChange={(e) => setDestinationInput(e.target.value)}
-                        />
-                        <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
-                    </GetDirectionsForm>
-                : <></>
-            }
-        
-            </>
+        <>
+        <ToggleSearch
+            onClick={toggleSearch}>
+            <GetDirectionsText>
+                <FcSearch  size = {50}/>
+            </GetDirectionsText>
+            <GetDirectionsText>Where to?</GetDirectionsText>
+        </ToggleSearch>
+        {search 
+            ?   <GetDirectionsForm 
+                    onSubmit={getDirections}>
+                
+                <Label htmlFor='origin'>Origin</Label>
+                    <Input
+                        autoFocus
+                        type="text"
+                        placeholder="Origin"
+                        value={originInput}
+                        required={true}
+                        onChange={(e) => {
+                            console.log(e.target.value)
+                            setOriginInput(e.target.value)
+                            console.log(originInput)
+                            }
+                        }
+                    />
+                    <Label htmlFor='last-name'>Destination</Label>
+                    <Input
+                        type="text"
+                        placeholder="Destination"
+                        value={destinationInput}
+                        required={true}
+                        onChange={(e) => {
+                            console.log(e.target.value)
+                            setDestinationInput(e.target.value)
+                            console.log(destinationInput)
+                            }
+                        }
+                    />
+                    <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
+                </GetDirectionsForm>
+            : <></>
+        }
+        </>
     )
 }
 

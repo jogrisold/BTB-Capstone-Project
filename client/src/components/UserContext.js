@@ -9,10 +9,12 @@ export const UserProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // ?? To store backend user data in a state ??
     const [currentUser, setCurrentUser] = useState(false);
+    // The user origin data converted to a geoJson array
+    const [origin, setOrigin] = useState(null);
+    // The user destination data converted to a geoJson array
+    const [destination, setDestination] = useState(null);
 
     // TO DO
-    const [flight, setFlight] = useState(null);
-    const [seat, setSeat] = useState(null);
     const [givenName, setGivenName] = useState(null);
     const [surname, setSurname] = useState(null);
     const [email, setEmail] = useState(null);
@@ -24,10 +26,10 @@ export const UserProvider = ({children}) => {
             setSearch,
             isLoggedIn,
             setIsLoggedIn,
-            flight,
-            setFlight,
-            seat,
-            setSeat,
+            origin,
+            setOrigin,
+            destination,
+            setDestination,
             givenName,
             setGivenName,
             surname,

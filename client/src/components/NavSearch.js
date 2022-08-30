@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 // React icon to toggle search
@@ -12,21 +12,40 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     const [directions, setDirections] = useState({});
     let distanceArray = []
 
-    // State for origin and destionation
-    const [originInput, setOriginInput] = useState([-73.607000, 45.529730])
-    const [destinationInput, setDestinationInput] = useState([-73.507000, 45.429730])
+    // State for origin and destination input by user in the form
+    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
+    const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
 
+    // State to handle our function calls based on whether the opencage fetch
+    // has successfully returned our input as geoJSON array format
+    const [geoJSONfetch, setGeoJSONfetch] = useState(false)
+
+
+
+    const [nearestOriginCompleted, setNearestOriginCompleted] = useState(false);
     // Use context to access states initialized in UserContext
     // search, SetSearch: for conditional rendering of the search form
     const {
         search, 
-        setSearch
+        setSearch,
+        isLoggedIn,
+        setIsLoggedIn,
+        origin,
+        setOrigin,
+        destination,
+        setDestination,
+        originStation, 
+        setOriginStation,
+        destinationStation,
+        setDestinationStation,
+        convertedOriginInput,
+        setConvertedOriginInput,
+        convertedDestinationInput,
+        setConvertedDestinationInput
     } = useContext(UserContext);
 
     // Function to calculate the distance between two points
-    const getDistance = (origin, destination) => {
-
-        
+    const getDistance = (start, finish) => {
         // Calculate the euclidian distance between two points: 
         // d = √[(x2 – x1)2 + (y2 – y1)2].
         // We could use the haversine method, but for the purposes of micromobility,
@@ -34,68 +53,104 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         const distEucl = Math.sqrt(
             // Keeping in mind that our location data is in geojson format of
             // an array e.g. geojsondatapoint = [longitude, latidute] 
-            Math.pow(origin[1] - destination[1], 2) + Math.pow(origin[0] - destination[0], 2)
+            Math.pow(start[1] - finish[1], 2) + Math.pow(start[0] - finish[0], 2)
             );
-
         const distKm = distEucl * 11.1
         return distKm
     };
 
     // First we will need to run getDistance on the station data to find the closest one
-
-    const nearestStationCalc = () => {
-        const testAddress = [-73.607000, 45.529730]
+    const nearestStationCalc = (location) => {
+        // const testAddress = [-73.607000, 45.529730]
         bikeStations.map((station)=> {
-            let distCalc = getDistance(testAddress, station.position)
-            distanceArray = [...distanceArray, {"station_id": station.station_id , "distance": getDistance(testAddress, station.position)}]
-            return distanceArray = [...distanceArray, getDistance(testAddress, station.position)]
+            // console.log(station);
+            distanceArray = [...distanceArray, {"station_id": station.station_id , "position": station.position, "distance": getDistance(location, station.position)}]
+            return distanceArray 
         })
         // sort the array to find the lowest distance
         distanceArray.sort((a, b)=>{
-            return a-b;
+            return a.distance-b.distance;
         })
         return distanceArray
     }
     // Then we will need to do the same for the destination address
-    nearestStationCalc();
 
 
     // Then once the stations have been chosen, we need to get the directions
     const getDirections = (e) => {
+        // Prevent the page from refreshing
         e.preventDefault();
+        
         // 0. (test) Total route directions
-        fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
-            .then((res)=>res.json())
-            .then((data)=> {
-                console.log('data is: ' + Object.keys(data))
-                console.log('data is: ' + data.routes[0].distance)
-                setDirections(data);
-            })
+        // fetch('https://api.mapbox.com/directions/v5/mapbox/driving/13.43,52.51;13.42,52.5;13.43,52.5?waypoints=0;2&access_token=pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug')
+        //     .then((res)=>res.json())
+        //     .then((data)=> {
+        //         console.log('data is: ' + Object.keys(data))
+        //         console.log('data is: ' + data.routes[0].distance)
+        //         setDirections(data);
+        //     })
         
-        // test directions layer add
+        // Convert the input strings to a format that can be passed as a param
+        const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
+        const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
         
-        addRouteLayer();
-        
-
-        // 1. Reqest the walking directions to the closest station (originStation)
-
+        // Fetch the opencage .get endpoint
+        fetch(`/get-position/${fetchOrigin}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setOrigin(data.data)
+                setConvertedOriginInput(data.data)
+                fetch(`/get-position/${fetchDestination}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    setDestination(data.data);
+                    setConvertedDestinationInput(data.data);
+                    // Set a state to trigger the addRouteLayer function
+                    // as the origin and destination states will not be 
+                    // accessible until the end of the getDirections function
+                    setGeoJSONfetch(true);
+                });
+            });
+        // addRouteLayerRequest();
         // 2. Request the biking directions from originStation to destinationStation
 
         // 3. Request the walking directions from the closest station to the destination (destinationStation)
 
         // 4. Remove the other stations from the map
-        // Add bike stations
+        // 5. Add the originStation and destinationStation to map
 
-        // 112: bikestations triggered
-        // Check that the station data has been retrieved successfully
-        // in the fetch above, and that the map has been rendered
-        removeMarkers();
-        // Test origin and destination
-        const origin =[-73.607000, 45.529730]; // this needs to be a setState
-        const destination = [-73.507000, 45.429730]; // in order to update in Map
-        centerMapOnOrigin(origin, destination);
     }
     
+    const addNearestOriginStationRoute = () => {
+        if (geoJSONfetch){
+            nearestStationCalc(convertedOriginInput);
+            console.log(distanceArray)
+            setOriginStation(distanceArray[0].position);
+            return (distanceArray[0].position)
+    
+        }
+    }
+    const addNearestDestinationStationRoute = () => {
+        if (geoJSONfetch){
+            nearestStationCalc(convertedDestinationInput);
+            setDestinationStation(distanceArray[0].position);
+            return (distanceArray[0].position);
+        }
+    }
+    // const addRouteLayerRequest = () =>{
+        if (geoJSONfetch){
+            let og = addNearestOriginStationRoute();
+            let dg = addNearestDestinationStationRoute()
+            addRouteLayer(origin, og, 'walk-to-station', '#BFCCFF', 'walking', false);
+            addRouteLayer(og, dg, 'bike-between-stations', '#5D5B67', 'cycling', true);
+            addRouteLayer(dg, destination, 'walk-from-station', '#BFCCFF', 'walking', false);
+            removeMarkers()
+            centerMapOnOrigin()
+            // Stop additional re-renders
+            setGeoJSONfetch(false);
+        }
+    // }
+
     if (directions.routes !== undefined){
         console.log('directions.routes: '+ directions.routes[0].distance)
     }
@@ -109,41 +164,53 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     }
     
     return (
-            <>
-            <ToggleSearch
-                onClick={toggleSearch}>
-                <GetDirectionsText>
-                    <FcSearch  size = {50}/>
-                </GetDirectionsText>
-                <GetDirectionsText>Where to?</GetDirectionsText>
-            </ToggleSearch>
-            {search 
-                ?   <GetDirectionsForm 
-                        onSubmit={getDirections}>
-                    
-                    <Label htmlFor='origin'>Origin</Label>
-                        <Input
-                            autoFocus
-                            type="text"
-                            placeholder="Origin"
-                            value={originInput}
-                            required={true}
-                            onChange={(e) => setOriginInput(e.target.value)}
-                        />
-                        <Label htmlFor='last-name'>Destination</Label>
-                        <Input
-                            type="text"
-                            placeholder="Destination"
-                            value={destinationInput}
-                            required={true}
-                            onChange={(e) => setDestinationInput(e.target.value)}
-                        />
-                        <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
-                    </GetDirectionsForm>
-                : <></>
-            }
-        
-            </>
+        <>
+        <ToggleSearch
+            onClick={toggleSearch}>
+            <GetDirectionsText>
+                <FcSearch  size = {50}/>
+            </GetDirectionsText>
+            <GetDirectionsText>Where to?</GetDirectionsText>
+        </ToggleSearch>
+        {search 
+            ?   <GetDirectionsForm 
+                    onSubmit={getDirections}>
+                
+                <Label htmlFor='origin'>Origin</Label>
+                    <Input
+                        autoFocus
+                        type="text"
+                        placeholder="Origin"
+                        // value={"6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3"}
+                        value={originInput}
+                        required={true}
+                        onChange={(e) => {
+                            console.log(e.target.value)
+                            setOriginInput(e.target.value)
+                            console.log(originInput)
+                            }
+                        }
+                    />
+                    <Label htmlFor='last-name'>Destination</Label>
+                    <Input
+                        type="text"
+                        placeholder="Destination"
+                        // value={"275 Notre-Dame St. East, Montreal, Quebec H2Y 1C"}
+                        value={destinationInput}
+                        required={true}
+                        defaultValue={"test"}
+                        onChange={(e) => {
+                            console.log(e.target.value)
+                            setDestinationInput(e.target.value)
+                            console.log(destinationInput)
+                            }
+                        }
+                    />
+                    <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
+                </GetDirectionsForm>
+            : <></>
+        }
+        </>
     )
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 
 // const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
@@ -6,6 +6,8 @@ import styled from "styled-components";
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import NavSearch from "./NavSearch";
+import { addRouteLayerObject } from "./LayerObjects";
+import { UserContext } from "./UserContext";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -39,7 +41,24 @@ const Map = () => {
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
     // set a state for origin and destination, or you could use a useContext file
-
+    const {
+        search, 
+        setSearch,
+        isLoggedIn,
+        setIsLoggedIn,
+        origin,
+        setOrigin,
+        destination,
+        setDestination,
+        originStation, 
+        setOriginStation,
+        destinationStation,
+        setDestinationStation,
+        convertedOriginInput,
+        setConvertedOriginInput,
+        convertedDestinationInput,
+        setConvertedDestinationInput
+    } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
     // *****************************************************
@@ -66,7 +85,6 @@ const Map = () => {
             setLng(mapRef.current.getCenter().lng.toFixed(4));
             setLat(mapRef.current.getCenter().lat.toFixed(4));
             setZoom(mapRef.current.getZoom().toFixed(2));
-            // console.log('59: end of store co-ordinates:' + bikeDataRetrieved, mapInit);
         });
     },[]);
     // *****************************************************
@@ -85,7 +103,6 @@ const Map = () => {
                 setBikeDataRetrieved(true);
             });
         },[])
-
 
     // Customization useEffect to avoid multiple elements 
     useEffect(() => {
@@ -141,8 +158,7 @@ const Map = () => {
     // Create a function that will remove all markers when a user submits the form
     // in NavSearch, triggering getDirections();
     const removeMarkers = () => {
-        console.log("removemarkers")
-        console.log(currentMarkers);
+        console.log("removemarkers starts")
         if (currentMarkers!==null) {
             for (var i = currentMarkers.length - 1; i >= 0; i--) {
               currentMarkers[i].remove();
@@ -150,38 +166,38 @@ const Map = () => {
         }
     }
        
-
-    // Function to add the route as a layer to the map
-    // From mapbox instructions:
-
-    // create a function to make a directions request
-    const getRoute = async(origin, destination) => {
+    // Create a function to make a directions request
+    const getRoute = async(start, finish, routeName, routeColor, profile) => {
+        console.log("getroute starts")
+        console.log(start, finish)
         // make a directions request using cycling profile
-        // an arbitrary origin, will always be the same
-        // only the destination or destination will change
+        // an arbitrary start, will always be the same
+        // only the finish or finish will change
+        
         const query = await fetch(
-            `https://api.mapbox.com/directions/v5/mapbox/cycling/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+            `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
             { method: 'GET' }
         );
         const json = await query.json();
         const data = json.routes[0];
+        console.log(data);
         const route = data.geometry.coordinates;
         const geojson = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-            type: 'LineString',
-            coordinates: route
-        }
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: route
+            }
         };
         // if the route already exists on the map, we'll reset it using setData
-        if (mapRef.current.getSource('route')) {
-        mapRef.current.getSource('route').setData(geojson);
+        if (mapRef.current.getSource(`${routeName}`)) {
+            mapRef.current.getSource(`${routeName}`).setData(geojson);
         }
         // otherwise, we'll make a new request
         else {
             mapRef.current.addLayer({
-                id: 'route',
+                id: `${routeName}`,
                 type: 'line',
                 source: {
                 type: 'geojson',
@@ -192,36 +208,38 @@ const Map = () => {
                 'line-cap': 'round'
                 },
                 paint: {
-                'line-color': '#3887be',
+                'line-color': `${routeColor}`,
                 'line-width': 5,
                 'line-opacity': 0.75
                 }
             });
         }
-    // add turn instructions here at the destination
+    // add turn instructions here at the destination - mapbox next steps
     }
   
     // Define a function to add the route to the map 
     // as a mapbox layer
-    const addRouteLayer = () =>{
-
-        // !!!!!! To do !!!!!!!!!!!    
-        // Set the origin and destination based on the user
-        // input in the form
-
-        // Then try and retrieve origin based on location services
-        
-        // !!!!!! To do !!!!!!!!!!! 
-
-
-        // Test origin and destination
-        const origin =[-73.607000, 45.529730];
-        const destination = [-73.507000, 45.429730];
+    const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, addStations) =>{
+        console.log("addRouteLayer starts")
+        console.log(layerOrigin);
+        console.log(layerDestination);
+        if (addStations){
+            let originStationMarker = new mapboxgl.Marker()
+                originStationMarker.setLngLat(layerOrigin);
+                originStationMarker.addTo(mapRef.current);
+                // Store the markers in an array in order to clear the map 
+                // when a user submits getDirections and it calls removeMarkers();
+                setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
+            let destinationStationMarker = new mapboxgl.Marker()
+                destinationStationMarker.setLngLat(layerDestination);
+                destinationStationMarker.addTo(mapRef.current);
+                setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
+        }
         // Call the function that returns the route
         // getRoute(origin, destination);
-        getRoute(origin, destination);
-        
         // Add origin point to the map
+        // Route to nearest station
+        getRoute(layerOrigin, layerDestination, routeName, routeColor, profile);
         mapRef.current.addLayer({
             id: 'point',
             type: 'circle',
@@ -235,7 +253,7 @@ const Map = () => {
                     properties: {},
                     geometry: {
                         type: 'Point',
-                        coordinates: origin,
+                        coordinates: layerOrigin,
                     }
                     }
                 ]
@@ -243,15 +261,16 @@ const Map = () => {
             },
             paint: {
                 'circle-radius': 10,
-                'circle-color': '#3887be'
+                'circle-color': '#BFCCFF'
             }
         });
+        
     // this is where the code from the next step will go
     };
 
     // Create a function that will center the map on the 
     // origin when the user submits the getDirections form
-    const centerMapOnOrigin = (origin, destination) => {
+    const centerMapOnOrigin = () => {
         const start = {
             center: destination,
             zoom: 1,
@@ -276,23 +295,22 @@ const Map = () => {
             essential: true // This animation is considered essential with
             //respect to prefers-reduced-motion
             });
-
     }
 
     return(
-                <Wrapper>
-                <div className="sidebar">
-                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-                </div>
-                <NavSearch 
-                    bikeStations = {bikeStations}
-                    addRouteLayer = {addRouteLayer}
-                    mapboxgl = {mapboxgl}
-                    removeMarkers = {removeMarkers}
-                    centerMapOnOrigin = {centerMapOnOrigin}
-                />
-                <MapContainer ref={mapContainer} className="map-container" />
-            </Wrapper>
+        <Wrapper>
+        <div className="sidebar">
+            Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+        </div>
+        <NavSearch 
+            bikeStations = {bikeStations}
+            addRouteLayer = {addRouteLayer}
+            mapboxgl = {mapboxgl}
+            removeMarkers = {removeMarkers}
+            centerMapOnOrigin = {centerMapOnOrigin}
+        />
+        <MapContainer ref={mapContainer} className="map-container" />
+    </Wrapper>
     )
 };
 export default Map;

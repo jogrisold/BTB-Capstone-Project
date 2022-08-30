@@ -85,13 +85,13 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // const destination = [-73.507000, 45.429730];
         console.log(originInput)
         console.log(destinationInput)
-        // const origin = originInput;
-        // const destination = destinationInput;
 
 
-        const testOrigin = "6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3";
+        const testOrigin = originInput;
+
         const fetchOrigin = JSON.stringify(testOrigin.replaceAll(" ", "&"));
-        const testDestination = "275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6";
+        const testDestination = destinationInput;
+
         const fetchDestination = JSON.stringify(testDestination.replaceAll(" ", "&"));
         
         fetch(`/get-position/${fetchOrigin}`)
@@ -131,8 +131,6 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         centerMapOnOrigin();
         setOriginConverted(false);
     }
-    console.log(origin);
-    console.log(destination);
 
     if (directions.routes !== undefined){
         console.log('directions.routes: '+ directions.routes[0].distance)

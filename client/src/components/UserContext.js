@@ -9,15 +9,20 @@ export const UserProvider = ({children}) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     // ?? To store backend user data in a state ??
     const [currentUser, setCurrentUser] = useState(false);
-    // The user origin data converted to a geoJson array
+    // State to store origin of route requests
     const [origin, setOrigin] = useState(null);
-    // The user destination data converted to a geoJson array
+    // State to store destination of route requests
     const [destination, setDestination] = useState(null);
+    // To hold the user input converted to geoJSON format 
+    // whilst we set origin/destination to originStation
+    // etc whilst adding walking route layer to closest station
+    const [convertedOriginInput, setConvertedOriginInput] = useState(null);
+    const [convertedDestinationInput, setConvertedDestinationInput] = useState(null);
+    // Closest station to origin as determined by nearestStationCalc
+    const [originStation, setOriginStation] = useState(null);
+    // Closest station to desination as determined by nearestStationCalc
+    const [destinationStation, setDestinationStation] = useState(null);
 
-    // TO DO
-    const [givenName, setGivenName] = useState(null);
-    const [surname, setSurname] = useState(null);
-    const [email, setEmail] = useState(null);
     
     return (
     <UserContext.Provider 
@@ -30,12 +35,14 @@ export const UserProvider = ({children}) => {
             setOrigin,
             destination,
             setDestination,
-            givenName,
-            setGivenName,
-            surname,
-            setSurname,
-            email,
-            setEmail
+            originStation, 
+            setOriginStation,
+            destinationStation,
+            setDestinationStation,
+            convertedOriginInput,
+            setConvertedOriginInput,
+            convertedDestinationInput,
+            setConvertedDestinationInput
         }}>
             {children}
         </UserContext.Provider>)

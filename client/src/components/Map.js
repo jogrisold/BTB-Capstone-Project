@@ -42,10 +42,22 @@ const Map = () => {
     
     // set a state for origin and destination, or you could use a useContext file
     const {
-        origin, 
-        setOrigin, 
-        destination, 
-        setDestination
+        search, 
+        setSearch,
+        isLoggedIn,
+        setIsLoggedIn,
+        origin,
+        setOrigin,
+        destination,
+        setDestination,
+        originStation, 
+        setOriginStation,
+        destinationStation,
+        setDestinationStation,
+        convertedOriginInput,
+        setConvertedOriginInput,
+        convertedDestinationInput,
+        setConvertedDestinationInput
     } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -73,7 +85,6 @@ const Map = () => {
             setLng(mapRef.current.getCenter().lng.toFixed(4));
             setLat(mapRef.current.getCenter().lat.toFixed(4));
             setZoom(mapRef.current.getZoom().toFixed(2));
-            // console.log('59: end of store co-ordinates:' + bikeDataRetrieved, mapInit);
         });
     },[]);
     // *****************************************************
@@ -156,18 +167,20 @@ const Map = () => {
     }
        
     // Create a function to make a directions request
-    const getRoute = async() => {
+    const getRoute = async(start, finish, routeName, routeColor, profile) => {
         console.log("getroute starts")
+        console.log(start, finish)
         // make a directions request using cycling profile
-        // an arbitrary origin, will always be the same
-        // only the destination or destination will change
+        // an arbitrary start, will always be the same
+        // only the finish or finish will change
         
         const query = await fetch(
-            `https://api.mapbox.com/directions/v5/mapbox/cycling/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+            `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
             { method: 'GET' }
         );
         const json = await query.json();
         const data = json.routes[0];
+        console.log(data);
         const route = data.geometry.coordinates;
         const geojson = {
             type: 'Feature',
@@ -178,13 +191,13 @@ const Map = () => {
             }
         };
         // if the route already exists on the map, we'll reset it using setData
-        if (mapRef.current.getSource('route')) {
-        mapRef.current.getSource('route').setData(geojson);
+        if (mapRef.current.getSource(`${routeName}`)) {
+            mapRef.current.getSource(`${routeName}`).setData(geojson);
         }
         // otherwise, we'll make a new request
         else {
             mapRef.current.addLayer({
-                id: 'route',
+                id: `${routeName}`,
                 type: 'line',
                 source: {
                 type: 'geojson',
@@ -195,7 +208,7 @@ const Map = () => {
                 'line-cap': 'round'
                 },
                 paint: {
-                'line-color': '#3887be',
+                'line-color': `${routeColor}`,
                 'line-width': 5,
                 'line-opacity': 0.75
                 }
@@ -206,15 +219,52 @@ const Map = () => {
   
     // Define a function to add the route to the map 
     // as a mapbox layer
-    const addRouteLayer = () =>{
+    const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, addStations) =>{
         console.log("addRouteLayer starts")
-        console.log(origin);
+        console.log(layerOrigin);
+        console.log(layerDestination);
+        if (addStations){
+            let originStationMarker = new mapboxgl.Marker()
+                originStationMarker.setLngLat(layerOrigin);
+                originStationMarker.addTo(mapRef.current);
+                // Store the markers in an array in order to clear the map 
+                // when a user submits getDirections and it calls removeMarkers();
+                setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
+            let destinationStationMarker = new mapboxgl.Marker()
+                destinationStationMarker.setLngLat(layerDestination);
+                destinationStationMarker.addTo(mapRef.current);
+                setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
+        }
         // Call the function that returns the route
         // getRoute(origin, destination);
-        getRoute();
-        
         // Add origin point to the map
-        mapRef.current.addLayer(addRouteLayerObject);
+        // Route to nearest station
+        getRoute(layerOrigin, layerDestination, routeName, routeColor, profile);
+        mapRef.current.addLayer({
+            id: 'point',
+            type: 'circle',
+            source: {
+                type: 'geojson',
+                data: {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: layerOrigin,
+                    }
+                    }
+                ]
+                }
+            },
+            paint: {
+                'circle-radius': 10,
+                'circle-color': '#BFCCFF'
+            }
+        });
+        
     // this is where the code from the next step will go
     };
 

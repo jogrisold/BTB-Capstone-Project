@@ -89,39 +89,30 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // const destination = destinationInput;
 
 
-        const testOrigin = "6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3"
-       
-        const fetchOrigin = JSON.stringify(testOrigin.replaceAll(" ", "&"))
+        const testOrigin = "6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3";
+        const fetchOrigin = JSON.stringify(testOrigin.replaceAll(" ", "&"));
+        const testDestination = "275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6";
+        const fetchDestination = JSON.stringify(testDestination.replaceAll(" ", "&"));
+        
         fetch(`/get-position/${fetchOrigin}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data.data)
                 setOrigin(data.data)
-                setOriginConverted(true);
+                fetch(`/get-position/${fetchDestination}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data.data)
+                    setDestination(data.data)
+                    console.log(origin);
+                    console.log(destination);
+                    setOriginConverted(true);
+                });
             });
-
-        const testDestination = "275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6"
-        const fetchDestination = JSON.stringify(testDestination.replaceAll(" ", "&"))
-        fetch(`/get-position/${fetchDestination}`)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data.data)
-                setDestination(data.data)
-            });
-
             
         console.log(origin);
         console.log(originConverted);
-        // if (originConverted === true) {
-            // const origin = origin;
-        // }
-        // const origin = [-73.607000, 45.529730];
-        // const destination = [-73.507000, 45.429730];
-        if (origin !== null && destination !== null){
-            addRouteLayer();
-            removeMarkers();
-            centerMapOnOrigin();
-        }
+        
         
         // 1. Reqest the walking directions to the closest station (originStation)
 
@@ -132,10 +123,17 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         // 4. Remove the other stations from the map
         // 5. Add the originStation and destinationStation to map
 
-        // Test origin and destination
-
     }
-    
+
+    if (originConverted){
+        addRouteLayer();
+        removeMarkers();
+        centerMapOnOrigin();
+        setOriginConverted(false);
+    }
+    console.log(origin);
+    console.log(destination);
+
     if (directions.routes !== undefined){
         console.log('directions.routes: '+ directions.routes[0].distance)
     }

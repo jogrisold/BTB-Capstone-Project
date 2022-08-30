@@ -41,7 +41,12 @@ const Map = () => {
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
     // set a state for origin and destination, or you could use a useContext file
-    const {origin, setOrigin, destination, setDestination} = useContext(UserContext)
+    const {
+        origin, 
+        setOrigin, 
+        destination, 
+        setDestination
+    } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
     // *****************************************************

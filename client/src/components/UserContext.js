@@ -18,10 +18,7 @@ export const UserProvider = ({children}) => {
     // etc whilst adding walking route layer to closest station
     const [convertedOriginInput, setConvertedOriginInput] = useState(null);
     const [convertedDestinationInput, setConvertedDestinationInput] = useState(null);
-    // Closest station to origin as determined by nearestStationCalc
-    const [originStation, setOriginStation] = useState(null);
-    // Closest station to desination as determined by nearestStationCalc
-    const [destinationStation, setDestinationStation] = useState(null);
+
 
     
     return (
@@ -35,10 +32,6 @@ export const UserProvider = ({children}) => {
             setOrigin,
             destination,
             setDestination,
-            originStation, 
-            setOriginStation,
-            destinationStation,
-            setDestinationStation,
             convertedOriginInput,
             setConvertedOriginInput,
             convertedDestinationInput,

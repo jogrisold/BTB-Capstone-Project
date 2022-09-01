@@ -106,44 +106,36 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
                     setGeoJSONfetch(true);
                 });
             });
-        // Request route layers for the locations retrieved
-        
-        // addRouteLayerRequest();
         // Hide the form so the user can see their route
-        // setSearch(false);
-        // console.log(busDuration);
+        setSearch(false);
         console.log("getDirections end")
-
     }
 
     // Create a function that will fetch public transit option from the NEXT public transit api
     // so that we can compare it against the bike route
     const fetchPublictTransitDirections = () => {
-
-        const transitAPIkey = 'nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8'
-        const test = "45.530210"
-        // fetch(`https://router.hereapi.com/v8/routes?destination=-15.79931,-47.86015&origin=-15.8697718,-47.9738754&return=summary&transportMode=bus&apiKey=${transitAPIkey}`)
-        // fetch(`https://transit.hereapi.com/v8/stations?in=45.538980,-73.631142&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
-        // Note that the HERE api uses non-geoJSON format for it's latitude, longitude
+        // const transitAPIkey = 'nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8'
+        // Send a GET request to the HERE transit api at /routes, which will return the public transit details
         fetch(`https://transit.router.hereapi.com/v8/routes?origin=${origin[1]},${origin[0]}&destination=${destination[1]},${destination[0]}&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
             .then((res)=>res.json())
             .then((data)=>{
                 console.log(data)
+                // !!!!!!!!!!!!!!!!!!!!!!!!
+                // need error handling here, but regular requests do not
+                // have .notices so this will break
+                // Do failed requests have ids?
+                // if so how do they differ?
+                // !!!!!!!!!!!!!!!!!!!!!!!!
                 // if(data.notices[0].code == "noCoverage"){
                 //     window.alert("Could not find a public transit route for these co-ordinates")
                 // } else {
                     setPublicTransitResult(data);
                 // }
-                // setBusDuration(data.routes[0].sections[0].summary.duration/60)
+
             })
 
-        // fetch(`https://router.hereapi.com/v8/routes?destination=-15.79931,-47.86015&origin=-15.8697718,-47.9738754&return=summary&transportMode=bus&apiKey=${transitAPIkey}`)
-        fetch(`https://router.hereapi.com/v8/routes?destination=45.538980,-73.631142&origin=45.530210,-73.608370&return=summary&transportMode=bus&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
-            .then((res)=>res.json())
-            .then((data)=>{
-                console.log(data)
-                // setTest(data.routes[0].sections[0].summary.duration/60);
-            })
+        // Other potential: 
+        // fetch(`https://router.hereapi.com/v8/routes?destination=45.538980,-73.631142&origin=45.530210,-73.608370&return=summary&transportMode=bus&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
     }
 
     // Create a function that will send route fetch requests in Map
@@ -158,7 +150,7 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             
             // Check the bus route duration
             fetchPublictTransitDirections();
-
+            
             // Clear the routesData Array of the previous trip
             setRoutesData([]);
             // 1. Request the walking directions to the originStation
@@ -176,9 +168,6 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             setGeoJSONfetch(false)
         }
     },[geoJSONfetch])
-
-
-
     
     return (
         <>

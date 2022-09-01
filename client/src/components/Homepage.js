@@ -15,7 +15,9 @@ const Homepage = () => {
         <Map />
         </>
     :   <>
-        <Login />  
+        {/* To be added and map removed once testing is complete */}
+        {/* <Login />   */}
+        <Map />
         </>    
         }
     </>

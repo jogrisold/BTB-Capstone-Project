@@ -4,7 +4,6 @@ import styled from "styled-components";
 // React icon to toggle search
 import { FcSearch } from "react-icons/fc";
 import { UserContext } from "./UserContext";
-import TripDetails from "./TripDetails";
 
 const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
@@ -125,21 +124,26 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         const test = "45.530210"
         // fetch(`https://router.hereapi.com/v8/routes?destination=-15.79931,-47.86015&origin=-15.8697718,-47.9738754&return=summary&transportMode=bus&apiKey=${transitAPIkey}`)
         // fetch(`https://transit.hereapi.com/v8/stations?in=45.538980,-73.631142&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
-        fetch(`https://transit.router.hereapi.com/v8/routes?origin=${test},-73.608370&destination=45.538980,-73.631142&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
+        // Note that the HERE api uses non-geoJSON format for it's latitude, longitude
+        fetch(`https://transit.router.hereapi.com/v8/routes?origin=${origin[1]},${origin[0]}&destination=${destination[1]},${destination[0]}&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
             .then((res)=>res.json())
             .then((data)=>{
                 console.log(data)
-                setPublicTransitResult(data);
+                // if(data.notices[0].code == "noCoverage"){
+                //     window.alert("Could not find a public transit route for these co-ordinates")
+                // } else {
+                    setPublicTransitResult(data);
+                // }
                 // setBusDuration(data.routes[0].sections[0].summary.duration/60)
             })
 
         // fetch(`https://router.hereapi.com/v8/routes?destination=-15.79931,-47.86015&origin=-15.8697718,-47.9738754&return=summary&transportMode=bus&apiKey=${transitAPIkey}`)
-        // fetch(`https://router.hereapi.com/v8/routes?destination=45.538980,-73.631142&origin=45.530210,-73.608370&return=summary&transportMode=bus&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
-        //     .then((res)=>res.json())
-        //     .then((data)=>{
-        //         console.log(data)
-        //         setBusDuration(data.routes[0].sections[0].summary.duration/60)
-        //     })
+        fetch(`https://router.hereapi.com/v8/routes?destination=45.538980,-73.631142&origin=45.530210,-73.608370&return=summary&transportMode=bus&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
+            .then((res)=>res.json())
+            .then((data)=>{
+                console.log(data)
+                // setTest(data.routes[0].sections[0].summary.duration/60);
+            })
     }
 
     // Create a function that will send route fetch requests in Map

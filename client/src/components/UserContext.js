@@ -34,6 +34,8 @@ export const UserProvider = ({children}) => {
             setSearch,
             isLoggedIn,
             setIsLoggedIn,
+            currentUser,
+            setCurrentUser,
             origin,
             setOrigin,
             destination,

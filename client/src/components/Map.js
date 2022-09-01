@@ -240,6 +240,7 @@ const Map = () => {
         // getRoute(origin, destination);
         // Add origin point to the map
         // Route to nearest station
+        console.log(layerDestination);
         getRoute(layerOrigin, layerDestination, routeName, routeColor, profile);
         mapRef.current.addLayer({
             id: 'point',

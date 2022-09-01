@@ -155,20 +155,35 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         if (publicTransitResult !==null){
             console.log(publicTransitResult);
             console.log(publicTransitResult.routes[0].sections)
+            let originBusStation = [];
+            let destinationBusStation = [];
+
             publicTransitResult.routes[0].sections.forEach(element => {
                 console.log(element);
 
                 if(element.type === 'transit'){
 
                     // const originBusStation = [element.place.location.lng, element.place.location.lat]
-                    const originBusStation = [element.arrival.place.location.lng, element.arrival.place.location.lat];
-                    const destinationBusStation = [element.departure.place.location.lng, element.departure.place.location.lat];
+                    destinationBusStation = [element.arrival.place.location.lng, element.arrival.place.location.lat];
+                    originBusStation = [element.departure.place.location.lng, element.departure.place.location.lat];
                     console.log(originBusStation);
                     console.log(destinationBusStation);
+                    return(originBusStation)
                 }
+                return(originBusStation)
             });
 
+            // BUS:
 
+             // 1. Request the walking directions to the originStation
+            addRouteLayer(origin, originBusStation, 'walk-to-bus-station', '#D4E6F1', 'walking', false);
+            // 2. Request the biking directions from originStation to destinationStation
+            addRouteLayer(originBusStation, destinationBusStation, 'bus-between-stations', '#5499C7 ', 'driving', true);
+            // 3. Request the walking directions from the closest station to the destination (destinationStation)
+            addRouteLayer(destinationBusStation, destination, 'walk-from-bus-station', '#D4E6F1', 'walking', false);
+            // 4. Remove the other stations from the map
+
+            // BIKING:
             // Calculate the nearest station for origin
             let originStation = nearestStationCalc(origin);
             // Calculate the nearest station for destination
@@ -178,11 +193,11 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             // Clear the routesData Array of the previous trip
             setRoutesData([]);
             // 1. Request the walking directions to the originStation
-            addRouteLayer(origin, originStation, 'walk-to-station', '#BFCCFF', 'walking', false);
+            addRouteLayer(origin, originStation, 'walk-to-station', '#FADBD8', 'walking', false);
             // 2. Request the biking directions from originStation to destinationStation
-            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#5D5B67', 'cycling', true);
+            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', 'cycling', true);
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
-            addRouteLayer(destinationStation, destination, 'walk-from-station', '#BFCCFF', 'walking', false);
+            addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', false);
             // 4. Remove the other stations from the map
             removeMarkers()
             // 5. Center the map at the start of the route

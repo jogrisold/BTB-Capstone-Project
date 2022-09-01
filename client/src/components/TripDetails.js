@@ -20,12 +20,12 @@ const TripDetails = () => {
 
     // Use effect to run the bikeTripDuration calculation once routesData is set
     useEffect(()=>{
-        if (publicTransitResult !== null){
+        if (publicTransitResult !== null && routesData.length > 0){
             bikeTripDuration();
             publicTransitDuration();
             setDisplayTripDetails(true);
         }
-    },[publicTransitResult])
+    },[publicTransitResult, routesData])
 
     // Create a function that will calculate the total trip duration 
     // to display to the user in minutes and kilometers

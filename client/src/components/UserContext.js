@@ -18,12 +18,15 @@ export const UserProvider = ({children}) => {
     // etc whilst adding walking route layer to closest station
     const [convertedOriginInput, setConvertedOriginInput] = useState(null);
     const [convertedDestinationInput, setConvertedDestinationInput] = useState(null);
-    // Closest station to origin as determined by nearestStationCalc
-    const [originStation, setOriginStation] = useState(null);
-    // Closest station to desination as determined by nearestStationCalc
-    const [destinationStation, setDestinationStation] = useState(null);
 
+    // Initialize an array to store information about each rout that is added
+    const [routesData, setRoutesData] = useState([]);
+
+    const [tripDetails, setTripDetails] = useState({});
     
+    const [busDuration, setBusDuration] = useState(0);
+
+    const [publicTransitResult, setPublicTransitResult] = useState(null);
     return (
     <UserContext.Provider 
         value = {{
@@ -31,18 +34,24 @@ export const UserProvider = ({children}) => {
             setSearch,
             isLoggedIn,
             setIsLoggedIn,
+            currentUser,
+            setCurrentUser,
             origin,
             setOrigin,
             destination,
             setDestination,
-            originStation, 
-            setOriginStation,
-            destinationStation,
-            setDestinationStation,
             convertedOriginInput,
             setConvertedOriginInput,
             convertedDestinationInput,
-            setConvertedDestinationInput
+            setConvertedDestinationInput,
+            routesData,
+            setRoutesData,
+            tripDetails,
+            setTripDetails,
+            busDuration, 
+            setBusDuration,
+            publicTransitResult, 
+            setPublicTransitResult
         }}>
             {children}
         </UserContext.Provider>)

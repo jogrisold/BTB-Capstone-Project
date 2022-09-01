@@ -10,8 +10,8 @@ import { Link } from "react-router-dom";
 // Local component dependencies
 import { UserContext } from "./UserContext";
 
-// It's your profile! 
-const Profile = () => {
+// Time to customize! 
+const Preferences = () => {
 
     //**************************************************************** */
     // Constants
@@ -42,15 +42,18 @@ const Profile = () => {
                 <Wrapper>
                 {/* If there is a current user (i.e. the user has logged in) */}
                     {currentUser 
-                    //Then return their profile
+                    //Then return their Preferences
                     ?   <>
-                        <H1>Profile</H1>
+                        <H1>User Information</H1>
                         <Line></Line> 
                         <FlexRow>
                             <Name><Bold>Name:</Bold> {currentUser.given_name}</Name>
                             <Surname>{currentUser.family_name}</Surname>
                         </FlexRow>
                         <Email><Bold>Email: </Bold> {currentUser.email}</Email>
+                        <Email><Bold>Home: </Bold> Beep</Email>
+                        <Email><Bold>Work: </Bold> Boop</Email>
+                        <Email><Bold>Favorite Destination: </Bold> Lloydie's</Email>
                                    
                         <PurchaseHistory>
                             <H1>Settings</H1>
@@ -77,8 +80,7 @@ const Profile = () => {
                             })
                                 :
                                 <>
-                                <p>You don't have any preferences yet.</p>
-                                <Login>You can add preferences<LoginLink to ="/preferences" style={{color: "var(--color-secondary)"}}> here</LoginLink> </Login>
+                                <p>Add preferences here</p>
                                 </>
                             }
                         </PurchaseHistory>
@@ -91,8 +93,8 @@ const Profile = () => {
         )
 }
 
-// Export the component for use in /profile
-export default Profile;
+// Export the component for use in /Preferences
+export default Preferences;
 
 //**************************************************************** */
 // Styled Components

@@ -19,8 +19,14 @@ export const UserProvider = ({children}) => {
     const [convertedOriginInput, setConvertedOriginInput] = useState(null);
     const [convertedDestinationInput, setConvertedDestinationInput] = useState(null);
 
+    // Initialize an array to store information about each rout that is added
+    const [routesData, setRoutesData] = useState([]);
 
+    const [tripDetails, setTripDetails] = useState({});
     
+    const [busDuration, setBusDuration] = useState(0);
+
+    const [publicTransitResult, setPublicTransitResult] = useState(null);
     return (
     <UserContext.Provider 
         value = {{
@@ -35,7 +41,15 @@ export const UserProvider = ({children}) => {
             convertedOriginInput,
             setConvertedOriginInput,
             convertedDestinationInput,
-            setConvertedDestinationInput
+            setConvertedDestinationInput,
+            routesData,
+            setRoutesData,
+            tripDetails,
+            setTripDetails,
+            busDuration, 
+            setBusDuration,
+            publicTransitResult, 
+            setPublicTransitResult
         }}>
             {children}
         </UserContext.Provider>)

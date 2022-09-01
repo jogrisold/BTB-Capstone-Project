@@ -6,8 +6,8 @@ import styled from "styled-components";
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import NavSearch from "./NavSearch";
-import { addRouteLayerObject } from "./LayerObjects";
 import { UserContext } from "./UserContext";
+import TripDetails from "./TripDetails";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -40,24 +40,17 @@ const Map = () => {
     // them on submission of addRoute
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
+    // Initialize an array to store information about each rout that is added
+
     // set a state for origin and destination, or you could use a useContext file
     const {
-        search, 
-        setSearch,
+
         isLoggedIn,
         setIsLoggedIn,
         origin,
-        setOrigin,
         destination,
-        setDestination,
-        originStation, 
-        setOriginStation,
-        destinationStation,
-        setDestinationStation,
-        convertedOriginInput,
-        setConvertedOriginInput,
-        convertedDestinationInput,
-        setConvertedDestinationInput
+        routesData, 
+        setRoutesData
     } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -93,6 +86,7 @@ const Map = () => {
 
     // Retrieve stations from backend
     useEffect(() => {
+        if (bikeDataRetrieved === false){
         fetch("/stations")
             .then((res) => res.json())
             .then((json) => {
@@ -102,7 +96,8 @@ const Map = () => {
                 // in order to render the waypoints on the map
                 setBikeDataRetrieved(true);
             });
-        },[])
+        }
+    },[])
 
     // Customization useEffect to avoid multiple elements 
     useEffect(() => {
@@ -155,6 +150,7 @@ const Map = () => {
         }
     },[bikeDataRetrieved])
 
+    
     // Create a function that will remove all markers when a user submits the form
     // in NavSearch, triggering getDirections();
     const removeMarkers = () => {
@@ -180,7 +176,10 @@ const Map = () => {
         );
         const json = await query.json();
         const data = json.routes[0];
-        console.log(data);
+
+        // Push the route information for use in duration calculation
+        setRoutesData(routesData => [...routesData, data]);
+
         const route = data.geometry.coordinates;
         const geojson = {
             type: 'Feature',
@@ -214,15 +213,17 @@ const Map = () => {
                 }
             });
         }
+        console.log("getRoute end")
+        
     // add turn instructions here at the destination - mapbox next steps
     }
   
+
+
     // Define a function to add the route to the map 
     // as a mapbox layer
     const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, addStations) =>{
         console.log("addRouteLayer starts")
-        console.log(layerOrigin);
-        console.log(layerDestination);
         if (addStations){
             let originStationMarker = new mapboxgl.Marker()
                 originStationMarker.setLngLat(layerOrigin);
@@ -264,7 +265,7 @@ const Map = () => {
                 'circle-color': '#BFCCFF'
             }
         });
-        
+        console.log("addRouteLayer end")
     // this is where the code from the next step will go
     };
 
@@ -297,20 +298,23 @@ const Map = () => {
             });
     }
 
-    return(
+    return(<>
+
         <Wrapper>
-        <div className="sidebar">
-            Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
-        </div>
-        <NavSearch 
-            bikeStations = {bikeStations}
-            addRouteLayer = {addRouteLayer}
-            mapboxgl = {mapboxgl}
-            removeMarkers = {removeMarkers}
-            centerMapOnOrigin = {centerMapOnOrigin}
-        />
-        <MapContainer ref={mapContainer} className="map-container" />
-    </Wrapper>
+            <div className="sidebar">
+                Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+            </div>
+            <NavSearch 
+                bikeStations = {bikeStations}
+                addRouteLayer = {addRouteLayer}
+                mapboxgl = {mapboxgl}
+                removeMarkers = {removeMarkers}
+                centerMapOnOrigin = {centerMapOnOrigin}
+            />
+            <MapContainer ref={mapContainer} className="map-container" />
+            <TripDetails />
+        </Wrapper>
+    </>
     )
 };
 export default Map;

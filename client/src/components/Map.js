@@ -165,7 +165,7 @@ const Map = () => {
     // Create a function to make a directions request
     const getRoute = async(start, finish, routeName, routeColor, profile) => {
         console.log("getroute starts")
-        console.log(start, finish)
+        // console.log(start, finish);
         // make a directions request using cycling profile
         // an arbitrary start, will always be the same
         // only the finish or finish will change

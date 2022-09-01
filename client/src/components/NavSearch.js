@@ -143,14 +143,38 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     useEffect(()=>{
         if (geoJSONfetch){
             
+            // Get our public transit directions
+            fetchPublictTransitDirections();
+            
+            // Reset the state to avoid additional calculation on re render
+            setGeoJSONfetch(false)
+        }
+    },[geoJSONfetch])
+
+    useEffect(()=>{
+        if (publicTransitResult !==null){
+            console.log(publicTransitResult);
+            console.log(publicTransitResult.routes[0].sections)
+            publicTransitResult.routes[0].sections.forEach(element => {
+                console.log(element);
+
+                if(element.type === 'transit'){
+
+                    // const originBusStation = [element.place.location.lng, element.place.location.lat]
+                    const originBusStation = [element.arrival.place.location.lng, element.arrival.place.location.lat];
+                    const destinationBusStation = [element.departure.place.location.lng, element.departure.place.location.lat];
+                    console.log(originBusStation);
+                    console.log(destinationBusStation);
+                }
+            });
+
+
             // Calculate the nearest station for origin
             let originStation = nearestStationCalc(origin);
             // Calculate the nearest station for destination
             let destinationStation = nearestStationCalc(destination);
             
-            // Check the bus route duration
-            fetchPublictTransitDirections();
-            
+
             // Clear the routesData Array of the previous trip
             setRoutesData([]);
             // 1. Request the walking directions to the originStation
@@ -167,7 +191,7 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             // Reset the state to avoid additional calculation on re render
             setGeoJSONfetch(false)
         }
-    },[geoJSONfetch])
+    },[publicTransitResult])
     
     return (
         <>

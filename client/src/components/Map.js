@@ -40,6 +40,7 @@ const Map = () => {
     // them on submission of addRoute
     const [currentMarkers, setCurrentMarkers] = useState([]);
     
+    const [bikeLocations, setBikeLocations] = useState([]);
     // Initialize an array to store information about each rout that is added
 
     // set a state for origin and destination, or you could use a useContext file

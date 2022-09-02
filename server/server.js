@@ -1,7 +1,7 @@
 // Import Express
 const express = require("express");
 const bp = require('body-parser')
-const { getGBFS } = require("./gbfs-handlers");
+const { getGBFS, getStationStatus } = require("./gbfs-handlers");
 const { requestPositionFromAddress } = require("./location-handlers");
 const { handleLogIn, handleSignUp } = require("./user-handlers");
 
@@ -11,6 +11,7 @@ express()
     .use(bp.urlencoded({extended:true}))
     // Create an endpoint to request bike station data
     .get("/stations", getGBFS)
+    .get("/station-status", getStationStatus)
 
     // Create an endpoint that will return the lon/lat
     // based on a user address input in the form

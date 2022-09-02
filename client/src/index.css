@@ -11,3 +11,49 @@
     margin: 12px;
     border-radius: 4px;
 }
+/* Marker tweaks */
+.mapboxgl-popup {
+    padding-bottom: 50px;
+    }
+     
+    .mapboxgl-popup-close-button {
+    display: none;
+    }
+    .mapboxgl-popup-content {
+    font: 400 15px/22px 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+    padding: 0;
+    width: 80px;
+    }
+    .mapboxgl-popup-content h3 {
+    background: var(--color-tertiary);
+    color: #fff;
+    margin: 0;
+    padding: 10px;
+    border-radius: 3px 3px 0 0;
+    font-weight: 700;
+    margin-top: -15px;
+    }
+     
+    .mapboxgl-popup-content h4 {
+    background: var(--color-secondary);
+    color: #fff;
+    margin: 0;
+    padding: 10px;
+    font-weight: 400;
+    }
+     
+    .mapboxgl-popup-content div {
+    background: white;
+    color: var(--color-secondary);
+    padding: 10px;
+    }
+     
+    .mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
+    margin-top: 15px;
+    
+    }
+     
+    .mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+    border-bottom-color: var(--color-primary);
+    }
+   

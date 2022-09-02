@@ -27,6 +27,9 @@ export const UserProvider = ({children}) => {
     const [busDuration, setBusDuration] = useState(0);
 
     const [publicTransitResult, setPublicTransitResult] = useState(null);
+    
+    const [stationStatus, setStationStatus] = useState(null);
+
     return (
     <UserContext.Provider 
         value = {{
@@ -51,7 +54,9 @@ export const UserProvider = ({children}) => {
             busDuration, 
             setBusDuration,
             publicTransitResult, 
-            setPublicTransitResult
+            setPublicTransitResult,
+            stationStatus, 
+            setStationStatus
         }}>
             {children}
         </UserContext.Provider>)

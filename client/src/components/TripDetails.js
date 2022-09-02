@@ -35,18 +35,25 @@ const TripDetails = () => {
         let walkingTime = 0;
         let walkingDistance = 0;
         routesData.map((i)=>{
+            // For each leg, sum duration and distance
             totalTripTime += i.duration;
             totalTripDistance += i.distance;
+            // If the data is for pedestrian travel,
+            // sum the walking distance and duration
             if(i.weight_name == "pedestrian"){
                 walkingTime += i.duration;
                 walkingDistance += i.distance; 
             }
         })
-        setTripDetails({...tripDetails,
+        setTripDetails(
+            {
+            ...tripDetails,
             "totalTripTime": Math.round(totalTripTime/60), 
             "totalTripDistance": Math.round(100*totalTripDistance/1000)/100, 
             "walkingTime": Math.round(walkingTime/60),
-            "walkingDistance": Math.round(100*walkingDistance/1000, 2)/100})
+            "walkingDistance": Math.round(100*walkingDistance/1000, 2)/100
+            }
+        )
     }
 
     const publicTransitDuration = () => {

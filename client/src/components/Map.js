@@ -50,7 +50,9 @@ const Map = () => {
         origin,
         destination,
         routesData, 
-        setRoutesData
+        setRoutesData,
+        stationStatus,
+        setStationStatus
     } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -94,6 +96,15 @@ const Map = () => {
                 setBikeStations(json.data);
                 // Set a state to trigger the bikeStations.map useEffect
                 // in order to render the waypoints on the map
+                fetch("/station-status")
+                    .then((res) => res.json())
+                    .then((json) => {
+                        // Store the station data in a state
+                        setStationStatus(json.data);
+                        // Set a state to trigger the bikeStations.map useEffect
+                        // in order to render the waypoints on the map
+                        setBikeDataRetrieved(true);
+                    });
                 setBikeDataRetrieved(true);
             });
         }
@@ -130,16 +141,41 @@ const Map = () => {
     // console.log('122, directions: ' + directions.waypoints[0])
     // console.log('109: just before bikestaions.map:' + bikeDataRetrieved, mapInit);
         
-    // Add bike stations
+    // Add bike station markers
     useEffect(()=>{
         // 112: bikestations triggered
         // Check that the station data has been retrieved successfully
         // in the fetch above, and that the map has been rendered
-        if (bikeDataRetrieved === true && mapInit === true){
+        if (bikeDataRetrieved === true && stationStatus!== null && mapInit === true){
+            // Map through the stations
             bikeStations.forEach((station) => {
+                let availableBikes = 0;
+                let available_E_Bikes = 0;
+                let docks = 0;
+                // Retrieve required data from stationStatus
+                stationStatus.forEach((stationData)=>{
+                    if (station.station_id == stationData.station_id){
+                        availableBikes = stationData.bikes;
+                        available_E_Bikes = stationData.e_bikes;
+                        docks = stationData.docks
+                    }
+                })
+                // Define a popup that will display the required station infomration
+                let popup = new mapboxgl.Popup()
+                    .setHTML(`<h3> Bikes ${availableBikes}</h3>`
+                            + `<h4> E-bikes ${available_E_Bikes}</h4>`
+                            + `<div> Docks ${docks}</div>`
+                            )
+                    .addTo(mapRef.current);
+                // Add the marker to the map
                 let marker = new mapboxgl.Marker()
                 marker.setLngLat(station.position);
                 marker.addTo(mapRef.current);
+                marker.setPopup(popup);
+                // Set the popup to default as not visible so that the base map
+                // is more clear and we can retrieve the popup only when the station
+                // is clicked
+                popup.remove();
                 // Store the markers in an array in order to clear the map 
                 // when a user submits getDirections and it calls removeMarkers();
                 setCurrentMarkers(currentMarkers =>[...currentMarkers, marker])
@@ -148,22 +184,29 @@ const Map = () => {
             // additional re-rendering on map navigation
             setBikeDataRetrieved(false);
         }
-    },[bikeDataRetrieved])
+    },[stationStatus])
 
     
     // Create a function that will remove all markers when a user submits the form
     // in NavSearch, triggering getDirections();
-    const removeMarkers = () => {
+    const removeMarkers = (originStation, destinationStation) => {
         console.log("removemarkers starts")
+        console.log(currentMarkers[0]._lngLat.lng);
+        console.log(originStation[1])
         if (currentMarkers!==null) {
             for (var i = currentMarkers.length - 1; i >= 0; i--) {
-              currentMarkers[i].remove();
+                // Remove all marker except the stations except those used in the trip
+                if(currentMarkers[i]._lngLat.lng !== originStation[0] && currentMarkers[i]._lngLat.lat !== originStation[1] || 
+                    currentMarkers[i]._lngLat.lng !== destinationStation[0] && currentMarkers[i]._lngLat.lat !== destinationStation[1]
+                    ){
+                    currentMarkers[i].remove();
+                }
             }
         }
     }
        
     // Create a function to make a directions request
-    const getRoute = async(start, finish, routeName, routeColor, profile) => {
+    const getRoute = async(start, finish, routeName, routeColor, profile, triptype) => {
         console.log("getroute starts")
         // console.log(start, finish);
         // make a directions request using cycling profile
@@ -178,7 +221,10 @@ const Map = () => {
         const data = json.routes[0];
 
         // Push the route information for use in duration calculation
-        setRoutesData(routesData => [...routesData, data]);
+        if(triptype == "biketrip"){
+            setRoutesData(routesData => [...routesData, data]);
+        }
+
 
         const route = data.geometry.coordinates;
         const geojson = {
@@ -222,26 +268,25 @@ const Map = () => {
 
     // Define a function to add the route to the map 
     // as a mapbox layer
-    const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, addStations) =>{
+    const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, triptype, addStations) =>{
         console.log("addRouteLayer starts")
-        if (addStations){
-            let originStationMarker = new mapboxgl.Marker()
-                originStationMarker.setLngLat(layerOrigin);
-                originStationMarker.addTo(mapRef.current);
-                // Store the markers in an array in order to clear the map 
-                // when a user submits getDirections and it calls removeMarkers();
-                setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
-            let destinationStationMarker = new mapboxgl.Marker()
-                destinationStationMarker.setLngLat(layerDestination);
-                destinationStationMarker.addTo(mapRef.current);
-                setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
-        }
+        // if (addStations){
+        //     let originStationMarker = new mapboxgl.Marker()
+        //         originStationMarker.setLngLat(layerOrigin);
+        //         originStationMarker.addTo(mapRef.current);
+        //         // Store the markers in an array in order to clear the map 
+        //         // when a user submits getDirections and it calls removeMarkers();
+        //         setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
+        //     let destinationStationMarker = new mapboxgl.Marker()
+        //         destinationStationMarker.setLngLat(layerDestination);
+        //         destinationStationMarker.addTo(mapRef.current);
+        //         setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
+        // }
         // Call the function that returns the route
         // getRoute(origin, destination);
         // Add origin point to the map
         // Route to nearest station
-        console.log(layerDestination);
-        getRoute(layerOrigin, layerDestination, routeName, routeColor, profile);
+        getRoute(layerOrigin, layerDestination, routeName, routeColor, profile, triptype);
         mapRef.current.addLayer({
             id: 'point',
             type: 'circle',

@@ -3,7 +3,12 @@ const express = require("express");
 const bp = require('body-parser')
 const { getGBFS, getStationStatus } = require("./gbfs-handlers");
 const { requestPositionFromAddress } = require("./location-handlers");
-const { handleLogIn, handleSignUp, updateUserProfile, getUserProfile } = require("./user-handlers");
+const { handleLogIn, 
+        handleSignUp, 
+        updateUserProfile, 
+        getUserProfile, 
+        updateUserRoutes 
+    } = require("./user-handlers");
 
 // Call express to use for endpoints below
 express()
@@ -31,6 +36,9 @@ express()
     // Create an endpoint to modify user information when user 
     // submits the preferences form in /profile
     .patch("/api/update-profile", updateUserProfile)
+
+    // Create an endpoint to add previous routes to user profile
+    .patch("/api/add-route-to-profile", updateUserRoutes)
 
 
     // Catch all endpoint

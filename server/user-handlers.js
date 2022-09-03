@@ -81,6 +81,7 @@ const handleSignUp = async (req, res) => {
       req.body.password = encryptedPassword;
       // Add some empty data points to hold user preferences
       req.body.favorites = [];
+      req.body.previous_searches = [];
       req.body.home = "";
       req.body.work = "";
       // Add the new user, including an encrypted password that will
@@ -139,7 +140,7 @@ const updateUserProfile = async (req, res) => {
       sendResponse(res, 404, updatedUserProfile.email, "User not found");
     } 
     // Otherwise, update the profile
-    const updateProfile = await db.collection("users").findOneAndUpdate(
+    const addRoute = await db.collection("users").findOneAndUpdate(
       // Find the user by email
       {email: updatedUserProfile.email}, 
       // Update the data based on the input
@@ -151,12 +152,12 @@ const updateUserProfile = async (req, res) => {
       }
       )
       
-    if(updateProfile){
+    if(addRoute){
       return res
         .status(200)
         .json(
           {status:200, 
-          data:updatedUserProfile, 
+          data: req.body, 
           message:"User profile successfully updated"});
     } else {
       sendResponse(res, 404, updatedUserProfile, "The user profile was not found");
@@ -164,6 +165,51 @@ const updateUserProfile = async (req, res) => {
   } catch (err) {
     console.log("Failed to update user in database: ", err);
     sendResponse(res, 500, updatedUserProfile._id, err.message)
+  }
+  client.close();
+};
+//*************************************************************** */
+// Adds route to user profile
+//*************************************************************** */
+const updateUserRoutes = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  console.log("req.body");
+  console.log(req.body);
+  try {
+    // Connect to client
+    await client.connect();
+    console.log('connected');
+    const db = client.db("BTB");
+    // Check if the user exists in the database
+    const checkUser = await db.collection("users")
+    .find({_id: req.body._id }).toArray();
+    // If that failed, exit  
+    if(checkUser.length === 0){
+      sendResponse(res, 404, req.body._id, "User not found");
+    } 
+    // Otherwise, add the route
+    const addRoute = await db.collection("users").findOneAndUpdate(
+      // Find the user by email
+      {_id: req.body._id}, 
+      // Update the data based on the input
+      {$set: 
+        { previous_searches : req.body.route}
+      }
+      )
+      
+    if(addRoute){
+      return res
+        .status(200)
+        .json(
+          {status:200, 
+          data: req.body, 
+          message: "Route successfully added"});
+    } else {
+      sendResponse(res, 404, req.body._id, "The route was not found");
+    }
+  } catch (err) {
+    console.log("Failed to add route: ", err);
+    sendResponse(res, 500, req.body._id, err.message)
   }
   client.close();
 };
@@ -202,5 +248,6 @@ module.exports = {
   handleLogIn,
   handleSignUp,
   updateUserProfile,
-  getUserProfile
+  getUserProfile,
+  updateUserRoutes
 };

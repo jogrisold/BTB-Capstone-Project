@@ -49,6 +49,7 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         setBikeStations,
         setAddStations,
         userData,
+        currentUser
     } = useContext(UserContext);
 
     
@@ -128,6 +129,32 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     setGeoJSONfetch(true);
                 });
             });
+
+        // If the user is logged in, add the route to the user profile
+        if(currentUser !== null){
+            console.log(currentUser)
+            const route = {
+                origin: originInput,
+                destination: destinationInput
+              };
+            const addRoute = {
+                _id : currentUser._id,
+                route : route
+            }
+              fetch("/api/add-route-to-profile", {
+                method: 'PATCH',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(addRoute),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data)
+                });
+
+        }
+        
+
+
         // Hide the form so the user can see their route
         setSearch(false);
         // Add the markers for stations in case this is a second trip request
@@ -300,13 +327,13 @@ const Label = styled.label`
     text-align: left;
     font-size: 24px;
     width: 100%;
+    padding: 5px 0 5px 0;
 `;
 // Same for inpiut
 const Input = styled.input`
-    font-size: 24px;
+    font-size: 16px;
     width: 100%;
     height: 40px;
-    border-radius: 5px;
     border: none;
 `;
 // Button for form submission

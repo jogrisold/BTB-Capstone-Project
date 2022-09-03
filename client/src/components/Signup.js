@@ -206,7 +206,7 @@ const SignUp = () => {
             <SignUpForm 
               onSubmit={handleSubmit}>
               <SignUpText>Sign Up</SignUpText>
-              <Label for='first-name'>First Name</Label>
+              <Label htmlFor='first-name'>First Name</Label>
                 <Input
                   autoFocus
                   type="text"
@@ -215,7 +215,7 @@ const SignUp = () => {
                   required={true}
                   onChange={(e) => setUserFirstName(e.target.value)}
                 />
-                <Label for='last-name'>Last Name</Label>
+                <Label htmlFor='last-name'>Last Name</Label>
                 <Input
                   type="text"
                   placeholder="Last Name"
@@ -223,7 +223,7 @@ const SignUp = () => {
                   required={true}
                   onChange={(e) => setUserLastName(e.target.value)}
                 />
-                <Label for='email'>Email</Label>
+                <Label htmlFor='email'>Email</Label>
                 <Input
                   type="email"
                   placeholder="Email"
@@ -231,7 +231,7 @@ const SignUp = () => {
                   required={true}
                   onChange={(e) => setUserEmail(e.target.value)}
                 />
-                <Label for='password'>Password</Label>
+                <Label htmlFor='password'>Password</Label>
               <FlexRow>
                 {/* Create an input in which the type can be toggled by the 
                 passwordInput function, called by clicking the button */}
@@ -245,7 +245,7 @@ const SignUp = () => {
                 />
                 {/* Set the type of button to be button to avoid form submission,
                 call the function togglePassword when it is clicked, and add
-                an aria label for vision impaired users */}
+                an aria label htmlFor vision impaired users */}
                 <TogglePassword 
                   type="button"
                   aria-label="Show password as plain text.
@@ -256,7 +256,7 @@ const SignUp = () => {
                   : <AiOutlineEye size = {25}/>}
                 </TogglePassword>
              </FlexRow>
-              <Label for='confirm-password'>Confirm Password</Label>
+              <Label htmlFor='confirm-password'>Confirm Password</Label>
               <FlexRow>
                 <Input 
                   type={inputType} 

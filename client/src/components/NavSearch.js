@@ -132,29 +132,29 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
         // If the user is logged in, add the route to the user profile
         if(currentUser !== null){
-            console.log(currentUser)
+            // Create an object to hold the origin and destination
             const route = {
                 origin: originInput,
                 destination: destinationInput
               };
+            // Append the user id for lookup in database
             const addRoute = {
                 _id : currentUser._id,
                 route : route
             }
-              fetch("/api/add-route-to-profile", {
-                method: 'PATCH',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(addRoute),
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log(data)
-                });
+            // Send a patch request to the server
+            fetch("/api/add-route-to-profile", {
+            method: 'PATCH',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(addRoute),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data)
+            });
 
         }
         
-
-
         // Hide the form so the user can see their route
         setSearch(false);
         // Add the markers for stations in case this is a second trip request

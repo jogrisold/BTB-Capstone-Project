@@ -3,7 +3,7 @@
 // Require MongoDB and dotenv
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
-
+const {sendResponse} = require('./utils')
 
 // Mongo constants
 const { MONGO_URI } = process.env;
@@ -77,8 +77,12 @@ const handleSignUp = async (req, res) => {
     if (!user) {
       req.body._id = uuidv4();
       // Encrypt the user password
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-      req.body.password = hashedPassword;
+      const encryptedPassword = await bcrypt.hash(req.body.password, 10);
+      req.body.password = encryptedPassword;
+      // Add some empty data points to hold user preferences
+      req.body.favorites = [];
+      req.body.home = "";
+      req.body.work = "";
       // Add the new user, including an encrypted password that will
       // not be decryptable if intercepted
       const userInserted = await db.collection("users").insertOne(req.body);
@@ -110,8 +114,93 @@ const handleSignUp = async (req, res) => {
   }
   client.close();
 };
+//*************************************************************** */
+// Updates user profile
+//*************************************************************** */
+const updateUserProfile = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  const updatedUserProfile = req.body;
+  console.log("req.body");
+  console.log(req.body);
+  console.log(updatedUserProfile.given_name);
+  console.log(updatedUserProfile.family_name);
+  console.log(updatedUserProfile.home);
+  console.log(updatedUserProfile.work);
+  try {
+    // Connect to client
+    await client.connect();
+    console.log('connected');
+    const db = client.db("BTB");
+    // Check if the user exists in the database
+    const checkUser = await db.collection("users")
+    .find({email: updatedUserProfile.email }).toArray();
+    // If that failed, exit  
+    if(checkUser.length === 0){
+      sendResponse(res, 404, updatedUserProfile.email, "User not found");
+    } 
+    // Otherwise, update the profile
+    const updateProfile = await db.collection("users").findOneAndUpdate(
+      // Find the user by email
+      {email: updatedUserProfile.email}, 
+      // Update the data based on the input
+      {$set: 
+        { given_name : updatedUserProfile.given_name, 
+        family_name : updatedUserProfile.family_name,
+        home : updatedUserProfile.home,
+        work : updatedUserProfile.work}
+      }
+      )
+      
+    if(updateProfile){
+      return res
+        .status(200)
+        .json(
+          {status:200, 
+          data:updatedUserProfile, 
+          message:"User profile successfully updated"});
+    } else {
+      sendResponse(res, 404, updatedUserProfile, "The user profile was not found");
+    }
+  } catch (err) {
+    console.log("Failed to update user in database: ", err);
+    sendResponse(res, 500, updatedUserProfile._id, err.message)
+  }
+  client.close();
+};
+
+// Retrieve user profile based on their id
+const getUserProfile = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  const db = client.db("BTB");
+  console.log("req.params");
+  console.log(req.params);
+  console.log(req.params._id);
+  try {
+    await client.connect();
+    const user = await db.collection("users").findOne({ _id: req.params._id });
+    if (user) {
+      res.status(200).json({
+        status: 200,
+        data: user,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "No user to display",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      status: 500,
+      message: err.message,
+    });
+  }
+  client.close();
+};
 
 module.exports = {
   handleLogIn,
   handleSignUp,
+  updateUserProfile,
+  getUserProfile
 };

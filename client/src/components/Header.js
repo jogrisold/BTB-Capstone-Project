@@ -49,7 +49,7 @@ const Header = () => {
     
     // Create a function to handle click of logot button
     const handleClickLogOut = () => {
-        setCurrentUser(null); // ?? backend ??
+        setCurrentUser(false); // ?? backend ??
         setIsLoggedIn(false);
     }
 

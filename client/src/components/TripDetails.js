@@ -12,6 +12,7 @@ const TripDetails = () => {
         busDuration,
         setBusDuration,
         publicTransitResult,
+        
 
     } = useContext(UserContext);
 

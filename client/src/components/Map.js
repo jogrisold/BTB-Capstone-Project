@@ -30,9 +30,7 @@ const Map = () => {
     // Create a state to hold map initialization for easier
     // useEffect customization implementation
     const [mapInit, setMapInit] = useState(false);
-    // Create a state to hold the data from the backend
-    // returning the bike station data
-    const [bikeStations, setBikeStations] = useState([]);
+    
     // For rendering the waypoints only once, and only after data 
     // has been fetched
     const [bikeDataRetrieved, setBikeDataRetrieved] = useState(false);
@@ -53,7 +51,11 @@ const Map = () => {
         routesData, 
         setRoutesData,
         stationStatus,
-        setStationStatus
+        setStationStatus,
+        bikeStations, 
+        setBikeStations,
+        addStations, 
+        setAddStations
     } = useContext(UserContext)
     // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
@@ -94,7 +96,7 @@ const Map = () => {
             .then((res) => res.json())
             .then((json) => {
                 // Store the station data in a state
-                setBikeStations(json.data);
+                setBikeLocations(json.data);
                 // Set a state to trigger the bikeStations.map useEffect
                 // in order to render the waypoints on the map
                 fetch("/station-status")
@@ -106,10 +108,50 @@ const Map = () => {
                         // in order to render the waypoints on the map
                         setBikeDataRetrieved(true);
                     });
-                setBikeDataRetrieved(true);
+
             });
         }
     },[])
+
+
+    // Use effect to render the location and station status data
+    // into a single array of objects for more efficient reference
+    useEffect(()=>{
+        // Check if the data has been fetched
+        if (bikeDataRetrieved && bikeLocations.length > 0 && stationStatus !== null){
+            // Initialize an empty array and object
+            let stations = [];
+            let stationResponse = {};
+           // Map through the stations in the locations array
+           bikeLocations.map((station)=>{
+            // Compare them to the stations in the detailed data
+                stationStatus.map((data)=>{
+                // If the IDs match
+                    if(station.station_id === data.station_id){
+                    // Create a new object with all of the required
+                    // data in the one place
+                        stationResponse = {
+                            station_id: station.station_id,
+                            name: station.name,
+                            position: station.position,
+                            capacity: station.capacity,
+                            bikes: data.bikes,
+                            e_bikes: data.e_bikes,
+                            docks: data.docks,
+                            renting: data.renting,
+                            returning: data.returning
+                        }
+
+                    }
+                // Add the object to an array and return it
+                return stationResponse;
+            })
+            stations = [...stations, stationResponse]
+            return stations;
+        })
+        setBikeStations(stations);
+        }
+    },[bikeDataRetrieved])
 
     // Customization useEffect to avoid multiple elements 
     useEffect(() => {
@@ -147,25 +189,14 @@ const Map = () => {
         // 112: bikestations triggered
         // Check that the station data has been retrieved successfully
         // in the fetch above, and that the map has been rendered
-        if (bikeDataRetrieved === true && stationStatus!== null && mapInit === true){
+        if (bikeStations.length > 0 && mapInit === true){
             // Map through the stations
-            bikeStations.forEach((station) => {
-                let availableBikes = 0;
-                let available_E_Bikes = 0;
-                let docks = 0;
-                // Retrieve required data from stationStatus
-                stationStatus.forEach((stationData)=>{
-                    if (station.station_id == stationData.station_id){
-                        availableBikes = stationData.bikes;
-                        available_E_Bikes = stationData.e_bikes;
-                        docks = stationData.docks
-                    }
-                })
+            bikeStations.forEach((station) => {                
                 // Define a popup that will display the required station infomration
                 let popup = new mapboxgl.Popup()
-                    .setHTML(`<h3> Bikes ${availableBikes}</h3>`
-                            + `<h4> E-bikes ${available_E_Bikes}</h4>`
-                            + `<div> Docks ${docks}</div>`
+                    .setHTML(`<h3> Bikes ${station.bikes}</h3>`
+                            + `<h4> E-bikes ${station.e_bikes}</h4>`
+                            + `<div> Docks ${station.docks}</div>`
                             )
                     .addTo(mapRef.current);
                 // Add the marker to the map
@@ -185,15 +216,13 @@ const Map = () => {
             // additional re-rendering on map navigation
             setBikeDataRetrieved(false);
         }
-    },[stationStatus])
+    },[stationStatus, addStations])
 
     
     // Create a function that will remove all markers when a user submits the form
     // in NavSearch, triggering getDirections();
     const removeMarkers = (originStation, destinationStation) => {
         console.log("removemarkers starts")
-        console.log(currentMarkers[0]._lngLat.lng);
-        console.log(originStation[1])
         if (currentMarkers!==null) {
             for (var i = currentMarkers.length - 1; i >= 0; i--) {
                 // Remove all marker except the stations except those used in the trip
@@ -209,7 +238,7 @@ const Map = () => {
     // Create a function to make a directions request
     const getRoute = async(start, finish, routeName, routeColor, profile, triptype) => {
         console.log("getroute starts")
-        // console.log(start, finish);
+
         // make a directions request using cycling profile
         // an arbitrary start, will always be the same
         // only the finish or finish will change
@@ -218,6 +247,9 @@ const Map = () => {
             `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
             { method: 'GET' }
         );
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Need errror handling here for cases where the fetch fails
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         const json = await query.json();
         const data = json.routes[0];
 
@@ -352,7 +384,6 @@ const Map = () => {
                 Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
             </div>
             <NavSearch 
-                bikeStations = {bikeStations}
                 addRouteLayer = {addRouteLayer}
                 mapboxgl = {mapboxgl}
                 removeMarkers = {removeMarkers}

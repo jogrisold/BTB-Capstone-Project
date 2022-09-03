@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { FcSearch } from "react-icons/fc";
 import { UserContext } from "./UserContext";
 
-const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
+const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
     // To hold the data that will be fetched from the mapbox directions API
     // returning the directions from origin to destination
@@ -43,7 +43,10 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         setBusDuration,
         publicTransitResult, 
         setPublicTransitResult,
-        setStationStatus
+        setStationStatus,
+        bikeStations, 
+        setBikeStations,
+        setAddStations
     } = useContext(UserContext);
 
     // Create a function that will toggle the view of the search form
@@ -72,14 +75,22 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
     };
 
     // First we will need to run getDistance on the station data to find the closest one
-    const nearestStationCalc = (location) => {
+    const nearestStationCalc = (location, type) => {
         // Initialize an array to hold the distance to each station 
         let distanceArray = [];
         // Map through the stations retrieved in the bike station fetch in Map
         bikeStations.map((station)=> {
-            // Run the get distance function on
-            distanceArray = [...distanceArray, {"station_id": station.station_id , "position": station.position, "distance": getDistance(location, station.position)}]
-            return distanceArray 
+            // Run the get distance function on, but only if it has bikes for an origin station
+            if (type == 'origin' && station.bikes == 0 && station.e_bikes == 0){
+                return distanceArray 
+            // And only if it has docks for a destination station
+            } else if(type == 'destination' && station.docks == 0) {
+                return distanceArray
+            // Thus if it meets our requirements, add it to the array
+            } else {
+                distanceArray = [...distanceArray, {"station_id": station.station_id , "position": station.position, "distance": getDistance(location, station.position)}]
+                return distanceArray 
+            }
         })
         // Sort the array of objects to find the lowest distance
         distanceArray.sort((a, b)=>{
@@ -116,6 +127,8 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             });
         // Hide the form so the user can see their route
         setSearch(false);
+        // Add the markers for stations in case this is a second trip request
+        setAddStations(true);
         console.log("getDirections end")
     }
 
@@ -157,8 +170,8 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
         if (publicTransitResult !== null){
             // BIKING:
             // First, calculate the nearest station for origin and destination
-            let originStation = nearestStationCalc(origin);
-            let destinationStation = nearestStationCalc(destination);
+            let originStation = nearestStationCalc(origin, 'origin');
+            let destinationStation = nearestStationCalc(destination, 'destination');
             // Clear the route data from any previous trips
             setRoutesData([]);
             
@@ -169,9 +182,9 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
             addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', 'biketrip', false);
             // 4. Remove the other stations from the map
-            // removeMarkers(originStation, destinationStation)
+            removeMarkers(originStation, destinationStation);
             // 5. Center the map at the start of the route
-            centerMapOnOrigin()
+            centerMapOnOrigin();
 
             
             // Check that the fetch has not returned an empty array, which 
@@ -211,7 +224,8 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
             <GetDirectionsText>Where to?</GetDirectionsText>
         </ToggleSearch>
         {search 
-            ?   <GetDirectionsForm 
+            ?   // If the user clicks on the search button, display the search form
+                <GetDirectionsForm 
                     onSubmit={geoJSONconverter}>
                 
                 <Label htmlFor='origin'>Origin</Label>
@@ -236,7 +250,9 @@ const NavSearch = ({bikeStations, addRouteLayer, removeMarkers, centerMapOnOrigi
                     />
                     <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
                 </GetDirectionsForm>
-            : <></>
+
+            : // Otherwise, don't display anything
+            <></>
         }
         </>
     )

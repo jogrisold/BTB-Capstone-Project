@@ -12,15 +12,14 @@ import GlobalStyles from "./GlobalStyles";
 import Homepage from "./Homepage";
 import Login from "./Login";
 import Signup from "./Signup";
-import Profile from "./Profile";
+import Profile from "./Profile/Profile";
 import Footer from "./Footer";
 
-import Map from './Map';
 import Header from './Header';
 
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import Preferences from "./Preferences";
+import Preferences from "./Profile/Preferences";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';

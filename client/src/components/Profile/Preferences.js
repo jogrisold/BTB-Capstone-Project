@@ -8,7 +8,7 @@ import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 // Local component dependencies
-import { UserContext } from "./UserContext";
+import { UserContext } from "../UserContext";
 
 // Time to customize! 
 const Preferences = () => {
@@ -18,10 +18,8 @@ const Preferences = () => {
     //**************************************************************** */
 
     // Use context to bring in the current user that is logged in
-    const {currentUser} = useContext(UserContext);
+    const {currentUser, userData, setUserData} = useContext(UserContext);
     
-    // Create a state to store the user's data
-    const [userData, setUserData] = useState(null);
     
     //**************************************************************** */
     // Functions

@@ -76,6 +76,7 @@ const Login = () => {
           // set the current user data for use in cart and profile
           // and navigate to the homepage so the user can begin shopping
           setIsLoggedIn(true);
+          console.log(json.data);
           setCurrentUser(json.data);
           navigate("/");
         } 

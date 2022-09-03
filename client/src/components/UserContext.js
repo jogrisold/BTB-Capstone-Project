@@ -27,6 +27,19 @@ export const UserProvider = ({children}) => {
     const [busDuration, setBusDuration] = useState(0);
 
     const [publicTransitResult, setPublicTransitResult] = useState(null);
+    
+    const [stationStatus, setStationStatus] = useState(null);
+    // State to trigger the use effect that adds stations to add stations
+    // again on new route or user toggle of the station button !!! To do: create station togglebutton !!!
+    const [addStations, setAddStations] = useState(null);
+
+    // Create a state to hold the data from the backend
+    // returning the bike station data
+    const [bikeStations, setBikeStations] = useState([]);
+
+
+    // Create a state to store the user's data
+    const [userData, setUserData] = useState(null);
     return (
     <UserContext.Provider 
         value = {{
@@ -51,7 +64,15 @@ export const UserProvider = ({children}) => {
             busDuration, 
             setBusDuration,
             publicTransitResult, 
-            setPublicTransitResult
+            setPublicTransitResult,
+            stationStatus, 
+            setStationStatus,
+            bikeStations, 
+            setBikeStations,
+            addStations, 
+            setAddStations,
+            userData, 
+            setUserData
         }}>
             {children}
         </UserContext.Provider>)

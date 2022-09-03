@@ -4,6 +4,7 @@ import styled from "styled-components";
 // React icon to toggle search
 import { FcSearch } from "react-icons/fc";
 import { UserContext } from "./UserContext";
+import TypeAhead from "./Typeahead";
 
 const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
@@ -277,6 +278,14 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                         defaultValue={"test"}
                         onChange={(e) => {setDestinationInput(e.target.value)}}
                     />
+
+                    {currentUser
+                    // If the user is logged in, display a typeahead that will
+                    // show previous search results
+                    ? <TypeAhead/>
+                    : <></>
+                    }
+                   
                     <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
                 </GetDirectionsForm>
 

@@ -192,10 +192,23 @@ const updateUserRoutes = async (req, res) => {
       // Find the user by email
       {_id: req.body._id}, 
       // Update the data based on the input
-      {$set: 
+      {$push: 
         { previous_searches : req.body.route}
       }
       )
+    
+    // updateOne( 
+    //   { "previous_searches": 0},{ $push: { "new_search": req.body.route } });
+
+      
+    // const addRoute = await db.collection("users").findOneAndUpdate(
+    //   // Find the user by email
+    //   {_id: req.body._id}, 
+    //   // Update the data based on the input
+    //   {$set: 
+    //     { previous_searches : req.body.route}
+    //   }
+    //   )
       
     if(addRoute){
       return res

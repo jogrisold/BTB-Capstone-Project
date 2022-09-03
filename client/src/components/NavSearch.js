@@ -14,6 +14,7 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
     // State for origin and destination input by user in the form
     const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
     const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
+    
 
     // State to handle our function calls based on whether the opencage fetch
     // has successfully returned our input as geoJSON array format
@@ -46,9 +47,11 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         setStationStatus,
         bikeStations, 
         setBikeStations,
-        setAddStations
+        setAddStations,
+        userData,
     } = useContext(UserContext);
 
+    
     // Create a function that will toggle the view of the search form
     const toggleSearch = () => {
         if (search === true){
@@ -223,17 +226,17 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             </GetDirectionsText>
             <GetDirectionsText>Where to?</GetDirectionsText>
         </ToggleSearch>
+        
         {search 
             ?   // If the user clicks on the search button, display the search form
+            // If the user is logged in, set the origin and destination to home to work
                 <GetDirectionsForm 
                     onSubmit={geoJSONconverter}>
-                
                 <Label htmlFor='origin'>Origin</Label>
                     <Input
                         autoFocus
                         type="text"
                         placeholder="Origin"
-                        // value={"6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3"}
                         value={originInput}
                         required={true}
                         onChange={(e) => {setOriginInput(e.target.value)}}
@@ -242,7 +245,6 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     <Input
                         type="text"
                         placeholder="Destination"
-                        // value={"275 Notre-Dame St. East, Montreal, Quebec H2Y 1C"}
                         value={destinationInput}
                         required={true}
                         defaultValue={"test"}

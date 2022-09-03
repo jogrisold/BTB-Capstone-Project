@@ -7,10 +7,10 @@ import { FcCurrencyExchange } from "react-icons/fc";
 const UserProfileForm = ({ handleSubmit }) => {
     // Use context to bring in the current user that is logged in
     const {setCurrentUser} = useContext(UserContext);
-    const [profileData, setprofileData] = useState({});
+    const [profileData, setProfileData] = useState({});
 
     const handleChange = (key, value) => {
-        setprofileData({
+        setProfileData({
         ...profileData,
         [key]: value,
         });

@@ -24,40 +24,29 @@ const Profile = () => {
     // Use context to bring in the current user that is logged in
     const {currentUser, setCurrentUser, userData, setUserData} = useContext(UserContext);
 
-    
-    
     // Conditional rendering states for editing profile and settings
     const [editProfile, setEditProfile] = useState(false);
     const [editSettings, setEditSettings] = useState(false);
-
-    const [geoJSONAddress, setGeoJSONAddress] = useState(null);
     
     //**************************************************************** */
     // Functions
     //**************************************************************** */
 
     useEffect(()=>{
-        if (currentUser) {
+        // If the user is logged in and they are not editing
+        // their profile
+        if (currentUser && editProfile === false) {
             console.log(currentUser);
+            // Get the user data from the database
             fetch(`/api/users/${currentUser._id}`)
             .then(res=>res.json())
             .then((data)=>{
                 console.log(data.data);
+                // And store it in the userData state
                 setUserData(data.data)         
             })
         }
     }, [currentUser, editProfile])
-
-    // Function to fetch the geoJSON position to store in database
-    // const convertAddress = (address) =>{
-    //     const fetchAddress = JSON.stringify(address.replaceAll(" ", "&"));
-    //     fetch(`/get-position/${fetchAddress}`)
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //         setGeoJSONAddress(data.data)
-    //     });
-    //     return geoJSONAddress();
-    // }
 
     const updateUserProfile = (e, profileData) => {
         // Stop the page from refreshing
@@ -77,17 +66,26 @@ const Profile = () => {
           })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data.data);
+                setCurrentUser({
+                    _id: currentUser._id,
+                    password: currentUser.password,
+                    given_name: data.data.given_name,
+                    family_name: data.data.family_name,
+                    email: data.data.email,
+                    home: data.data.home,
+                    work: data.data.work
+                })
             });
         // Close the form
         setEditProfile(false);
+        console.log("edit profile switched to false")
     }
 
     return (
         <Center>
             <Wrapper>
             {/* If there is a current user (i.e. the user has logged in) */}
-                {currentUser 
+                {userData
                 //Then return their profile
                 ?   <>
                     {editProfile 
@@ -130,12 +128,12 @@ const Profile = () => {
                             </FlexHeader>
                             <Line></Line> 
                             <FlexRow>
-                                <Name><Bold>Name:</Bold> {currentUser.given_name}</Name>
-                                <Surname>{currentUser.family_name}</Surname>
+                                <Name><Bold>Name:</Bold> {userData.given_name}</Name>
+                                <Surname>{userData.family_name}</Surname>
                             </FlexRow>
-                            <Email><Bold> Email: </Bold> {currentUser.email}</Email>
-                            <Email><Bold> Home: </Bold> {currentUser.home}</Email>
-                            <Email><Bold> Work: </Bold> {currentUser.work}</Email>
+                            <Email><Bold> Email: </Bold> {userData.email}</Email>
+                            <Email><Bold> Home: </Bold> {userData.home}</Email>
+                            <Email><Bold> Work: </Bold> {userData.work}</Email>
                         </>
                         }
             
@@ -249,25 +247,14 @@ const FlexHeader = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-
-
 `;
 const Bold = styled.span`
     font-weight: 800;
     margin-right: 2px;
 `;
-const Total = styled.div` 
-    font-weight: 800;
-    margin: 10px 0;
-`;
 const Settings = styled.div`
 
 `;
-const OrderNumber = styled.div`
-    font-weight: 800;
-    margin: 0 0 10px;
-`;
-
 const Line = styled.div`
     border: 1px solid var(--color-secondary);
     margin: 10px 0 30px 0;
@@ -277,4 +264,3 @@ const H1 = styled.h1`
     margin: 40px 0 10px 0;
     font-size: 30px !important;
 `;
-

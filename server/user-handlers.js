@@ -18,7 +18,9 @@ const { v4: uuidv4 } = require("uuid");
 // Hash conversion to encrypt user passwords
 const bcrypt = require("bcrypt");
 
-// Create a handler to return user data from the database on login
+//*************************************************************** */
+// Returns user data from the database on login
+//*************************************************************** */
 const handleLogIn = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   const db = client.db("BTB");
@@ -62,8 +64,9 @@ const handleLogIn = async (req, res) => {
   client.close();
 };
 
-// Create a handler to add new user data to database when a user 
-// submits a sign up request
+//*************************************************************** */
+// Adds new user data when a user submits a sign up request
+//*************************************************************** */
 const handleSignUp = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   const db = client.db("BTB");
@@ -173,8 +176,6 @@ const updateUserProfile = async (req, res) => {
 //*************************************************************** */
 const updateUserRoutes = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
-  console.log("req.body");
-  console.log(req.body);
   try {
     // Connect to client
     await client.connect();
@@ -189,36 +190,17 @@ const updateUserRoutes = async (req, res) => {
     } 
     // Otherwise, add the route
     const addRoute = await db.collection("users").findOneAndUpdate(
-      // Find the user by email
+      // Find the user by id
       {_id: req.body._id}, 
-      // Update the data based on the input
-      {$push: 
-        { previous_searches : req.body.route}
-      }
+      // Push the search data object to the previous searches array
+      {$push: { previous_searches : req.body.route}}
       )
-    
-    // updateOne( 
-    //   { "previous_searches": 0},{ $push: { "new_search": req.body.route } });
-
-      
-    // const addRoute = await db.collection("users").findOneAndUpdate(
-    //   // Find the user by email
-    //   {_id: req.body._id}, 
-    //   // Update the data based on the input
-    //   {$set: 
-    //     { previous_searches : req.body.route}
-    //   }
-    //   )
-      
+  
     if(addRoute){
-      return res
-        .status(200)
-        .json(
-          {status:200, 
-          data: req.body, 
-          message: "Route successfully added"});
+      return sendResponse(res, 200, req.body, "Route successfully added");
     } else {
       sendResponse(res, 404, req.body._id, "The route was not found");
+      
     }
   } catch (err) {
     console.log("Failed to add route: ", err);
@@ -227,7 +209,9 @@ const updateUserRoutes = async (req, res) => {
   client.close();
 };
 
+//*************************************************************** */
 // Retrieve user profile based on their id
+//*************************************************************** */
 const getUserProfile = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   const db = client.db("BTB");

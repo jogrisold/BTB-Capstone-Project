@@ -2,19 +2,20 @@ import {useState, useContext} from 'react';
 import styled from 'styled-components';
 import { UserContext } from './UserContext';
 
-const TypeAhead = () => {
+const DestinationTypeAhead = () => {
 
     const {currentUser} = useContext(UserContext);
-    const [inputValue, setInputValue] = useState("");
+    const [destinationTypeAheadInputValue, setDestinationTypeAheadInputValue] = useState("");
     const [searchNotSelected, setSearchNotSelected] = useState(true);
 
     // Return results that match what the user types
     const previousSearches = currentUser.previous_searches.filter(search => {
-        return search.origin.toLowerCase().includes(inputValue.toLowerCase())
+        console.log(search.destination);
+        return search.destination.toLowerCase().includes(destinationTypeAheadInputValue.toLowerCase())
     })
     // When a user clicks on a suggestion, navigate to the item details page and clear the input field
-    const handleSuggestionClick = (origin) => {
-        setInputValue(origin);
+    const handleSuggestionClick = (destination) => {
+        setDestinationTypeAheadInputValue(destination);
         // Clear the list of searches
         setSearchNotSelected(false);
     } 
@@ -25,24 +26,24 @@ const TypeAhead = () => {
             <FlexRow>
                 <SearchBar 
                     type="text" 
-                    value={inputValue} 
-                    onChange={(e) => {setInputValue(e.target.value)}} 
+                    value={destinationTypeAheadInputValue} 
+                    onChange={(e) => {setDestinationTypeAheadInputValue(e.target.value); }} 
                 />
-                <ClearBtn type = "button" onClick={()=> {setInputValue("")}}>Clear</ClearBtn>
+                <ClearBtn type = "button" onClick={()=> {setDestinationTypeAheadInputValue("")}}>Clear</ClearBtn>
             </FlexRow>
-        {previousSearches.length > 0 && inputValue.length >= 2 && searchNotSelected &&
+        {previousSearches.length > 0 && destinationTypeAheadInputValue.length >= 2 && searchNotSelected &&
         // If the previous searches has been populated and the user has typed enough input to render 
         // a meaningful result, and a search item has not been selected, render the search list
             <SearchList>
                 {previousSearches.map(search => {
                     // Find index of word and split for styling
-                    let indexOfsecondHalf = search.origin.toLowerCase().indexOf(inputValue.toLowerCase())
-                    let firstHalf = search.origin.slice(0, indexOfsecondHalf + inputValue.length)
-                    let secondHalf = search.origin.slice(indexOfsecondHalf + inputValue.length)
+                    let indexOfsecondHalf = search.destination.toLowerCase().indexOf(destinationTypeAheadInputValue.toLowerCase())
+                    let firstHalf = search.destination.slice(0, indexOfsecondHalf + destinationTypeAheadInputValue.length)
+                    let secondHalf = search.destination.slice(indexOfsecondHalf + destinationTypeAheadInputValue.length)
                     // Clicking a suggestion navigates to the search details page
                     return (
                         <SearchListItem 
-                            onClick={()=> {handleSuggestionClick(search.origin)}}
+                            onClick={()=> {handleSuggestionClick(search.destination)}}
                             >
                             {firstHalf}
                             <Prediction>{secondHalf}</Prediction> 
@@ -57,7 +58,7 @@ const TypeAhead = () => {
     );
 };
 
-export default TypeAhead;
+export default DestinationTypeAhead;
 
 const SearchBar = styled.input`
     font-size: 16px;

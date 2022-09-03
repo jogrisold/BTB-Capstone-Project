@@ -4,18 +4,14 @@ import styled from "styled-components";
 // React icon to toggle search
 import { FcSearch } from "react-icons/fc";
 import { UserContext } from "./UserContext";
-import TypeAhead from "./Typeahead";
+import OriginTypeAhead from "./OriginTypeAhead";
+import DestinationTypeAhead from "./DestinationTypeAhead";
 
 const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
     // To hold the data that will be fetched from the mapbox directions API
     // returning the directions from origin to destination
     const [directions, setDirections] = useState({});
-
-    // State for origin and destination input by user in the form
-    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
-    const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
-    
 
     // State to handle our function calls based on whether the opencage fetch
     // has successfully returned our input as geoJSON array format
@@ -50,7 +46,11 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         setBikeStations,
         setAddStations,
         userData,
-        currentUser
+        currentUser,
+        originInput,
+        setOriginInput,
+        destinationInput,
+        setDestinationInput
     } = useContext(UserContext);
 
     
@@ -112,7 +112,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         // Convert the input strings to a format that can be passed as a param
         const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
         const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
-        
+        console.log(destinationInput);
+        console.log(fetchDestination);
         // Fetch the opencage .get endpoint to convert string input into a geoJSON array
         fetch(`/get-position/${fetchOrigin}`)
             .then((res) => res.json())
@@ -261,7 +262,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                 <GetDirectionsForm 
                     onSubmit={geoJSONconverter}>
                 <Label htmlFor='origin'>Origin</Label>
-                    <Input
+                    {currentUser
+                    ? <OriginTypeAhead
                         autoFocus
                         type="text"
                         placeholder="Origin"
@@ -269,23 +271,35 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                         required={true}
                         onChange={(e) => {setOriginInput(e.target.value)}}
                     />
+                    :<Input
+                        type="text"
+                        placeholder="Origin"
+                        value={originInput}
+                        required={true}
+                        defaultValue={originInput}
+                        onChange={(e) => {setOriginInput(e.target.value)}}
+                    />
+                    }
+                    
                     <Label htmlFor='last-name'>Destination</Label>
-                    <Input
+                    {currentUser
+                    ? <DestinationTypeAhead
+                        autoFocus
                         type="text"
                         placeholder="Destination"
                         value={destinationInput}
                         required={true}
-                        defaultValue={"test"}
                         onChange={(e) => {setDestinationInput(e.target.value)}}
                     />
-
-                    {currentUser
-                    // If the user is logged in, display a typeahead that will
-                    // show previous search results
-                    ? <TypeAhead/>
-                    : <></>
+                    :<Input
+                        type="text"
+                        placeholder="Destination"
+                        value={destinationInput}
+                        required={true}
+                        defaultValue={destinationInput}
+                        onChange={(e) => {setDestinationInput(e.target.value)}}
+                    />
                     }
-                   
                     <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
                 </GetDirectionsForm>
 

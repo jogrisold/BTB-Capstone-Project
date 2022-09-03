@@ -176,6 +176,8 @@ const updateUserProfile = async (req, res) => {
 //*************************************************************** */
 const updateUserRoutes = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
+  console.log("req.body update route")
+  console.log(req.body)
   try {
     // Connect to client
     await client.connect();

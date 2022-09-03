@@ -37,6 +37,9 @@ export const UserProvider = ({children}) => {
     // returning the bike station data
     const [bikeStations, setBikeStations] = useState([]);
 
+    // State for origin and destination input by user in the form
+    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
+    const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
 
     // Create a state to store the user's data
     const [userData, setUserData] = useState(null);
@@ -72,7 +75,11 @@ export const UserProvider = ({children}) => {
             addStations, 
             setAddStations,
             userData, 
-            setUserData
+            setUserData,
+            originInput,
+            setOriginInput,
+            destinationInput,
+            setDestinationInput
         }}>
             {children}
         </UserContext.Provider>)

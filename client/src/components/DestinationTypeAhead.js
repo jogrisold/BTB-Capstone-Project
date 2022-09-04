@@ -4,13 +4,13 @@ import { UserContext } from './UserContext';
 
 const DestinationTypeAhead = () => {
 
-    const {currentUser} = useContext(UserContext);
+    const {currentUser, destinationInput, setDestinationInput} = useContext(UserContext);
     const [destinationTypeAheadInputValue, setDestinationTypeAheadInputValue] = useState("");
     const [searchNotSelected, setSearchNotSelected] = useState(true);
 
     // Return results that match what the user types
     const previousSearches = currentUser.previous_searches.filter(search => {
-        console.log(search.destination);
+
         return search.destination.toLowerCase().includes(destinationTypeAheadInputValue.toLowerCase())
     })
     // When a user clicks on a suggestion, navigate to the item details page and clear the input field
@@ -27,7 +27,7 @@ const DestinationTypeAhead = () => {
                 <SearchBar 
                     type="text" 
                     value={destinationTypeAheadInputValue} 
-                    onChange={(e) => {setDestinationTypeAheadInputValue(e.target.value); }} 
+                    onChange={(e) => {setDestinationTypeAheadInputValue(e.target.value);setDestinationInput(e.target.value); console.log(destinationInput) }} 
                 />
                 <ClearBtn type = "button" onClick={()=> {setDestinationTypeAheadInputValue("")}}>Clear</ClearBtn>
             </FlexRow>

@@ -133,7 +133,7 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             });
 
         // If the user is logged in, add the route to the user profile
-        if(currentUser !== null){
+        if(currentUser){
             // Create an object to hold the origin and destination
             const route = {
                 origin: originInput,

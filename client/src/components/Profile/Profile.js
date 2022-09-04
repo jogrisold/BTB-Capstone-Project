@@ -5,7 +5,8 @@
 // React dependencies
 import styled from "styled-components"
 import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 // Local component dependencies
 import { UserContext } from "../UserContext";
@@ -13,6 +14,9 @@ import UserProfileForm from "./UserProfileForm";
 
 // Icons
 import { FiEdit } from "react-icons/fi";
+import { MdTripOrigin } from "react-icons/md";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 // It's your profile! 
 const Profile = () => {
@@ -22,12 +26,13 @@ const Profile = () => {
     //**************************************************************** */
 
     // Use context to bring in the current user that is logged in
-    const {currentUser, setCurrentUser, userData, setUserData} = useContext(UserContext);
+    const {currentUser, setCurrentUser, userData, setUserData, setOriginInput, setDestinationInput} = useContext(UserContext);
 
     // Conditional rendering states for editing profile and settings
     const [editProfile, setEditProfile] = useState(false);
     const [editSettings, setEditSettings] = useState(false);
     
+    const navigate = useNavigate();
     //**************************************************************** */
     // Functions
     //**************************************************************** */
@@ -81,6 +86,12 @@ const Profile = () => {
         console.log("edit profile switched to false")
     }
 
+    // Create a function to re-search a previous trip on the main page
+    const searchTrip = (origin, destination) => {
+        setOriginInput(origin);
+        setDestinationInput(destination);
+        navigate("/");
+    }
     return (
         <Center>
             <Wrapper>
@@ -165,6 +176,25 @@ const Profile = () => {
                             </>
                         }
                     </Settings>
+                        <FlexHeader>
+                            <H1>Previous Trips</H1>
+                        </FlexHeader>
+                        <Line></Line> 
+                        {userData
+                        // If the user is logged in, display their previous trips
+                        ? userData.previous_searches.map((search)=>{
+                            return(<>
+                                <Trip
+                                    onClick={()=>searchTrip(search.origin, search.destination)}>
+                                    <Origin><MdTripOrigin/>{search.origin}</Origin>
+                                    <Origin><BsThreeDotsVertical/></Origin>
+                                    <Origin><FaMapMarkerAlt/>{search.destination}</Origin>
+                                </Trip>
+                                </>
+                            )
+                        })
+                        :<>You have not completed any previous trips</>
+                        }
                 </>
             // Otherwise, direct the user to login first
             : <Login>Please <LoginLink to ="/login" style={{color: "var(--color-secondary)"}}> login</LoginLink> to continue</Login>
@@ -206,7 +236,7 @@ const LoginLink = styled(Link)`
 `
 const Wrapper= styled.div`
     display: flex;
-    width: 70%;
+    width: 80%;
     flex-direction: column;
     align-items: left;
     margin-top: 100px;
@@ -258,6 +288,17 @@ const Settings = styled.div`
 const Line = styled.div`
     border: 1px solid var(--color-secondary);
     margin: 10px 0 30px 0;
+`;
+const Origin = styled.div`
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+`;
+const Trip = styled.div`
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 `;
 const H1 = styled.h1`
     text-align: left;

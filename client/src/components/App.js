@@ -36,10 +36,10 @@ const App = () => {
         <Routes>
             {/* react router v6 uses element attribute to render components */}
             <Route exact path="/" element={<Homepage />} />
-            <Route exact path="/login" element={<Login />} />
-            <Route exact path="/signup" element={<Signup />} />
-            <Route exact path="/profile" element={<Profile/>}/>
-            <Route exact path="/preferences" element={<Preferences/>}/>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile/>}/>
+            <Route path="/preferences" element={<Preferences/>}/>
         </Routes>
 
         <Footer />

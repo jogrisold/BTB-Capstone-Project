@@ -4,7 +4,7 @@ import { UserContext } from './UserContext';
 
 const OriginTypeAhead = () => {
 
-    const {currentUser} = useContext(UserContext);
+    const {currentUser, originInput, setOriginInput} = useContext(UserContext);
     const [inputValue, setInputValue] = useState("");
     const [searchNotSelected, setSearchNotSelected] = useState(true);
 
@@ -26,7 +26,7 @@ const OriginTypeAhead = () => {
                 <SearchBar 
                     type="text" 
                     value={inputValue} 
-                    onChange={(e) => {setInputValue(e.target.value); }} 
+                    onChange={(e) => {setInputValue(e.target.value); setOriginInput(e.target.value); console.log(originInput)}} 
                 />
                 <ClearBtn type = "button" onClick={()=> {setInputValue("")}}>Clear</ClearBtn>
             </FlexRow>

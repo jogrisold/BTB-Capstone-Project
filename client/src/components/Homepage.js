@@ -2,6 +2,7 @@ import { useContext } from "react";
 import Login from "./Login";
 import { UserContext } from "./UserContext";
 import Map from "./Map";
+import Header from "./Header";
 
 const Homepage = () => {
     const {

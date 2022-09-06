@@ -7,7 +7,6 @@ import styled from "styled-components"
 import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
 // Local component dependencies
 import { UserContext } from "../UserContext";
 import UserProfileForm from "./UserProfileForm";
@@ -23,6 +22,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UserSettingsForm from "./UserSettingsForm";
 import ProfileHeader from "./ProfileHeader";
 import SettingsHeading from "./SettingsHeading";
+import Settings from "./Settings";
+
 
 // It's your profile! 
 const Profile = () => {
@@ -37,22 +38,12 @@ const Profile = () => {
         setCurrentUser,
         isLoggedIn,
         setOriginInput, 
-        setDestinationInput,
-        searchForRoute, 
+        setDestinationInput, 
         setSearchForRoute,
         isLoading,
-        setIsLoading
+        setIsLoading,editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
     } = useContext(UserContext);
 
-
-    // Conditional rendering states for editing profile and settings
-    const [editSettings, setEditSettings] = useState(false);
-    // State for toggling the view of the edit profile form
-    const [editProfile, setEditProfile] = useState(false);
-    // Create a state to store the user's data
-    const [userData, setUserData] = useState({settings: {use_bike_paths: true}});
-    
-    
     const navigate = useNavigate();
     //**************************************************************** */
     // Functions
@@ -63,19 +54,20 @@ const Profile = () => {
     useEffect(()=>{
         // If the user is logged in and they are not editing
         // their profile
-        if (isLoggedIn && editProfile === false && currentUser) {
+        if (isLoggedIn && currentUser && isLoading) {
             console.log(currentUser);
             // Get the user data from the database
             fetch(`/api/users/${currentUser._id}`)
-            .then(res=>res.json())
-            .then((json)=>{
-                console.log(json.data);
+            .then((res)=>res.json())
+            .then((data)=>{
+                console.log(data.data);
                 // And store it in the userData state
-                setUserData(json.data)      
+                setUserData(data.data)      
             })
-            setIsLoading(false);  
+            // Render the page
+            setIsLoading(false);
         }
-    }, [currentUser, editProfile])
+    }, [isLoading])
 
     // Create a function to handle submission of the 
     // updateUserProfile form
@@ -100,64 +92,37 @@ const Profile = () => {
         })
         .then((res) => res.json())
         .then((data) => {
+            console.log(data);
+            // setUserData(data[0]);
+
             // Reset the current user state to render the new information 
-            setCurrentUser({
-                _id: currentUser._id,
-                password: currentUser.password,
-                given_name: data.data.given_name,
-                family_name: data.data.family_name,
-                email: data.data.email,
-                home: data.data.home,
-                work: data.data.work
-            })
+            // setCurrentUser({
+            //     _id: currentUser._id,
+            //     password: currentUser.password,
+            //     given_name: data.data.given_name,
+            //     family_name: data.data.family_name,
+            //     email: data.data.email,
+            //     home: data.data.home,
+            //     work: data.data.work
+            // })
         });
+        // Reset the loading state to recall the fetch
+        setIsLoading(true);
         // Close the form
         setEditProfile(false);
         console.log("edit profile switched to false")
-    }
-
-    // Create a function to handle submission of the 
-    // updateUserSettings form.
-    const updateUsersettings = (e, settingsData) => {
-        // Check that the user data is available for 
-        // retreival by id in the database 
-
-        if(userData){
-            // Stop the page from refreshing
-            e.preventDefault()
-            console.log("submitted!")
-            console.log(userData);
-
-            const settings = {
-                use_bike_paths: settingsData.use_bike_paths,
-            }
-
-            const bodyToSend = {
-                _id: userData._id,
-                settings: settings
-            };
-    
-            fetch("/api/update-settings", {
-                method: 'PATCH',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(bodyToSend),
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-            });
-        } else {
-            window.alert("Please log in to submit settings")
-        }
-        // Close the form
-        setEditSettings(false);
+        console.log(userData);
     }
 
     // Create a function to re-search a previous trip on the main page
     const searchTrip = (origin, destination) => {
+        // Set the input values of the search bar
         setOriginInput(origin);
         setDestinationInput(destination);
+        // Navigate to the homepage
         navigate("/");
+        // Set the state that calls the geoJSON fetch and
+        // corresponding routing functions
         setSearchForRoute(true);
     }
 
@@ -168,18 +133,12 @@ const Profile = () => {
             setEditProfile(true);
         }
     }
-    const toggleEditSettings = () => {
-        if(editSettings){
-            setEditSettings(false);
-        } else {
-            setEditSettings(true);
-        }
-    }
+
     return (
         <Center>
         <Wrapper>
         {/* If there is a current user (i.e. the user has logged in) */}
-        {isLoading === false
+        {isLoading === false && userData !== null && userData !== undefined
         //Then return their profile
         ?   <>
             {editProfile 
@@ -204,40 +163,7 @@ const Profile = () => {
                     <Email><Bold> Work: </Bold> {userData.work}</Email>
                 </>
             }
-            <Settings>
-                {editSettings
-                    // If editSettings has been set to true (edit button clicked), display the settings form
-                ?   <>
-                    <SettingsHeading toggleEditSettings={toggleEditSettings}/>
-                    <Line></Line> 
-                    <UserSettingsForm handleSubmit={updateUsersettings}/>
-                    </>
-                :   // Otherwise, render the user settings from database
-                    <>
-                    <SettingsHeading toggleEditSettings={toggleEditSettings}/>
-                    <Line></Line> 
-                    {userData
-                        // if the userData has been populated
-                    ?  Object.values(userData.settings).length > 0 
-                        // Check that they have created settings
-                        ? <> Settings: bike: 
-                            {userData.settings.use_bike_paths 
-                                ? <Yes> Yes</Yes>
-                                : <No> No </No>
-                                } 
-                        </>
-                        : <>
-                            <p>You don't have any settings yet.</p>
-                            <Login>Click the edit settings icon above to edit your settings </Login>
-                        </>
-                        
-                    : <> User data did not load yet</>
-                    }
-                   
-                    </>
-                }
-            </Settings>
-            
+            <Settings />
             <FlexHeader>
                 <H1>Previous Trips</H1>
             </FlexHeader>
@@ -354,9 +280,6 @@ const FlexHeader = styled.div`
 const Bold = styled.span`
     font-weight: 800;
     margin-right: 2px;
-`;
-const Settings = styled.div`
-
 `;
 const Line = styled.div`
     border: 1px solid var(--color-secondary);

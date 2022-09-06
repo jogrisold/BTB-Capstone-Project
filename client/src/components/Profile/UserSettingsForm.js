@@ -7,11 +7,11 @@ import { BsToggleOn } from "react-icons/bs";
 import { MdDirectionsBike } from "react-icons/md";
 import { MdElectricBike } from "react-icons/md";
 
-const UserSettingsForm = ({ handleSubmit }) => {
+const UserSettingsForm = ({ handleSubmit}) => {
     // Use context to bring in the current user that is logged in
-    const {setCurrentUser} = useContext(UserContext);
+    const {userData, setUserData} = useContext(UserContext);
     const [settingsData, setSettingsData] = useState({});
-    const [useBikePaths, setUseBikePaths] = useState(true);
+    const [useBikePaths, setUseBikePaths] = useState(userData.settings.use_bike_paths);
 
     const handleChange = () => {
         setSettingsData({
@@ -35,13 +35,12 @@ const UserSettingsForm = ({ handleSubmit }) => {
         <ToggleBikePaths 
             onClick = {toggleUseBikePaths}>
             <FlexRow>
-                <MdElectricBike size = {40} />
-                Use bike paths:
+                <MdDirectionsBike size = {40}/>
                 {useBikePaths
                 ?<BsToggleOff size = {40}/>
                 :<BsToggleOn size = {40}/>
                 }
-                <MdDirectionsBike size = {40}/>
+                <MdElectricBike size = {40} />
             </FlexRow>
         </ToggleBikePaths>
         <UserSettingsSubmit type="submit" >

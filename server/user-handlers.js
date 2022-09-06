@@ -85,7 +85,7 @@ const handleSignUp = async (req, res) => {
       // Add some empty data points to hold user information and settings
       req.body.favorites = [];
       req.body.previous_searches = [];
-      req.body.settings = [];
+      req.body.settings = {use_bike_paths: true};
       req.body.home = "";
       req.body.work = "";
       // Add the new user, including an encrypted password that will
@@ -155,13 +155,15 @@ const updateUserProfile = async (req, res) => {
         work : updatedUserProfile.work}
       }
       )
+    const updatedUser = await db.collection("users")
+    .find({email: updatedUserProfile.email }).toArray();
       
     if(addRoute){
       return res
         .status(200)
         .json(
           {status:200, 
-          data: req.body, 
+          data: updatedUser, 
           message:"User profile successfully updated"});
     } else {
       sendResponse(res, 404, updatedUserProfile, "The user profile was not found");
@@ -203,16 +205,18 @@ const updateUserSettings = async (req, res) => {
         { settings : updatedUserSettings.settings }
       }
       )
-      
+    
+    const updatedUser = await db.collection("users")
+    .find({_id: updatedUserSettings._id }).toArray();
     if(updateSettings){
       return res
         .status(200)
         .json(
           {status:200, 
-          data: req.body, 
+          data: updatedUser, 
           message:"User profile successfully updated"});
     } else {
-      sendResponse(res, 404, updatedUserSettings, "The user profile was not found");
+      sendResponse(res, 404, updatedUserSettings._id, "The user profile was not found");
     }
   } catch (err) {
     console.log("Failed to update user in database: ", err);

@@ -48,6 +48,12 @@ export const UserProvider = ({children}) => {
     // State for conditional rendering of page whilst waiting on fetches to back end\
     const [isLoading, setIsLoading] = useState(true);
 
+    // Conditional rendering states for editing profile and settings
+    const [editSettings, setEditSettings] = useState(false);
+    // State for toggling the view of the edit profile form
+    const [editProfile, setEditProfile] = useState(false);
+    // Create a state to store the user's data
+    const [userData, setUserData] = useState(null);
     
 
     return (
@@ -59,18 +65,13 @@ export const UserProvider = ({children}) => {
             setIsLoggedIn,
             currentUser,
             setCurrentUser,
-            origin,
-            setOrigin,
+            origin, setOrigin,
             destination,
             setDestination,
-            convertedOriginInput,
-            setConvertedOriginInput,
-            convertedDestinationInput,
-            setConvertedDestinationInput,
-            routesData,
-            setRoutesData,
-            tripDetails,
-            setTripDetails,
+            convertedOriginInput, setConvertedOriginInput,
+            convertedDestinationInput, setConvertedDestinationInput,
+            routesData, setRoutesData,
+            tripDetails, setTripDetails,
             busDuration, 
             setBusDuration,
             publicTransitResult, 
@@ -81,14 +82,10 @@ export const UserProvider = ({children}) => {
             setBikeStations,
             addStations, 
             setAddStations,
-            originInput,
-            setOriginInput,
-            destinationInput,
-            setDestinationInput,
+            originInput, setOriginInput, destinationInput, setDestinationInput,
             searchForRoute, 
             setSearchForRoute,
-            isLoading,
-            setIsLoading,
+            isLoading, setIsLoading,editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
         }}>
             {children}
         </UserContext.Provider>)

@@ -40,9 +40,11 @@ const Profile = () => {
         setOriginInput, 
         setDestinationInput, 
         setSearchForRoute,
-        isLoading,
-        setIsLoading,editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
+        editProfile, setEditProfile, userData, setUserData
     } = useContext(UserContext);
+
+    // State for conditional rendering of page whilst waiting on fetches to back end\
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
     //**************************************************************** */
@@ -51,24 +53,25 @@ const Profile = () => {
 
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
+
     useEffect(()=>{
         // If the user is logged in and they are not editing
         // their profile
-        if (isLoggedIn && currentUser && isLoading) {
-            console.log(currentUser);
-            // Give the server 50ms to update
+        if (isLoggedIn && currentUser  && isLoading === true) {
+            // Give the server somt time to update
             setTimeout(()=>{
                 // Get the user data from the database
                 fetch(`/api/users/${currentUser._id}`)
                 .then((res)=>res.json())
                 .then((data)=>{
                     console.log(data.data);
-                    // And store it in the userData state
+                    // Store it in the userData state
                     setUserData(data.data)      
                 })
+                }, 2300)
+
                 // Render the page
                 setIsLoading(false);
-            }, 50)
         }
     }, [isLoading])
 
@@ -96,18 +99,6 @@ const Profile = () => {
         .then((res) => res.json())
         .then((data) => {
             console.log(data);
-            // setUserData(data[0]);
-
-            // Reset the current user state to render the new information 
-            // setCurrentUser({
-            //     _id: currentUser._id,
-            //     password: currentUser.password,
-            //     given_name: data.data.given_name,
-            //     family_name: data.data.family_name,
-            //     email: data.data.email,
-            //     home: data.data.home,
-            //     work: data.data.work
-            // })
         });
         // Reset the loading state to recall the fetch
         setIsLoading(true);
@@ -140,60 +131,63 @@ const Profile = () => {
     return (
         <Center>
         <Wrapper>
-        {/* If there is a current user (i.e. the user has logged in) */}
-        {isLoading === false && userData !== null && userData !== undefined
-        //Then return their profile
-        ?   <>
-            {editProfile 
-            // Check if the editProfile button has been clicked,
-            // If so, show the edit profile form
-                ? 
-                <>
-                    <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                    <Line></Line> 
-                    <UserProfileForm handleSubmit={updateUserProfile}/>
-                    </>
-                : // If not, display the user data
-                <>
-                    <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                    <Line></Line> 
-                    <FlexRow>
-                        <Name><Bold>Name:</Bold> {userData.given_name}</Name>
-                        <Surname>{userData.family_name}</Surname>
-                    </FlexRow>
-                    <Email><Bold> Email: </Bold> {userData.email}</Email>
-                    <Email><Bold> Home: </Bold> {userData.home}</Email>
-                    <Email><Bold> Work: </Bold> {userData.work}</Email>
-                </>
-            }
-            <Settings />
-            <FlexHeader>
-                <H1>Previous Trips</H1>
-            </FlexHeader>
-            <Line></Line> 
-            {isLoading && userData
-                // If the data has been fetched from the backend
-                ? userData.previous_searches.length > 0
-                // Check if the user has populated the previous_searches array
-                    ? userData.previous_searches.map((search)=>{
-                        // If so, return th previous searches
-                        return(<>
-                            <Trip
-                                onClick={()=>searchTrip(search.origin, search.destination)}>
-                                <Origin><MdTripOrigin/>{search.origin}</Origin>
-                                <Origin><BsThreeDotsVertical/></Origin>
-                                <Origin><FaMapMarkerAlt/>{search.destination}</Origin>
-                            </Trip>
+        {isLoggedIn
+            ? isLoading === false && userData !== null && userData !== undefined
+                //Then return their profile
+                ?   <>
+                    {editProfile 
+                    // Check if the editProfile button has been clicked,
+                    // If so, show the edit profile form
+                        ? 
+                        <>
+                            <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
+                            <Line></Line> 
+                            <UserProfileForm handleSubmit={updateUserProfile}/>
                             </>
-                        )
-                        })
-                    :<>You have not completed any previous trips</>
-                : <>You have not completed any previous trips</>
-                }
-        </>
-        // Otherwise, display a loading animation
-        : <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
+                        : // If not, display the user data
+                        <>
+                            <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
+                            <Line></Line> 
+                            <FlexRow>
+                                <Name><Bold>Name:</Bold> {userData.given_name}</Name>
+                                <Surname>{userData.family_name}</Surname>
+                            </FlexRow>
+                            <Email><Bold> Email: </Bold> {userData.email}</Email>
+                            <Email><Bold> Home: </Bold> {userData.home}</Email>
+                            <Email><Bold> Work: </Bold> {userData.work}</Email>
+                        </>
+                    }
+                    <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
+                    <FlexHeader>
+                        <H1>Previous Trips</H1>
+                    </FlexHeader>
+                    <Line></Line> 
+                    {isLoading && userData
+                        // If the data has been fetched from the backend
+                        ? userData.previous_searches.length > 0
+                        // Check if the user has populated the previous_searches array
+                            ? userData.previous_searches.map((search)=>{
+                                // If so, return th previous searches
+                                return(<>
+                                    <Trip
+                                        onClick={()=>searchTrip(search.origin, search.destination)}>
+                                        <Origin><MdTripOrigin/>{search.origin}</Origin>
+                                        <Origin><BsThreeDotsVertical/></Origin>
+                                        <Origin><FaMapMarkerAlt/>{search.destination}</Origin>
+                                    </Trip>
+                                    </>
+                                )
+                                })
+                            :<>You have not completed any previous trips</>
+                        : <>You have not completed any previous trips</>
+                        }
+                </>
+                // Otherwise, display a loading animation
+                : <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
+                
+        : <>Please login to continue</>
         }
+            
     </Wrapper>
     </Center>
     )

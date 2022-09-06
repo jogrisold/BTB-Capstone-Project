@@ -25,13 +25,36 @@ import ProfileHeader from "./ProfileHeader";
 import SettingsHeading from "./SettingsHeading";
 
 // It's your profile! 
-const Settings = () => {
+const Settings = ({isLoading, setIsLoading,}) => {
 
-    const {isLoading, setIsLoading, editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData} = useContext(UserContext);
+    const {isLoggedIn, currentUser,
+         editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData} = useContext(UserContext);
+
+
+    useEffect(()=>{
+        // If the user is logged in and they are not editing
+        // their profile
+        if (isLoggedIn && currentUser && isLoading !== undefined && isLoading === true) {
+            console.log(currentUser);
+            // Give the server somt time to update
+            setTimeout(()=>{
+                // Get the user data from the database
+                fetch(`/api/users/${currentUser._id}`)
+                .then((res)=>res.json())
+                .then((data)=>{
+                    console.log(data.data);
+                    // And store it in the userData state
+                    setUserData(data.data)      
+                })
+                // Render the page
+                setIsLoading(false);
+            }, 1300)
+        }
+    }, [isLoading])
 
     // Create a function to handle submission of the 
     // updateUserSettings form.
-    const updateUsersettings = (e, settingsData) => {
+    const updateUserSettings = (e, settingsData) => {
         // Check that the user data is available for 
         // retreival by id in the database 
 
@@ -39,7 +62,6 @@ const Settings = () => {
             // Stop the page from refreshing
             e.preventDefault()
             console.log("submitted!")
-            console.log(userData);
 
             const updatedSettings = {
                 use_bike_paths: settingsData.use_bike_paths,
@@ -57,7 +79,7 @@ const Settings = () => {
             })
             .then((res) => res.json())
             .then((data) => {
-                console.log(data[0]);
+                console.log(data);
             });
         } else {
             window.alert("Please log in to submit settings")
@@ -68,7 +90,6 @@ const Settings = () => {
 
         // Close the form
         setEditSettings(false);
-        console.log(userData);
     }
 
     const toggleEditSettings = () => {
@@ -86,7 +107,7 @@ const Settings = () => {
         ?   <>
             <SettingsHeading toggleEditSettings={toggleEditSettings}/>
             <Line></Line> 
-            <UserSettingsForm handleSubmit={updateUsersettings} userData = {userData} setUserData ={setUserData}/>
+            <UserSettingsForm handleSubmit={updateUserSettings}/>
             </>
         :   // Otherwise, render the user settings from database
             <>

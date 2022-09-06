@@ -45,8 +45,7 @@ export const UserProvider = ({children}) => {
     // State that controls the route request functionality in the search bar
     const [searchForRoute, setSearchForRoute] = useState(false);
 
-    // State for conditional rendering of page whilst waiting on fetches to back end\
-    const [isLoading, setIsLoading] = useState(true);
+    
 
     // Conditional rendering states for editing profile and settings
     const [editSettings, setEditSettings] = useState(false);
@@ -85,7 +84,7 @@ export const UserProvider = ({children}) => {
             originInput, setOriginInput, destinationInput, setDestinationInput,
             searchForRoute, 
             setSearchForRoute,
-            isLoading, setIsLoading,editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
+            editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
         }}>
             {children}
         </UserContext.Provider>)

@@ -12,12 +12,13 @@ const UserSettingsForm = ({ handleSubmit}) => {
     const {userData, setUserData} = useContext(UserContext);
     const [settingsData, setSettingsData] = useState({});
     const [useBikePaths, setUseBikePaths] = useState(userData.settings.use_bike_paths);
-
+    console.log(useBikePaths);
     const handleChange = () => {
         setSettingsData({
         ...settingsData,
         use_bike_paths: useBikePaths,
         });
+        console.log(settingsData);
     };
 
     const toggleUseBikePaths = (e) => {
@@ -27,20 +28,20 @@ const UserSettingsForm = ({ handleSubmit}) => {
         } else {
             setUseBikePaths(true);
         }
-        handleChange();
+        
     }
 
     return (
         <SettingsForm onSubmit={(e) => handleSubmit(e, settingsData)}>
         <ToggleBikePaths 
-            onClick = {toggleUseBikePaths}>
+            onClick = {(e)=>{toggleUseBikePaths(e); handleChange();}}>
             <FlexRow>
-                <MdDirectionsBike size = {40}/>
-                {useBikePaths
-                ?<BsToggleOff size = {40}/>
-                :<BsToggleOn size = {40}/>
-                }
                 <MdElectricBike size = {40} />
+                {useBikePaths
+                ?<BsToggleOn size = {40}/>
+                :<BsToggleOff size = {40}/>
+                }
+                <MdDirectionsBike size = {40}/>
             </FlexRow>
         </ToggleBikePaths>
         <UserSettingsSubmit type="submit" >

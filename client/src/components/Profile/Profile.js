@@ -56,16 +56,19 @@ const Profile = () => {
         // their profile
         if (isLoggedIn && currentUser && isLoading) {
             console.log(currentUser);
-            // Get the user data from the database
-            fetch(`/api/users/${currentUser._id}`)
-            .then((res)=>res.json())
-            .then((data)=>{
-                console.log(data.data);
-                // And store it in the userData state
-                setUserData(data.data)      
-            })
-            // Render the page
-            setIsLoading(false);
+            // Give the server 50ms to update
+            setTimeout(()=>{
+                // Get the user data from the database
+                fetch(`/api/users/${currentUser._id}`)
+                .then((res)=>res.json())
+                .then((data)=>{
+                    console.log(data.data);
+                    // And store it in the userData state
+                    setUserData(data.data)      
+                })
+                // Render the page
+                setIsLoading(false);
+            }, 50)
         }
     }, [isLoading])
 

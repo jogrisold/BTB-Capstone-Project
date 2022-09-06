@@ -20,12 +20,12 @@ const SignUp = () => {
   
   // Bring in basics from UserContext
   const { 
+    currentUser,
     setCurrentUser, 
     isLoggedIn, 
     setIsLoggedIn 
     } =useContext(UserContext);
   // Set some new states for storage user input from form
-  //******************* MOVE TO UserContext???????????????????????????
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -94,6 +94,7 @@ const SignUp = () => {
             // a success message and a navlink to the main page
             setIsLoggedIn(true);
             setCurrentUser(json.data);
+            console.log(currentUser)
           }
         })
         // Uncaught fetch errors

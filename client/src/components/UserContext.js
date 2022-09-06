@@ -38,14 +38,12 @@ export const UserProvider = ({children}) => {
     const [bikeStations, setBikeStations] = useState([]);
 
     // State for origin and destination input by user in the form
-    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
+    const [originInput, setOriginInput] = useState("124 Rue Saint- Viateur O, Montréal, QC H2T 2L1")
     const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
 
 
     // State that controls the route request functionality in the search bar
     const [searchForRoute, setSearchForRoute] = useState(false);
-
-    
 
     // Conditional rendering states for editing profile and settings
     const [editSettings, setEditSettings] = useState(false);

@@ -40,6 +40,7 @@ const Profile = () => {
         setOriginInput, 
         setDestinationInput, 
         setSearchForRoute,
+        setRoutesData,
         editProfile, setEditProfile, userData, setUserData
     } = useContext(UserContext);
 
@@ -109,16 +110,20 @@ const Profile = () => {
         // Set the input values of the search bar
         setOriginInput(origin);
         setDestinationInput(destination);
+        // Reset the data for the route to avoid multiple trip distances
+        // being summed in TripDetails
+        setRoutesData([]);
         // Navigate to the homepage
         navigate("/");
-        // Set the state that calls the geoJSON fetch and
-        // corresponding routing functions
-        setSearchForRoute(true);
-
+        // Fixes render issue of homepage displaying as scrolled halfway
+        // down on load
         window.scrollTo({
             top: 0,
             left: 100,
-          });
+        });
+        // Set the state that calls the geoJSON fetch and
+        // corresponding routing functions
+        setSearchForRoute(true);
     }
 
     const toggleEditProfile = () => {

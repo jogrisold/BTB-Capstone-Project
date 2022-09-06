@@ -8,6 +8,7 @@ import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-load
 import NavSearch from "./NavSearch";
 import { UserContext } from "./UserContext";
 import TripDetails from "./TripDetails";
+import { Navigate, useNavigate } from "react-router";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -40,6 +41,7 @@ const Map = () => {
     
     const [bikeLocations, setBikeLocations] = useState([]);
     // Initialize an array to store information about each rout that is added
+
 
     // set a state for origin and destination, or you could use a useContext file
     const {
@@ -226,8 +228,8 @@ const Map = () => {
         if (currentMarkers!==null) {
             for (var i = currentMarkers.length - 1; i >= 0; i--) {
                 // Remove all marker except the stations except those used in the trip
-                if(currentMarkers[i]._lngLat.lng !== originStation[0] && currentMarkers[i]._lngLat.lat !== originStation[1] || 
-                    currentMarkers[i]._lngLat.lng !== destinationStation[0] && currentMarkers[i]._lngLat.lat !== destinationStation[1]
+                if(((currentMarkers[i]._lngLat.lng !== originStation[0]) && (currentMarkers[i]._lngLat.lat !== originStation[1])) || 
+                    (currentMarkers[i]._lngLat.lng !== destinationStation[0]) && currentMarkers[i]._lngLat.lat !== destinationStation[1]
                     ){
                     currentMarkers[i].remove();
                 }
@@ -244,58 +246,62 @@ const Map = () => {
             // make a directions request using cycling profile
             // an arbitrary start, will always be the same
             // only the finish or finish will change
-            
-            const query = await fetch(
-                `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-                { method: 'GET' }
-            );
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // Need errror handling here for cases where the fetch fails
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            const json = await query.json();
-            const data = json.routes[0];
-    
-            // Push the route information for use in duration calculation
-            if(triptype == "biketrip"){
-                setRoutesData(routesData => [...routesData, data]);
-            }
-    
-    
-            const route = data.geometry.coordinates;
-            const geojson = {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                    type: 'LineString',
-                    coordinates: route
+            try{
+                const query = await fetch(
+                    `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                    { method: 'GET' }
+                );
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // Need errror handling here for cases where the fetch fails
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                const json = await query.json();
+               
+                const data = json.routes[0];
+        
+                // Push the route information for use in duration calculation
+                if(triptype == "biketrip"){
+                    setRoutesData(routesData => [...routesData, data]);
                 }
-            };
-            // if the route already exists on the map, we'll reset it using setData
-            if (mapRef.current.getSource(`${routeName}`)) {
-                mapRef.current.getSource(`${routeName}`).setData(geojson);
-            }
-            // otherwise, we'll make a new request
-            else {
-                mapRef.current.addLayer({
-                    id: `${routeName}`,
-                    type: 'line',
-                    source: {
-                    type: 'geojson',
-                    data: geojson
-                    },
-                    layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                    },
-                    paint: {
-                    'line-color': `${routeColor}`,
-                    'line-width': 5,
-                    'line-opacity': 0.75
+        
+        
+                const route = data.geometry.coordinates;
+                const geojson = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: route
                     }
-                });
+                };
+                // if the route already exists on the map, we'll reset it using setData
+                if (mapRef.current.getSource(`${routeName}`)) {
+                    mapRef.current.getSource(`${routeName}`).setData(geojson);
+                }
+                // otherwise, we'll make a new request
+                else {
+                    mapRef.current.addLayer({
+                        id: `${routeName}`,
+                        type: 'line',
+                        source: {
+                        type: 'geojson',
+                        data: geojson
+                        },
+                        layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                        },
+                        paint: {
+                        'line-color': `${routeColor}`,
+                        'line-width': 5,
+                        'line-opacity': 0.75
+                        }
+                    });
+                }
+                console.log("getRoute end")
+            } catch {
+                window.alert("You can't bike across water! Unless you're superman? In which case, just fly. Try again")
+                // window.location.reload();
             }
-            console.log("getRoute end")
-            
         }
     // add turn instructions here at the destination - mapbox next steps
     }

@@ -211,8 +211,9 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             // Clear the route data from any previous trips
             console.log(routesData);
             setRoutesData([]);
-            console.log(routesData);
             
+            console.log("routesData first bike route");
+            console.log(routesData);
             // 1. Request the walking directions to the originStation
             addRouteLayer(origin, originStation, 'walk-to-station', '#FADBD8', 'walking', 'biketrip', false);
             // 2. Request the biking directions from originStation to destinationStation
@@ -225,9 +226,15 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     navigationMode = 'driving'
                 }
             }
+            console.log("routesData second bike route");
+            console.log(routesData);
             addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', navigationMode, 'biketrip', true);
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
+            console.log("routesData third bike route");
+            console.log(routesData);
             addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', 'biketrip', false);
+            console.log("routesData final");
+            console.log(routesData);
             // 4. Remove the other stations from the map
             removeMarkers(originStation, destinationStation);
             // 5. Center the map at the start of the route

@@ -57,7 +57,7 @@ const Settings = ({isLoading, setIsLoading,}) => {
     const updateUserSettings = (e, settingsData) => {
         // Check that the user data is available for 
         // retreival by id in the database 
-
+        console.log(settingsData);
         if(userData){
             // Stop the page from refreshing
             e.preventDefault()
@@ -117,7 +117,7 @@ const Settings = ({isLoading, setIsLoading,}) => {
                 // if the userData has been populated
             ?  Object.values(userData.settings).length > 0 
                 // Check that they have created settings
-                ? <> use electric bike: 
+                ? <> Use bike path: 
                     {userData.settings.use_bike_paths 
                         ? <Yes> Yes</Yes>
                         : <No> No </No>

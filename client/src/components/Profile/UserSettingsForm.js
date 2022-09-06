@@ -12,29 +12,34 @@ const UserSettingsForm = ({ handleSubmit}) => {
     const {userData, setUserData} = useContext(UserContext);
     const [settingsData, setSettingsData] = useState({});
     const [useBikePaths, setUseBikePaths] = useState(userData.settings.use_bike_paths);
+
     console.log(useBikePaths);
     const handleChange = () => {
+        console.log(useBikePaths);
         setSettingsData({
         ...settingsData,
         use_bike_paths: useBikePaths,
         });
         console.log(settingsData);
     };
+    console.log(settingsData);
+
 
     const toggleUseBikePaths = (e) => {
         e.preventDefault()
         if(useBikePaths){
             setUseBikePaths(false);
-        } else {
+            return
+        } 
             setUseBikePaths(true);
-        }
-        
     }
 
-    return (
+    return (<>
+
+                <Ok onClick={handleChange}>Ok</Ok>
         <SettingsForm onSubmit={(e) => handleSubmit(e, settingsData)}>
         <ToggleBikePaths 
-            onClick = {(e)=>{toggleUseBikePaths(e); handleChange();}}>
+            onClick = {toggleUseBikePaths}>
             <FlexRow>
                 <MdElectricBike size = {40} />
                 {useBikePaths
@@ -48,6 +53,7 @@ const UserSettingsForm = ({ handleSubmit}) => {
             Confirm
         </UserSettingsSubmit>
         </SettingsForm>
+    </>
     );
 };
 
@@ -75,6 +81,14 @@ const Label = styled.label`
     width: 100%;
 `;
 const ToggleBikePaths = styled.button`
+    color: var(--color-secondary);
+    background-color: white;
+    text-align: left;
+    width: 200px;
+    height: 50px;
+    border: none;
+`;
+const Ok = styled.button`
     color: var(--color-secondary);
     background-color: white;
     text-align: left;

@@ -4,17 +4,14 @@ import styled from "styled-components";
 // React icon to toggle search
 import { FcSearch } from "react-icons/fc";
 import { UserContext } from "./UserContext";
+import OriginTypeAhead from "./OriginTypeAhead";
+import DestinationTypeAhead from "./DestinationTypeAhead";
 
 const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
     // To hold the data that will be fetched from the mapbox directions API
     // returning the directions from origin to destination
     const [directions, setDirections] = useState({});
-
-    // State for origin and destination input by user in the form
-    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
-    const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
-    
 
     // State to handle our function calls based on whether the opencage fetch
     // has successfully returned our input as geoJSON array format
@@ -38,18 +35,20 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         setDestination,
         routesData, 
         setRoutesData,
-        tripDetails,
-        setTripDetails,
-        busDuration, 
-        setBusDuration,
         publicTransitResult, 
         setPublicTransitResult,
         setStationStatus,
         bikeStations, 
         setBikeStations,
         setAddStations,
+        currentUser,
+        originInput,
+        setOriginInput,
+        destinationInput,
+        setDestinationInput,
+        searchForRoute, 
+        setSearchForRoute,
         userData,
-        currentUser
     } = useContext(UserContext);
 
     
@@ -102,65 +101,72 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         })
         return distanceArray[0].position
     }
-
     // Then once the stations have been chosen, we need to get the directions
-    const geoJSONconverter = (e) => {
-        // Prevent the page from refreshing
-        e.preventDefault();
-        
-        // Convert the input strings to a format that can be passed as a param
-        const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
-        const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
-        
-        // Fetch the opencage .get endpoint to convert string input into a geoJSON array
-        fetch(`/get-position/${fetchOrigin}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setOrigin(data.data)
-                // Nest the destination fetch in order to setGeoJSONfetch stat
-                // only once both fetches have passed
-                fetch(`/get-position/${fetchDestination}`)
+    // const geoJSONconverter = (e) => {
+
+    useEffect(()=>{
+        if(searchForRoute){
+
+            // Prevent the page from refreshing
+            // e.preventDefault();
+            
+            // Convert the input strings to a format that can be passed as a param
+            const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
+            const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
+            console.log(destinationInput);
+            console.log(fetchDestination);
+            // Fetch the opencage .get endpoint to convert string input into a geoJSON array
+            fetch(`/get-position/${fetchOrigin}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    setDestination(data.data);
-                    // Set a state to trigger the addRouteLayer function
-                    // as the origin and destination states will not be 
-                    // accessible immediately inside this function
-                    setGeoJSONfetch(true);
+                    setOrigin(data.data)
+                    // Nest the destination fetch in order to setGeoJSONfetch stat
+                    // only once both fetches have passed
+                    fetch(`/get-position/${fetchDestination}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        setDestination(data.data);
+                        // Set a state to trigger the addRouteLayer function
+                        // as the origin and destination states will not be 
+                        // accessible immediately inside this function
+                        setGeoJSONfetch(true);
+                    });
                 });
-            });
-
-        // If the user is logged in, add the route to the user profile
-        if(currentUser !== null){
-            // Create an object to hold the origin and destination
-            const route = {
-                origin: originInput,
-                destination: destinationInput
-              };
-            // Append the user id for lookup in database
-            const addRoute = {
-                _id : currentUser._id,
-                route : route
-            }
-            // Send a patch request to the server
-            fetch("/api/add-route-to-profile", {
-            method: 'PATCH',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(addRoute),
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data)
-            });
-
-        }
         
-        // Hide the form so the user can see their route
-        setSearch(false);
-        // Add the markers for stations in case this is a second trip request
-        setAddStations(true);
-        console.log("getDirections end")
-    }
+            // If the user is logged in, add the route to the user profile
+            if(currentUser){
+                // Create an object to hold the origin and destination
+                const route = {
+                    origin: originInput,
+                    destination: destinationInput
+                  };
+                // Append the user id for lookup in database
+                const addRoute = {
+                    _id : currentUser._id,
+                    route : route
+                }
+                // Send a patch request to the server
+                fetch("/api/add-route-to-profile", {
+                method: 'PATCH',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(addRoute),
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log(data)
+                });
+        
+            }
+            
+            // Hide the form so the user can see their route
+            setSearch(false);
+            // Add the markers for stations in case this is a second trip request
+            setAddStations(true);
+            console.log("getDirections end")
+        }
+    },[searchForRoute])
+
+    // }
 
     // Create a function that will fetch public transit option from the NEXT public transit api
     // so that we can compare it against the bike route
@@ -203,12 +209,23 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             let originStation = nearestStationCalc(origin, 'origin');
             let destinationStation = nearestStationCalc(destination, 'destination');
             // Clear the route data from any previous trips
+            console.log(routesData);
             setRoutesData([]);
+            console.log(routesData);
             
             // 1. Request the walking directions to the originStation
             addRouteLayer(origin, originStation, 'walk-to-station', '#FADBD8', 'walking', 'biketrip', false);
             // 2. Request the biking directions from originStation to destinationStation
-            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', 'cycling', 'biketrip', true);
+            // Set default state for preferences
+            let navigationMode = 'cycling'
+            // Check if the user data has been populated (i.e. userData.settings is accessible)
+            if(userData){
+                // If the user does not need to take bike paths, instruct addRouteLayer to give the driving directions
+                if(userData.settings.use_bike_paths === false){
+                    navigationMode = 'driving'
+                }
+            }
+            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', navigationMode, 'biketrip', true);
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
             addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', 'biketrip', false);
             // 4. Remove the other stations from the map
@@ -241,6 +258,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                 // setErrorMessage();
                 // setPopUp(true);
             }
+            // Our original request is finished so reset the state
+            setSearchForRoute(false);
         }
     },[publicTransitResult])
     
@@ -258,9 +277,10 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             ?   // If the user clicks on the search button, display the search form
             // If the user is logged in, set the origin and destination to home to work
                 <GetDirectionsForm 
-                    onSubmit={geoJSONconverter}>
+                    onSubmit={(e)=>{e.preventDefault(); setSearchForRoute(true)}}>
                 <Label htmlFor='origin'>Origin</Label>
-                    <Input
+                    {currentUser
+                    ? <OriginTypeAhead
                         autoFocus
                         type="text"
                         placeholder="Origin"
@@ -268,15 +288,35 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                         required={true}
                         onChange={(e) => {setOriginInput(e.target.value)}}
                     />
+                    :<Input
+                        type="text"
+                        placeholder="Origin"
+                        value={originInput}
+                        required={true}
+                        defaultValue={originInput}
+                        onChange={(e) => {setOriginInput(e.target.value)}}
+                    />
+                    }
+                    
                     <Label htmlFor='last-name'>Destination</Label>
-                    <Input
+                    {currentUser
+                    ? <DestinationTypeAhead
+                        autoFocus
                         type="text"
                         placeholder="Destination"
                         value={destinationInput}
                         required={true}
-                        defaultValue={"test"}
                         onChange={(e) => {setDestinationInput(e.target.value)}}
                     />
+                    :<Input
+                        type="text"
+                        placeholder="Destination"
+                        value={destinationInput}
+                        required={true}
+                        defaultValue={destinationInput}
+                        onChange={(e) => {setDestinationInput(e.target.value)}}
+                    />
+                    }
                     <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
                 </GetDirectionsForm>
 

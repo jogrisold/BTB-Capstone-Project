@@ -7,7 +7,8 @@ const { handleLogIn,
         handleSignUp, 
         updateUserProfile, 
         getUserProfile, 
-        updateUserRoutes 
+        updateUserRoutes, 
+        updateUserSettings
     } = require("./user-handlers");
 
 // Call express to use for endpoints below
@@ -36,6 +37,10 @@ express()
     // Create an endpoint to modify user information when user 
     // submits the preferences form in /profile
     .patch("/api/update-profile", updateUserProfile)
+
+    // Create an endpoint to modify user information when user 
+    // submits the preferences form in /profile
+    .patch("/api/update-settings", updateUserSettings)
 
     // Create an endpoint to add previous routes to user profile
     .patch("/api/add-route-to-profile", updateUserRoutes)

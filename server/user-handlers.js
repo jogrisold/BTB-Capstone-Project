@@ -82,9 +82,10 @@ const handleSignUp = async (req, res) => {
       // Encrypt the user password
       const encryptedPassword = await bcrypt.hash(req.body.password, 10);
       req.body.password = encryptedPassword;
-      // Add some empty data points to hold user preferences
+      // Add some empty data points to hold user information and settings
       req.body.favorites = [];
       req.body.previous_searches = [];
+      req.body.settings = {use_bike_paths: true};
       req.body.home = "";
       req.body.work = "";
       // Add the new user, including an encrypted password that will
@@ -124,7 +125,7 @@ const handleSignUp = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
   const updatedUserProfile = req.body;
-  console.log("req.body");
+  console.log("req.body user profile");
   console.log(req.body);
   console.log(updatedUserProfile.given_name);
   console.log(updatedUserProfile.family_name);
@@ -154,13 +155,15 @@ const updateUserProfile = async (req, res) => {
         work : updatedUserProfile.work}
       }
       )
+    const updatedUser = await db.collection("users")
+    .find({email: updatedUserProfile.email }).toArray();
       
     if(addRoute){
       return res
         .status(200)
         .json(
           {status:200, 
-          data: req.body, 
+          data: updatedUser, 
           message:"User profile successfully updated"});
     } else {
       sendResponse(res, 404, updatedUserProfile, "The user profile was not found");
@@ -172,10 +175,62 @@ const updateUserProfile = async (req, res) => {
   client.close();
 };
 //*************************************************************** */
+// Updates user settings
+//*************************************************************** */
+const updateUserSettings = async (req, res) => {
+  const client = new MongoClient(MONGO_URI, options);
+  const updatedUserSettings = req.body;
+  console.log("req.body user settings");
+  console.log(req.body);
+
+  try {
+    // Connect to client
+    await client.connect();
+    console.log('connected');
+    const db = client.db("BTB");
+    // Check if the user exists in the database
+    const checkUser = await db.collection("users")
+    .find({_id: updatedUserSettings._id }).toArray();
+    // If that failed, exit  
+    if(checkUser.length === 0){
+      sendResponse(res, 404, updatedUserSettings.email, "User not found");
+    } 
+    // Otherwise, update the profile
+    const updateSettings = await db.collection("users").findOneAndUpdate(
+      // Find the user by email
+      {_id: updatedUserSettings._id}, 
+      // Reset the settings object based on information passed by req.body 
+      {
+        $set: 
+        { settings : updatedUserSettings.settings }
+      }
+      )
+    
+    const updatedUser = await db.collection("users")
+    .find({_id: updatedUserSettings._id }).toArray();
+    if(updateSettings){
+      return res
+        .status(200)
+        .json(
+          {status:200, 
+          data: updatedUser, 
+          message:"User profile successfully updated"});
+    } else {
+      sendResponse(res, 404, updatedUserSettings._id, "The user profile was not found");
+    }
+  } catch (err) {
+    console.log("Failed to update user in database: ", err);
+    sendResponse(res, 500, updatedUserSettings._id, err.message)
+  }
+  client.close();
+};
+//*************************************************************** */
 // Adds route to user profile
 //*************************************************************** */
 const updateUserRoutes = async (req, res) => {
   const client = new MongoClient(MONGO_URI, options);
+  console.log("req.body update")
+  console.log(req.body)
   try {
     // Connect to client
     await client.connect();
@@ -193,7 +248,16 @@ const updateUserRoutes = async (req, res) => {
       // Find the user by id
       {_id: req.body._id}, 
       // Push the search data object to the previous searches array
-      {$push: { previous_searches : req.body.route}}
+      // in position 0 (unshift), in order to render the searches in
+      // order of most recent to least recent.
+      {
+        $push: { 
+          previous_searches : {
+            $each: [req.body.route],
+            $position: 0
+          }
+        }
+      }
       )
   
     if(addRoute){
@@ -246,5 +310,6 @@ module.exports = {
   handleSignUp,
   updateUserProfile,
   getUserProfile,
-  updateUserRoutes
+  updateUserRoutes,
+  updateUserSettings
 };

@@ -57,18 +57,18 @@ const SignUp = () => {
     e.preventDefault();
     // Pass the data from the form into an object that
     // we can pass to the backend
-    const userData = {
+    const userSignUpData = {
       given_name: userFirstName,
       family_name: userLastName,
       email: userEmail,
       password: passwordInput,
     };
-    console.log(userData);
+    console.log(userSignUpData);
     // Define our options for the post method including 
     // stringifying our object to post to mongoDB
     const options = {
       method: "POST",
-      body: JSON.stringify(userData),
+      body: JSON.stringify(userSignUpData),
       headers: { 
         Accept: "application/json",
         "Content-Type": "application/json" 

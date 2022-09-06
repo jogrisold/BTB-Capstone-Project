@@ -37,9 +37,24 @@ export const UserProvider = ({children}) => {
     // returning the bike station data
     const [bikeStations, setBikeStations] = useState([]);
 
+    // State for origin and destination input by user in the form
+    const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
+    const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
 
+
+    // State that controls the route request functionality in the search bar
+    const [searchForRoute, setSearchForRoute] = useState(false);
+
+    
+
+    // Conditional rendering states for editing profile and settings
+    const [editSettings, setEditSettings] = useState(false);
+    // State for toggling the view of the edit profile form
+    const [editProfile, setEditProfile] = useState(false);
     // Create a state to store the user's data
     const [userData, setUserData] = useState(null);
+    
+
     return (
     <UserContext.Provider 
         value = {{
@@ -49,18 +64,13 @@ export const UserProvider = ({children}) => {
             setIsLoggedIn,
             currentUser,
             setCurrentUser,
-            origin,
-            setOrigin,
+            origin, setOrigin,
             destination,
             setDestination,
-            convertedOriginInput,
-            setConvertedOriginInput,
-            convertedDestinationInput,
-            setConvertedDestinationInput,
-            routesData,
-            setRoutesData,
-            tripDetails,
-            setTripDetails,
+            convertedOriginInput, setConvertedOriginInput,
+            convertedDestinationInput, setConvertedDestinationInput,
+            routesData, setRoutesData,
+            tripDetails, setTripDetails,
             busDuration, 
             setBusDuration,
             publicTransitResult, 
@@ -71,8 +81,10 @@ export const UserProvider = ({children}) => {
             setBikeStations,
             addStations, 
             setAddStations,
-            userData, 
-            setUserData
+            originInput, setOriginInput, destinationInput, setDestinationInput,
+            searchForRoute, 
+            setSearchForRoute,
+            editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
         }}>
             {children}
         </UserContext.Provider>)

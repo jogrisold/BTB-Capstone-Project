@@ -12,16 +12,13 @@ import { UserContext } from "../UserContext";
 import UserProfileForm from "./UserProfileForm";
 
 // Icons
-import { FiEdit } from "react-icons/fi";
 import { MdTripOrigin } from "react-icons/md";
 import { FaMapMarkerAlt } from "react-icons/fa";
-import { BsFolderPlus, BsThreeDotsVertical } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 
 // Circular Progress animation for loading
 import CircularProgress from '@mui/material/CircularProgress';
-import UserSettingsForm from "./UserSettingsForm";
 import ProfileHeader from "./ProfileHeader";
-import SettingsHeading from "./SettingsHeading";
 import Settings from "./Settings";
 
 
@@ -101,7 +98,6 @@ const Profile = () => {
         setIsLoading(true);
         // Close the form
         setEditProfile(false);
-        console.log("edit profile switched to false")
         console.log(userData);
     }
 
@@ -168,24 +164,21 @@ const Profile = () => {
                         <H1>Previous Trips</H1>
                     </FlexHeader>
                     <Line></Line> 
-                    {userData
-                        // If the data has been fetched from the backend
-                        ? userData.previous_searches.length > 0
-                        // Check if the user has populated the previous_searches array
-                            ? userData.previous_searches.map((search)=>{
-                                // If so, return th previous searches
-                                return(<>
+                    {userData // If the data has been fetched from the backend (i.e. userData.previous_searches is available)
+                        && userData.previous_searches.length > 0 // Check if the user has populated the previous_searches array
+                            ? // If so, return the previous searches
+                              userData.previous_searches.map((search)=>{
+                                return(
                                     <Trip
                                         onClick={()=>searchTrip(search.origin, search.destination)}>
                                         <Origin><MdTripOrigin/>{search.origin}</Origin>
                                         <Origin><BsThreeDotsVertical/></Origin>
                                         <Origin><FaMapMarkerAlt/>{search.destination}</Origin>
                                     </Trip>
-                                    </>
                                 )
                                 })
-                            :<>You have not completed any previous trips</>
-                        : <>You have not completed any previous trips</>
+                            : // Otherwise, let the user know that they need to search first to populate the array
+                              <>You have not completed any previous trips</>
                         }
                 </>
                 // Otherwise, display a loading animation

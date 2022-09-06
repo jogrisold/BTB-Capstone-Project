@@ -16,10 +16,7 @@ const UserSettingsForm = ({ handleSubmit}) => {
     console.log(useBikePaths);
     const handleChange = () => {
         console.log(useBikePaths);
-        setSettingsData({
-        ...settingsData,
-        use_bike_paths: useBikePaths,
-        });
+        
         console.log(settingsData);
     };
     console.log(settingsData);
@@ -29,14 +26,22 @@ const UserSettingsForm = ({ handleSubmit}) => {
         e.preventDefault()
         if(useBikePaths){
             setUseBikePaths(false);
-            return
-        } 
+            setSettingsData({
+                ...settingsData,
+                use_bike_paths: false,
+                });
+        } else {
             setUseBikePaths(true);
+            setSettingsData({
+                ...settingsData,
+                use_bike_paths: true,
+                });
+        }
     }
 
     return (<>
 
-                <Ok onClick={handleChange}>Ok</Ok>
+                {/* <Ok onClick={handleChange}>Ok</Ok> */}
         <SettingsForm onSubmit={(e) => handleSubmit(e, settingsData)}>
         <ToggleBikePaths 
             onClick = {toggleUseBikePaths}>

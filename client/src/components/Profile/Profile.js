@@ -53,11 +53,10 @@ const Profile = () => {
 
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
-
     useEffect(()=>{
         // If the user is logged in and they are not editing
         // their profile
-        if (isLoggedIn && currentUser  && isLoading === true) {
+        if (isLoggedIn && currentUser && isLoading === true) {
             // Give the server somt time to update
             setTimeout(()=>{
                 // Get the user data from the database
@@ -68,7 +67,7 @@ const Profile = () => {
                     // Store it in the userData state
                     setUserData(data.data)      
                 })
-                }, 2300)
+            }, 2300)
 
                 // Render the page
                 setIsLoading(false);
@@ -96,10 +95,7 @@ const Profile = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedProfile),
         })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log(data);
-        });
+
         // Reset the loading state to recall the fetch
         setIsLoading(true);
         // Close the form
@@ -118,6 +114,11 @@ const Profile = () => {
         // Set the state that calls the geoJSON fetch and
         // corresponding routing functions
         setSearchForRoute(true);
+
+        window.scrollTo({
+            top: 0,
+            left: 100,
+          });
     }
 
     const toggleEditProfile = () => {
@@ -162,7 +163,7 @@ const Profile = () => {
                         <H1>Previous Trips</H1>
                     </FlexHeader>
                     <Line></Line> 
-                    {isLoading && userData
+                    {userData
                         // If the data has been fetched from the backend
                         ? userData.previous_searches.length > 0
                         // Check if the user has populated the previous_searches array

@@ -377,7 +377,7 @@ const Map = () => {
                     
                 mapRef.current.flyTo({
                 ...target, // Fly to the selected target
-                duration: 7000, // Animate over 10 seconds
+                duration: 5000, // Animate over 10 seconds
                 essential: true // This animation is considered essential with
                 //respect to prefers-reduced-motion
                 });

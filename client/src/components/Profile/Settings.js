@@ -25,32 +25,12 @@ import ProfileHeader from "./ProfileHeader";
 import SettingsHeading from "./SettingsHeading";
 
 // It's your profile! 
-const Settings = ({isLoading, setIsLoading,}) => {
+const Settings = ({isLoading, setIsLoading}) => {
 
     const {isLoggedIn, currentUser,
          editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData} = useContext(UserContext);
 
 
-    useEffect(()=>{
-        // If the user is logged in and they are not editing
-        // their profile
-        if (isLoggedIn && currentUser && isLoading !== undefined && isLoading === true) {
-            console.log(currentUser);
-            // Give the server somt time to update
-            setTimeout(()=>{
-                // Get the user data from the database
-                fetch(`/api/users/${currentUser._id}`)
-                .then((res)=>res.json())
-                .then((data)=>{
-                    console.log(data.data);
-                    // And store it in the userData state
-                    setUserData(data.data)      
-                })
-                // Render the page
-                setIsLoading(false);
-            }, 1300)
-        }
-    }, [isLoading])
 
     // Create a function to handle submission of the 
     // updateUserSettings form.

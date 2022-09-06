@@ -47,7 +47,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         destinationInput,
         setDestinationInput,
         searchForRoute, 
-        setSearchForRoute
+        setSearchForRoute,
+        userData,
     } = useContext(UserContext);
 
     
@@ -215,7 +216,16 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             // 1. Request the walking directions to the originStation
             addRouteLayer(origin, originStation, 'walk-to-station', '#FADBD8', 'walking', 'biketrip', false);
             // 2. Request the biking directions from originStation to destinationStation
-            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', 'cycling', 'biketrip', true);
+            // Set default state for preferences
+            let navigationMode = 'cycling'
+            // Check if the user data has been populated (i.e. userData.settings is accessible)
+            if(userData){
+                // If the user does not need to take bike paths, instruct addRouteLayer to give the driving directions
+                if(userData.settings.use_bike_paths === false){
+                    navigationMode = 'driving'
+                }
+            }
+            addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', navigationMode, 'biketrip', true);
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
             addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', 'biketrip', false);
             // 4. Remove the other stations from the map

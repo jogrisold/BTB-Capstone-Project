@@ -41,8 +41,15 @@ export const UserProvider = ({children}) => {
     const [originInput, setOriginInput] = useState("6327 St Laurent Blvd, Montreal, Quebec  H2S 3C3")
     const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
 
-    // Create a state to store the user's data
-    const [userData, setUserData] = useState(null);
+
+    // State that controls the route request functionality in the search bar
+    const [searchForRoute, setSearchForRoute] = useState(false);
+
+    // State for conditional rendering of page whilst waiting on fetches to back end\
+    const [isLoading, setIsLoading] = useState(true);
+
+    
+
     return (
     <UserContext.Provider 
         value = {{
@@ -74,12 +81,14 @@ export const UserProvider = ({children}) => {
             setBikeStations,
             addStations, 
             setAddStations,
-            userData, 
-            setUserData,
             originInput,
             setOriginInput,
             destinationInput,
-            setDestinationInput
+            setDestinationInput,
+            searchForRoute, 
+            setSearchForRoute,
+            isLoading,
+            setIsLoading,
         }}>
             {children}
         </UserContext.Provider>)

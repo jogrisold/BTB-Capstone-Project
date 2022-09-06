@@ -35,6 +35,7 @@ const TripDetails = () => {
         let totalTripDistance = 0;
         let walkingTime = 0;
         let walkingDistance = 0;
+        console.log(routesData);
         routesData.map((i)=>{
             // For each leg, sum duration and distance
             totalTripTime += i.duration;

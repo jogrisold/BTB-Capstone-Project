@@ -237,63 +237,66 @@ const Map = () => {
        
     // Create a function to make a directions request
     const getRoute = async(start, finish, routeName, routeColor, profile, triptype) => {
-        console.log("getroute starts")
+        if(mapInit){
 
-        // make a directions request using cycling profile
-        // an arbitrary start, will always be the same
-        // only the finish or finish will change
-        
-        const query = await fetch(
-            `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-            { method: 'GET' }
-        );
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // Need errror handling here for cases where the fetch fails
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        const json = await query.json();
-        const data = json.routes[0];
-
-        // Push the route information for use in duration calculation
-        if(triptype == "biketrip"){
-            setRoutesData(routesData => [...routesData, data]);
-        }
-
-
-        const route = data.geometry.coordinates;
-        const geojson = {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-                type: 'LineString',
-                coordinates: route
+            console.log("getroute starts")
+    
+            // make a directions request using cycling profile
+            // an arbitrary start, will always be the same
+            // only the finish or finish will change
+            
+            const query = await fetch(
+                `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                { method: 'GET' }
+            );
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // Need errror handling here for cases where the fetch fails
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            const json = await query.json();
+            const data = json.routes[0];
+    
+            // Push the route information for use in duration calculation
+            if(triptype == "biketrip"){
+                setRoutesData(routesData => [...routesData, data]);
             }
-        };
-        // if the route already exists on the map, we'll reset it using setData
-        if (mapRef.current.getSource(`${routeName}`)) {
-            mapRef.current.getSource(`${routeName}`).setData(geojson);
-        }
-        // otherwise, we'll make a new request
-        else {
-            mapRef.current.addLayer({
-                id: `${routeName}`,
-                type: 'line',
-                source: {
-                type: 'geojson',
-                data: geojson
-                },
-                layout: {
-                'line-join': 'round',
-                'line-cap': 'round'
-                },
-                paint: {
-                'line-color': `${routeColor}`,
-                'line-width': 5,
-                'line-opacity': 0.75
+    
+    
+            const route = data.geometry.coordinates;
+            const geojson = {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'LineString',
+                    coordinates: route
                 }
-            });
+            };
+            // if the route already exists on the map, we'll reset it using setData
+            if (mapRef.current.getSource(`${routeName}`)) {
+                mapRef.current.getSource(`${routeName}`).setData(geojson);
+            }
+            // otherwise, we'll make a new request
+            else {
+                mapRef.current.addLayer({
+                    id: `${routeName}`,
+                    type: 'line',
+                    source: {
+                    type: 'geojson',
+                    data: geojson
+                    },
+                    layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                    },
+                    paint: {
+                    'line-color': `${routeColor}`,
+                    'line-width': 5,
+                    'line-opacity': 0.75
+                    }
+                });
+            }
+            console.log("getRoute end")
+            
         }
-        console.log("getRoute end")
-        
     // add turn instructions here at the destination - mapbox next steps
     }
   
@@ -302,79 +305,83 @@ const Map = () => {
     // Define a function to add the route to the map 
     // as a mapbox layer
     const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, triptype, addStations) =>{
-        console.log("addRouteLayer starts")
-        // if (addStations){
-        //     let originStationMarker = new mapboxgl.Marker()
-        //         originStationMarker.setLngLat(layerOrigin);
-        //         originStationMarker.addTo(mapRef.current);
-        //         // Store the markers in an array in order to clear the map 
-        //         // when a user submits getDirections and it calls removeMarkers();
-        //         setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
-        //     let destinationStationMarker = new mapboxgl.Marker()
-        //         destinationStationMarker.setLngLat(layerDestination);
-        //         destinationStationMarker.addTo(mapRef.current);
-        //         setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
-        // }
-        // Call the function that returns the route
-        // getRoute(origin, destination);
-        // Add origin point to the map
-        // Route to nearest station
-        getRoute(layerOrigin, layerDestination, routeName, routeColor, profile, triptype);
-        mapRef.current.addLayer({
-            id: 'point',
-            type: 'circle',
-            source: {
-                type: 'geojson',
-                data: {
-                type: 'FeatureCollection',
-                features: [
-                    {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                        type: 'Point',
-                        coordinates: layerOrigin,
-                    }
-                    }
-                ]
-                }
-            },
-            paint: {
-                'circle-radius': 10,
-                'circle-color': '#BFCCFF'
+        if(mapInit){
+            console.log("addRouteLayer starts")
+            if (addStations){
+                let originStationMarker = new mapboxgl.Marker()
+                    originStationMarker.setLngLat(layerOrigin);
+                    originStationMarker.addTo(mapRef.current);
+                    // Store the markers in an array in order to clear the map 
+                    // when a user submits getDirections and it calls removeMarkers();
+                    setCurrentMarkers(currentMarkers =>[...currentMarkers, originStationMarker])
+                let destinationStationMarker = new mapboxgl.Marker()
+                    destinationStationMarker.setLngLat(layerDestination);
+                    destinationStationMarker.addTo(mapRef.current);
+                    setCurrentMarkers(currentMarkers =>[...currentMarkers, destinationStationMarker])
             }
-        });
-        console.log("addRouteLayer end")
-    // this is where the code from the next step will go
-    };
-
+            // Call the function that returns the route
+            // getRoute(origin, destination);
+            // Add origin point to the map
+            // Route to nearest station
+            getRoute(layerOrigin, layerDestination, routeName, routeColor, profile, triptype);
+            mapRef.current.addLayer({
+                id: 'point',
+                type: 'circle',
+                source: {
+                    type: 'geojson',
+                    data: {
+                    type: 'FeatureCollection',
+                    features: [
+                        {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'Point',
+                            coordinates: layerOrigin,
+                        }
+                        }
+                    ]
+                    }
+                },
+                paint: {
+                    'circle-radius': 10,
+                    'circle-color': '#BFCCFF'
+                }
+            });
+            console.log("addRouteLayer end")
+        // this is where the code from the next step will go
+        }
+        };
+    
     // Create a function that will center the map on the 
     // origin when the user submits the getDirections form
     const centerMapOnOrigin = () => {
-        const start = {
-            center: destination,
-            zoom: 1,
-            pitch: 0,
-            bearing: 0
+        if(mapInit){
+            const start = {
+                center: destination,
+                zoom: 1,
+                pitch: 0,
+                bearing: 0
+                };
+            const end = {
+                center: origin,
+                zoom: 16.5,
+                bearing: 0,
+                pitch: 0
             };
-        const end = {
-            center: origin,
-            zoom: 16.5,
-            bearing: 0,
-            pitch: 0
-        };
-  
-            let isAtStart = true;
-             
-            const target = isAtStart ? end : start;
-            isAtStart = !isAtStart;
-             
-            mapRef.current.flyTo({
-            ...target, // Fly to the selected target
-            duration: 10000, // Animate over 10 seconds
-            essential: true // This animation is considered essential with
-            //respect to prefers-reduced-motion
-            });
+        
+                let isAtStart = true;
+                    
+                const target = isAtStart ? end : start;
+                isAtStart = !isAtStart;
+                    
+                mapRef.current.flyTo({
+                ...target, // Fly to the selected target
+                duration: 7000, // Animate over 10 seconds
+                essential: true // This animation is considered essential with
+                //respect to prefers-reduced-motion
+                });
+        }
     }
 
     return(<>

@@ -19,7 +19,6 @@ import Header from './Header';
 
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import Preferences from "./Profile/Preferences";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
@@ -39,7 +38,6 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/profile" element={<Profile/>}/>
-            <Route path="/preferences" element={<Preferences/>}/>
         </Routes>
 
         <Footer />

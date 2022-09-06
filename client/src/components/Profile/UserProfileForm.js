@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import styled from "styled-components";
 import Input from "./Input";
 import { UserContext } from "../UserContext";
-import { FcCurrencyExchange } from "react-icons/fc";
 
 const UserProfileForm = ({ handleSubmit }) => {
     // Use context to bring in the current user that is logged in

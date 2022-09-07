@@ -1,7 +1,11 @@
+// React essentials
 import { useState, useContext } from "react";
 import styled from "styled-components";
-import Input from "./Input";
+
+// User context dependency
 import { UserContext } from "../UserContext";
+
+// React icons
 import { BsToggleOff } from "react-icons/bs";
 import { BsToggleOn } from "react-icons/bs";
 import { MdDirectionsBike } from "react-icons/md";
@@ -9,19 +13,14 @@ import { MdElectricBike } from "react-icons/md";
 
 const UserSettingsForm = ({ handleSubmit}) => {
     // Use context to bring in the current user that is logged in
-    const {userData, setUserData} = useContext(UserContext);
+    const {userData} = useContext(UserContext);
+    // Create a state to hold the new settings information entered by user
     const [settingsData, setSettingsData] = useState({});
+    // Create a state to toggle the conditional rendering
     const [useBikePaths, setUseBikePaths] = useState(userData.settings.use_bike_paths);
 
-    console.log(useBikePaths);
-    const handleChange = () => {
-        console.log(useBikePaths);
-        
-        console.log(settingsData);
-    };
-    console.log(settingsData);
-
-
+    // Function that toggles conditional render and sets
+    // state for form submission
     const toggleUseBikePaths = (e) => {
         e.preventDefault()
         if(useBikePaths){
@@ -40,28 +39,32 @@ const UserSettingsForm = ({ handleSubmit}) => {
     }
 
     return (<>
-
-                {/* <Ok onClick={handleChange}>Ok</Ok> */}
         <SettingsForm onSubmit={(e) => handleSubmit(e, settingsData)}>
-        <ToggleBikePaths 
-            onClick = {toggleUseBikePaths}>
-            <FlexRow>
-                <MdElectricBike size = {40} />
-                {useBikePaths
-                ?<BsToggleOn size = {40}/>
-                :<BsToggleOff size = {40}/>
-                }
-                <MdDirectionsBike size = {40}/>
-            </FlexRow>
-        </ToggleBikePaths>
-        <UserSettingsSubmit type="submit" >
-            Confirm
-        </UserSettingsSubmit>
+            <Center>
+                <FlexRow>
+                    <Label>Use bike paths:</Label>
+                    <ToggleBikePaths 
+                        onClick = {toggleUseBikePaths}>
+                        <FlexRow>
+                            <Electric><MdElectricBike size = {40} /></Electric>
+                            {useBikePaths
+                            ?<BsToggleOn size = {40}/>
+                            :<BsToggleOff size = {40}/>
+                            }
+                            <Regular><MdDirectionsBike size = {40}/></Regular>
+                        </FlexRow>
+                    </ToggleBikePaths>
+                </FlexRow>
+            </Center>
+            <UserSettingsSubmit  >
+                Confirm
+            </UserSettingsSubmit>
         </SettingsForm>
     </>
     );
 };
 
+export default UserSettingsForm;
 
 // Create our form
 const SettingsForm = styled.form`
@@ -69,57 +72,63 @@ const SettingsForm = styled.form`
     flex-direction: column;
     width: 100%;
 `;
-
+const Center= styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    
+`;
 const FlexRow = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+`;
+const Electric = styled.div`
+    margin: 0 5px 0 0;
+`;
+const Regular = styled.div`
+    margin: 0 0 0 5px;
 `;
 // Create our label styling
 const Label = styled.label`
     font-size: 1rem;
-    color: var(--color-secondary);
-    background-color: white;
     text-align: left;
     font-size: 24px;
     width: 100%;
+    color: white;
+    background-color: var(--color-secondary);
 `;
 const ToggleBikePaths = styled.button`
-    color: var(--color-secondary);
-    background-color: white;
+    color: white;
+    background-color: var(--color-secondary);
     text-align: left;
     width: 200px;
     height: 50px;
     border: none;
+    
 `;
-const Ok = styled.button`
-    color: var(--color-secondary);
-    background-color: white;
-    text-align: left;
-    width: 200px;
-    height: 50px;
-    border: none;
-`;
-
 // Button for form submission
 const UserSettingsSubmit = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-quarternary);
   font-size: 24px;
   border-radius: 5px;
-  border: none;
+  border: 1px solid white;
+  border-radius: 10px;
+  margin: 30px 0 0 0;
   padding: 10px;
   cursor: pointer;
     transition: ease-in-out 100ms;
     &:hover{
-      transform: scale(1.02);
+      color: var(--color-quarternary);
+      background-color: white;
     }
     &:active{
         transform: scale(.8);
-        background-color: lightgray;
+        
     }
-`
-export default UserSettingsForm;
+`;

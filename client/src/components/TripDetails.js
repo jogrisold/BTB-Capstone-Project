@@ -2,21 +2,23 @@ import { useEffect, useContext, useState } from "react";
 import styled from "styled-components";
 import { UserContext } from "./UserContext";
 
+import { MdDirectionsBike } from "react-icons/md";
+import { FaWalking } from "react-icons/fa";
+import { FaBus } from "react-icons/fa";
+import { RiPinDistanceFill } from "react-icons/ri";
+
 const TripDetails = () => {
-    // set a state for origin and destination, or you could use a useContext file
+    // Required states from useContext
     const {
         routesData, 
-        setRoutesData,
         tripDetails,
         setTripDetails,
         busDuration,
         setBusDuration,
         publicTransitResult,
-        
-
     } = useContext(UserContext);
 
-
+    // State to store the data from the trip
     const [displayTripDetails, setDisplayTripDetails] = useState(false);
 
     // Use effect to run the bikeTripDuration calculation once routesData is set
@@ -35,7 +37,6 @@ const TripDetails = () => {
         let totalTripDistance = 0;
         let walkingTime = 0;
         let walkingDistance = 0;
-        console.log(routesData);
         routesData.map((i)=>{
             // For each leg, sum duration and distance
             totalTripTime += i.duration;
@@ -68,13 +69,23 @@ const TripDetails = () => {
 
     return (<>
             {displayTripDetails
-            ? <TripDetailsInfo>
-                <TripDistance> <Text>TD:</Text>{tripDetails.totalTripDistance}km</TripDistance>
-                <TripTime> <Text>/</Text> {tripDetails.totalTripTime}mins</TripTime>
-                <WalkingDistance><Text>WD:</Text>{tripDetails.walkingDistance}km</WalkingDistance>
-                <WalkingTime> <Text>/</Text> {tripDetails.walkingTime}mins</WalkingTime>
-                <BusDuration><Text>B:</Text> {busDuration} mins</BusDuration>
+            ? 
+            <>
+
+            <TripDetailsInfo>
+            <FlexCol>
+                <FlexRow>
+                    <TripDistance> <Text><RiPinDistanceFill/></Text>{tripDetails.totalTripDistance}km</TripDistance>
+                    <TripTime> <Text><MdDirectionsBike /></Text> {tripDetails.totalTripTime}mins</TripTime>
+                    <WalkingTime> <Text><FaWalking /></Text> {tripDetails.walkingTime}mins</WalkingTime>
+                </FlexRow>
+                <FlexRow>
+                    <TripDistance> <Text><RiPinDistanceFill/></Text>{tripDetails.totalTripDistance}km</TripDistance>
+                    <BusDuration><Text><FaBus/></Text> {busDuration} mins</BusDuration>
+                </FlexRow>
+                </FlexCol>
             </TripDetailsInfo>
+            </>
             : <></>
             }
             </>
@@ -92,6 +103,7 @@ const TripDetailsInfo = styled.div`
     gap: 0px;
     width: 100%;
     height: 70px;
+    padding-top: 10px;
     background-color: var(--color-secondary);
     font-size: 20px;
 `;
@@ -115,4 +127,16 @@ const BusDuration = styled.div`
 `;
 const Text = styled.span`
     color: var(--color-tertiary);
+`;
+const FlexCol = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 10px;
+`;
+const FlexRow = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0px 20px 5px 0;
 `;

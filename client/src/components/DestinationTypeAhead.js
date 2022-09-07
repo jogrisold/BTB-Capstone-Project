@@ -3,16 +3,18 @@ import styled from 'styled-components';
 import { UserContext } from './UserContext';
 
 const DestinationTypeAhead = () => {
-
+    // Bring in user data to access the previous searches
     const {currentUser, destinationInput, setDestinationInput} = useContext(UserContext);
+    // State to hold changes in input
     const [destinationTypeAheadInputValue, setDestinationTypeAheadInputValue] = useState("");
+    // State to conditionally render based on whether an item in the list has been clicked on
     const [searchNotSelected, setSearchNotSelected] = useState(true);
 
     // Return results that match what the user types
     const previousSearches = currentUser.previous_searches.filter(search => {
-
         return search.destination.toLowerCase().includes(destinationTypeAheadInputValue.toLowerCase())
     })
+    
     // When a user clicks on a suggestion, navigate to the item details page and clear the input field
     const handleSuggestionClick = (destination) => {
         setDestinationTypeAheadInputValue(destination);
@@ -62,7 +64,7 @@ export default DestinationTypeAhead;
 
 const SearchBar = styled.input`
     font-size: 16px;
-    height: 30px;
+    height: 34px;
     width: 100%;
     border: 2px solid var(--color-secondary);
     &:focus-visible {
@@ -70,23 +72,18 @@ const SearchBar = styled.input`
     }
 `;
 const ClearBtn = styled.button`
-    color: #fff;
-    background-color: var(--color-secondary);
-    border: none;
+    color: var(--color-secondary);
+    background-color: white;
+    border-top: 2px solid var(--color-secondary);
+    border-bottom: 2px solid var(--color-secondary);
+    border-right: none;
+    border-left: 1px solid var(--color-secondary);
     font-size: 19px;
-    padding: 5px 10px;
+    padding: 5px 10px 5px 10px;
+    margin: 0px 0 0 -30px;
     transition: ease-in-out 100ms;
-    &:focus-visible {
-        outline: 4px lightblue solid ;
-    }
-    &:hover{
-        transform: scale(1.1);
-    }
-    &:active{
-        transform: scale(.9);
-        background-color: var(--color-primary);
-    }
 `;
+
 const SearchList = styled.ul`
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     padding: 10px;

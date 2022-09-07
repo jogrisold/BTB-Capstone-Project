@@ -26,7 +26,11 @@ const Login = () => {
   const [userEmail, setUserEmail] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [inputType, setInputType] = useState("password");
+
+  // Some states to create a styled error message
   const [popUp, setPopUp] = useState(false);
+
+  // For navigation
   let navigate = useNavigate();
 
   //**************************************************************** */
@@ -70,13 +74,11 @@ const Login = () => {
         if (status >= 400) {
           // If there is an error, display an error message
           setPopUp(true);
-
         } else if(status === 200){
           // If the response is a success, set the user login state 
           // set the current user data for use in cart and profile
           // and navigate to the homepage so the user can begin shopping
           setIsLoggedIn(true);
-          console.log(json.data);
           setCurrentUser(json.data);
           navigate("/");
         } 
@@ -91,37 +93,37 @@ const Login = () => {
   // Nothing new here: it's basically an edited Signup return
   return (
     <>
+    <Center>
+    <Wrapper>
     {popUp 
-    ? (<Center>
-        <PopUp> 
-        <FlexCol>
-        <H2>Ooopsie daisie!</H2>
-        <Text>
-          Sorry,
-          It seems like the Username and Password
-          you have entered do not match. 
-          Please try again
-        </Text>
-        <Button 
-        onClick = {()=>setPopUp(false)}
-        type="ok">Ok</Button>
-        </FlexCol>
+      ? <PopUp> 
+          <FlexCol>
+            <Center>
+            <H2>Wawaweewa!</H2>
+            </Center>
+            <Text>
+              Computer says the Username and Password
+              you have entered do not match our records.
+              Try again?
+            </Text>
+            <Center>
+              <Button 
+              onClick = {()=>setPopUp(false)}
+              type="ok">Sounds good!</Button>
+            </Center>
+          </FlexCol>
         </PopUp>
-      </Center>)
-      : (<></>) }
-      {isLoggedIn ? (
-        <Center>
-        <Wrapper>
-          <H1>You are logged in!</H1>
+      : <></> 
+    }
+      {isLoggedIn 
+      ? <>
+          <H1>Log in successful!</H1>
           <GoHome>
             <HomepageLink 
-            href="/">Go to Homepage</HomepageLink>
+            href="/">Let's go!</HomepageLink>
           </GoHome>
-          </Wrapper>
-        </Center>
-      ) : (
-        <Center>
-        <Wrapper>
+        </>
+      : <>
           <H1>Log In</H1>
           <LoginForm onSubmit={handleSubmit}>
             <LoginSection>
@@ -129,7 +131,7 @@ const Login = () => {
               <Input
                 autoFocus
                 type="email"
-                placeholder="Email"
+                placeholder="jojo@jojo.jo"
                 value={userEmail}
                 required={true}
                 onChange={(e) => setUserEmail(e.target.value)}
@@ -138,7 +140,7 @@ const Login = () => {
               <FlexRow>
                 <Input 
                   type={inputType} 
-                  placeholder="Password"
+                  placeholder="OMG-itsDONE#WD16"
                   value={passwordInput} 
                   aria-describedby="password-constraints"
                   required = {true}
@@ -150,8 +152,9 @@ const Login = () => {
                     Warning: this will display your password on the screen."
                   onClick={togglePassword}>
                   { inputType ==="password"
-                  ? <AiOutlineEyeInvisible size = {25} />
-                  : <AiOutlineEye size = {25}/>}
+                    ? <AiOutlineEyeInvisible size = {25} />
+                    : <AiOutlineEye size = {25}/>
+                  }
                 </TogglePassword>
                 </FlexRow>
               <Button type="submit">Continue</Button>
@@ -159,13 +162,15 @@ const Login = () => {
           </LoginForm>
           <SignUpSection>
             <FlexRow>
-              <NoAccount>Don't have an account? <SignUpLink href="/signup">Sign up </SignUpLink></NoAccount>
+              <NoAccount>Don't have an account? </NoAccount>
+              <NoAccount><SignUpLink href="/signup">Sign Up!</SignUpLink></NoAccount>
               
             </FlexRow>
           </SignUpSection>
-        </Wrapper>
-        </Center>
-      )}
+        </>
+      }
+      </Wrapper>
+    </Center>
     </>
   );
 };
@@ -176,17 +181,19 @@ export default Login;
 // This CSS is a repetition of SignUp:
 const PopUp= styled.div`
     display: flex;
-    width: 100%;
+    width: 90%;
     justify-content: center;
-    border: 1px solid black;
+    border: 1px solid #E5E7E9;
+    border-radius: 15px;
     position: absolute;
-    z-index: 1;
-    margin: 210px 0 0 0;
+      z-index: 1;
+      top: 240px;
     font-size: 26px;
+    margin-left: -30px;
     font-family: var(--font-heading);
     background-color: white;
-    width: 450px;
-    padding: 20px;
+
+    padding: 10px 20px;
 `;
 const Center= styled.div`
     display: flex;
@@ -236,13 +243,16 @@ const Input = styled.input`
   border-radius: 5px;
   border: none;
   margin: 0 0 10px 0;
+  ::placeholder {
+    color: var(--color-secondary);
+  }
 
 `;
 const Button = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-quarternary);
   font-size: 20px;
   border-radius: 5px;
   border: none;
@@ -265,11 +275,16 @@ const LoginSection = styled.div`
   width: 100%;
 `;
 const SignUpSection = styled.div`
+  margin: 30px 0 10px 0;
 `;
 const SignUpLink = styled.a`
   margin-top: 10px;
   color: var(--color-quarternary);
-  font-size: 16px;
+  background-color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: 900;
   font-weight: bold;
   text-decoration: none;
   &:hover{
@@ -285,9 +300,10 @@ const HomepageLink = styled.a`
   text-decoration: none;
 `;
 const NoAccount = styled.p`
-  margin-top: 10px;
+  
   color: white;
   font-size: 16px;
+  font-weight: 600;
 `;
 const FlexRow = styled.div`
     width: 100%;
@@ -305,9 +321,13 @@ const Text = styled.div`
   margin: 20px 0 20px 0 ;
 
 `;const TogglePassword = styled.button`
-    height: 43px;
-    width: 43px;
-    border-radius: 10px;
+    height: 40px;
+    width: 40px;
+    border-left: 1px solid var(--color-secondary) !important;
     background-color: white;
     padding: 4px 0 0 1px;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    margin: 1px 0 0 -60px;
 `;

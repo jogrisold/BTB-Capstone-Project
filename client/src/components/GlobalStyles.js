@@ -13,7 +13,7 @@ const GlobalStyles = createGlobalStyle`
         --color-primary: #BFBA9F; /* #C6C9C0;*/
         --color-secondary: #BFCCFF;
         --color-tertiary: #5D5B67 ;
-        --color-quarternary: #BF9663; /* #6A6A5F;*/
+        --color-quarternary: #fec789; /* #ff9933 #6A6A5F;*/
         --color-gold:#BF9663;
         --font-heading: 'Noto Sans', Arial, Helvetica, sans-serif;
         --font-body: 'Helvetica', Arial, Helvetica, sans-serif;
@@ -22,8 +22,9 @@ const GlobalStyles = createGlobalStyle`
 
     // Set the page to fill the screen
     html, body {
-    max-width: 100vw;
-    height: 100vh;
+        max-width: 100vw;
+        height: 100vh;
+        background-color: var(--color-secondary);
     }
 
     // Adjust css for mobile-first design:

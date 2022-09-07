@@ -25,7 +25,6 @@ const SignUp = () => {
     setIsLoggedIn 
     } =useContext(UserContext);
   // Set some new states for storage user input from form
-  //******************* MOVE TO UserContext???????????????????????????
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -74,30 +73,29 @@ const SignUp = () => {
         "Content-Type": "application/json" 
       },
     };
-    console.log(options);
 
-    // Create a function that will send a .post request containing the user
-    // data, to be called only if the user passes the input handling below.
-    const addUser = (options) => {
-      fetch("/api/signup", options)
-        .then((res) => res.json())
-        .then((json) => {
-          const {status, message, error} = json;
-          if (status >= 400) {
-            // If there is an error, display a styled error message
-            setErrorMsg(message);
-            setPopUp(true);
-          } else if(status === 200){
-            // If the response is a success, log the new user in and 
-            // set the current user data for use in cart /profile,
-            // This will also refresh the returned elements to show
-            // a success message and a navlink to the main page
-            setIsLoggedIn(true);
-            setCurrentUser(json.data);
-          }
-        })
-        // Uncaught fetch errors
-        .catch((err) => console.log(err))
+  // Create a function that will send a .post request containing the user
+  // data, to be called only if the user passes the input handling below.
+  const addUser = (options) => {
+    fetch("/api/signup", options)
+      .then((res) => res.json())
+      .then((json) => {
+        const {status, message, error} = json;
+        if (status >= 400) {
+          // If there is an error, display a styled error message
+          setErrorMsg(message);
+          setPopUp(true);
+        } else if(status === 200){
+          // If the response is a success, log the new user in and 
+          // set the current user data for use in cart /profile,
+          // This will also refresh the returned elements to show
+          // a success message and a navlink to the main page
+          setIsLoggedIn(true);
+          setCurrentUser(json.data);
+        }
+      })
+      // Uncaught fetch errors
+      .catch((err) => console.log(err))
       // })
     };
 
@@ -276,7 +274,7 @@ const SignUp = () => {
                   : <AiOutlineEye size = {25}/>}
                 </TogglePassword>
              </FlexRow>
-              <SignUpSubmit type="submit">Sign Up</SignUpSubmit>
+              <SignUpSubmit type="submit">Sign Up!</SignUpSubmit>
             </SignUpForm>
           </Wrapper>
         </Center>
@@ -373,6 +371,9 @@ const Input = styled.input`
   border-radius: 5px;
   border: none;
   margin: 0 10px 10px 0;
+  ::placeholder {
+    color: var(--color-secondary);
+  }
 `;
 // Button for form submission
 const Submit = styled.button`
@@ -386,8 +387,8 @@ const Submit = styled.button`
 const SignUpSubmit = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-quarternary);
   font-size: 24px;
   border-radius: 5px;
   border: none;
@@ -422,11 +423,15 @@ const Text = styled.div`
 `;
 // Styling for toggling password visible 
 const TogglePassword = styled.button`
-    height: 43px;
-    width: 43px;
-    border-radius: 10px;
+    height: 40px;
+    width: 40px;
+    border-left: 1px solid var(--color-secondary) !important;
     background-color: white;
     padding: 4px 0 0 1px;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    margin: 1px 0 0 -60px;
 `;
 // Standard flex column
 const FlexCol = styled.div`

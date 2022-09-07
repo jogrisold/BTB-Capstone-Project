@@ -20,7 +20,6 @@ const SignUp = () => {
   
   // Bring in basics from UserContext
   const { 
-    currentUser,
     setCurrentUser, 
     isLoggedIn, 
     setIsLoggedIn 
@@ -99,7 +98,6 @@ const SignUp = () => {
       .catch((err) => console.log(err))
       // })
     };
-    console.log(currentUser)
 
     //**************************************************************** */
     // Input Handling

@@ -18,35 +18,26 @@ export const UserProvider = ({children}) => {
     // etc whilst adding walking route layer to closest station
     const [convertedOriginInput, setConvertedOriginInput] = useState(null);
     const [convertedDestinationInput, setConvertedDestinationInput] = useState(null);
-
     // Initialize an array to store information about each rout that is added
     const [routesData, setRoutesData] = useState([]);
-
+    // Holds the distance and duration of the bike trip
     const [tripDetails, setTripDetails] = useState({});
-    
+    // Holds the duration of the public transit route
     const [busDuration, setBusDuration] = useState(0);
-
+    // Holds the result of the fetch to get public transit directions
     const [publicTransitResult, setPublicTransitResult] = useState(null);
-    
     const [stationStatus, setStationStatus] = useState(null);
     // State to trigger the use effect that adds stations to add stations
     // again on new route or user toggle of the station button !!! To do: create station togglebutton !!!
     const [addStations, setAddStations] = useState(null);
-
     // Create a state to hold the data from the backend
     // returning the bike station data
     const [bikeStations, setBikeStations] = useState([]);
-
     // State for origin and destination input by user in the form
     const [originInput, setOriginInput] = useState("124 Rue Saint- Viateur O, Montréal, QC H2T 2L1")
     const [destinationInput, setDestinationInput] = useState("275 Notre-Dame St. East, Montreal, Quebec H2Y 1C6")
-
-
     // State that controls the route request functionality in the search bar
     const [searchForRoute, setSearchForRoute] = useState(false);
-
-    
-    
     // Create a state to store the user's data
     const [userData, setUserData] = useState(null);
     
@@ -54,32 +45,23 @@ export const UserProvider = ({children}) => {
     return (
     <UserContext.Provider 
         value = {{
-            search, 
-            setSearch,
-            isLoggedIn,
-            setIsLoggedIn,
-            currentUser,
-            setCurrentUser,
+            search, setSearch,
+            isLoggedIn, setIsLoggedIn,
+            currentUser, setCurrentUser,
             origin, setOrigin,
-            destination,
-            setDestination,
+            destination, setDestination,
             convertedOriginInput, setConvertedOriginInput,
             convertedDestinationInput, setConvertedDestinationInput,
             routesData, setRoutesData,
             tripDetails, setTripDetails,
-            busDuration, 
-            setBusDuration,
-            publicTransitResult, 
-            setPublicTransitResult,
-            stationStatus, 
-            setStationStatus,
-            bikeStations, 
-            setBikeStations,
-            addStations, 
-            setAddStations,
-            originInput, setOriginInput, destinationInput, setDestinationInput,
-            searchForRoute, 
-            setSearchForRoute,
+            busDuration, setBusDuration,
+            publicTransitResult, setPublicTransitResult,
+            stationStatus, setStationStatus,
+            bikeStations, setBikeStations,
+            addStations, setAddStations,
+            originInput, setOriginInput, 
+            destinationInput, setDestinationInput,
+            searchForRoute, setSearchForRoute,
             userData, setUserData
         }}>
             {children}

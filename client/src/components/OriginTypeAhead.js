@@ -2,6 +2,7 @@ import {useState, useContext} from 'react';
 import styled from 'styled-components';
 import { UserContext } from './UserContext';
 
+
 const OriginTypeAhead = () => {
 
     const {currentUser, originInput, setOriginInput} = useContext(UserContext);

@@ -21,25 +21,19 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
     const [errorMsg, setErrorMsg] = useState("");
     const [popUp, setPopUp] = useState(false);
 
-    const YOUR_API_KEY = "HERE-4d73a56f-1184-4598-9fd6-fa7142a57fe0";
     // Use context to access states initialized in UserContext
     // search, SetSearch: for conditional rendering of the search form
     const {
         search, 
         setSearch,
-        isLoggedIn,
-        setIsLoggedIn,
         origin,
         setOrigin,
         destination,
         setDestination,
-        routesData, 
         setRoutesData,
         publicTransitResult, 
         setPublicTransitResult,
-        setStationStatus,
         bikeStations, 
-        setBikeStations,
         setAddStations,
         currentUser,
         originInput,
@@ -60,7 +54,6 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
             setSearch(true);
         }
     }
-
 
     // Function to calculate the distance between two points
     const getDistance = (start, finish) => {
@@ -84,10 +77,10 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         // Map through the stations retrieved in the bike station fetch in Map
         bikeStations.map((station)=> {
             // Run the get distance function on, but only if it has bikes for an origin station
-            if (type == 'origin' && station.bikes == 0 && station.e_bikes == 0){
+            if (type === 'origin' && station.bikes === 0 && station.e_bikes === 0){
                 return distanceArray 
             // And only if it has docks for a destination station
-            } else if(type == 'destination' && station.docks == 0) {
+            } else if(type === 'destination' && station.docks === 0) {
                 return distanceArray
             // Thus if it meets our requirements, add it to the array
             } else {
@@ -106,15 +99,9 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
 
     useEffect(()=>{
         if(searchForRoute){
-
-            // Prevent the page from refreshing
-            // e.preventDefault();
-            
             // Convert the input strings to a format that can be passed as a param
             const fetchOrigin = JSON.stringify(originInput.replaceAll(" ", "&"));
             const fetchDestination = JSON.stringify(destinationInput.replaceAll(" ", "&"));
-            console.log(destinationInput);
-            console.log(fetchDestination);
             // Fetch the opencage .get endpoint to convert string input into a geoJSON array
             fetch(`/get-position/${fetchOrigin}`)
                 .then((res) => res.json())
@@ -155,14 +142,11 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                 .then((data) => {
                     console.log(data)
                 });
-        
             }
-            
             // Hide the form so the user can see their route
             setSearch(false);
             // Add the markers for stations in case this is a second trip request
             setAddStations(true);
-            console.log("getDirections end")
         }
     },[searchForRoute])
 
@@ -176,7 +160,6 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         fetch(`https://transit.router.hereapi.com/v8/routes?origin=${origin[1]},${origin[0]}&destination=${destination[1]},${destination[0]}&apiKey=nhtKpzL7jDCdppdqSI2G4sIeQukduxhH74b-6xPcCV8`)
             .then((res)=>res.json())
             .then((data)=>{
-                console.log(data)
                 setPublicTransitResult(data);
             })
             .catch((err) => window.alert(err))
@@ -246,7 +229,6 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                         destinationTransitStation = [element.arrival.place.location.lng, element.arrival.place.location.lat];
                     }
                 });
-                console.log(originTransitStation);
                 // Transit layers:
                 // 1. Request the walking directions to the departure transit station
                 addRouteLayer(origin, originTransitStation, 'walk-to-bus-station', '#D4E6F1', 'walking', 'transittrip', false);

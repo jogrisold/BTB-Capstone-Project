@@ -29,15 +29,14 @@ const Profile = () => {
     const { 
         currentUser,
         isLoggedIn,
-        editProfile, 
-        setEditProfile, 
         userData, 
         setUserData
     } = useContext(UserContext);
 
     // State for conditional rendering of page whilst waiting on fetches to back end\
     const [isLoading, setIsLoading] = useState(true);
-
+    // State for toggling the view of the edit profile form
+    const [editProfile, setEditProfile] = useState(false);
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
     useEffect(()=>{

@@ -45,10 +45,8 @@ export const UserProvider = ({children}) => {
     // State that controls the route request functionality in the search bar
     const [searchForRoute, setSearchForRoute] = useState(false);
 
-    // Conditional rendering states for editing profile and settings
-    const [editSettings, setEditSettings] = useState(false);
-    // State for toggling the view of the edit profile form
-    const [editProfile, setEditProfile] = useState(false);
+    
+    
     // Create a state to store the user's data
     const [userData, setUserData] = useState(null);
     
@@ -82,7 +80,7 @@ export const UserProvider = ({children}) => {
             originInput, setOriginInput, destinationInput, setDestinationInput,
             searchForRoute, 
             setSearchForRoute,
-            editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData
+            userData, setUserData
         }}>
             {children}
         </UserContext.Provider>)

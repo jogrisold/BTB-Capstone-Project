@@ -17,10 +17,10 @@ import SettingsHeading from "./SettingsHeading";
 // It's your profile! 
 const Settings = ({isLoading, setIsLoading}) => {
 
-    const {isLoggedIn, currentUser,
-         editSettings, setEditSettings, editProfile, setEditProfile, userData, setUserData} = useContext(UserContext);
+    const {userData} = useContext(UserContext);
 
-
+    // Conditional rendering states for editing profile and settings
+    const [editSettings, setEditSettings] = useState(false);
 
     // Create a function to handle submission of the 
     // updateUserSettings form.

@@ -2,16 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
 // React icon to toggle search
-import { FcSearch } from "react-icons/fc";
+import { BsSearch } from "react-icons/bs";
 import { UserContext } from "./UserContext";
 import OriginTypeAhead from "./OriginTypeAhead";
 import DestinationTypeAhead from "./DestinationTypeAhead";
 
 const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
-
-    // To hold the data that will be fetched from the mapbox directions API
-    // returning the directions from origin to destination
-    const [directions, setDirections] = useState({});
 
     // State to handle our function calls based on whether the opencage fetch
     // has successfully returned our input as geoJSON array format
@@ -20,6 +16,10 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
     // Initialize arrays to hold the lng, lat of transit stations in the 
     let originTransitStation = [];
     let destinationTransitStation = [];
+
+    // Some states to create a styled error message
+    const [errorMsg, setErrorMsg] = useState("");
+    const [popUp, setPopUp] = useState(false);
 
     const YOUR_API_KEY = "HERE-4d73a56f-1184-4598-9fd6-fa7142a57fe0";
     // Use context to access states initialized in UserContext
@@ -204,16 +204,15 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         // Check that the Public transit result has been set, which by 
         // definition will mean that our geoJSON conversion was successful
         if (publicTransitResult !== null){
+
             // BIKING:
+
             // First, calculate the nearest station for origin and destination
             let originStation = nearestStationCalc(origin, 'origin');
             let destinationStation = nearestStationCalc(destination, 'destination');
             // Clear the route data from any previous trips
-            console.log(routesData);
             setRoutesData([]);
             
-            console.log("routesData first bike route");
-            console.log(routesData);
             // 1. Request the walking directions to the originStation
             addRouteLayer(origin, originStation, 'walk-to-station', '#FADBD8', 'walking', 'biketrip', false);
             // 2. Request the biking directions from originStation to destinationStation
@@ -226,21 +225,16 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     navigationMode = 'driving'
                 }
             }
-            console.log("routesData second bike route");
-            console.log(routesData);
             addRouteLayer(originStation, destinationStation, 'bike-between-stations', '#F39C12', navigationMode, 'biketrip', true);
             // 3. Request the walking directions from the closest station to the destination (destinationStation)
-            console.log("routesData third bike route");
-            console.log(routesData);
             addRouteLayer(destinationStation, destination, 'walk-from-station', '#FADBD8', 'walking', 'biketrip', false);
-            console.log("routesData final");
-            console.log(routesData);
             // 4. Remove the other stations from the map
             removeMarkers(originStation, destinationStation);
             // 5. Center the map at the start of the route
             centerMapOnOrigin();
 
-            
+            // PUBLIC TRANSIT: 
+
             // Check that the fetch has not returned an empty array, which 
             // will be the case for all results out of mapping range
             if(publicTransitResult.routes.length >= 1){
@@ -262,8 +256,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                 // 3. Request the walking directions from the arrival transit station to final destination
                 addRouteLayer(destinationTransitStation, destination, 'walk-from-bus-station', '#D4E6F1', 'walking', 'transittrip', false); 
             } else {
-                // setErrorMessage();
-                // setPopUp(true);
+                setErrorMsg("Failed to load Public Transit Route");
+                setPopUp(true);
             }
             // Our original request is finished so reset the state
             setSearchForRoute(false);
@@ -274,12 +268,17 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
         <>
         <ToggleSearch
             onClick={toggleSearch}>
-            <GetDirectionsText>
-                <FcSearch  size = {50}/>
-            </GetDirectionsText>
-            <GetDirectionsText>Where to?</GetDirectionsText>
+            <FlexRow>
+                <Icon>
+                    <BsSearch  size = {26}/>
+                </Icon>
+                <GetDirectionsText>Where to?</GetDirectionsText>
+            </FlexRow>
         </ToggleSearch>
-        
+        {popUp
+        ?<PopUp>{errorMsg}</PopUp>
+        :<></>
+        }
         {search 
             ?   // If the user clicks on the search button, display the search form
             // If the user is logged in, set the origin and destination to home to work
@@ -305,7 +304,7 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     />
                     }
                     
-                    <Label htmlFor='last-name'>Destination</Label>
+                    <Label htmlFor='destination'>Destination</Label>
                     {currentUser
                     ? <DestinationTypeAhead
                         autoFocus
@@ -326,9 +325,8 @@ const NavSearch = ({ addRouteLayer, removeMarkers, centerMapOnOrigin}) => {
                     }
                     <GetDirectionsSubmit type="submit">Let's Go!</GetDirectionsSubmit>
                 </GetDirectionsForm>
-
             : // Otherwise, don't display anything
-            <></>
+              <></>
         }
         </>
     )
@@ -343,18 +341,26 @@ const ToggleSearch = styled.button`
     font-family: var(--font-heading);
     font-weight: bold;
     color: var(--color-quarternary);
-    background-color: whitesmoke;
+    background-color:  var(--color-quarternary);
     font-size: 24px;
-    border-radius: 5px;
-    border: none;
+    border-right: none;
+    border-left: none;
+    border-top: 1px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
 `
 // Styling fo the header
 const GetDirectionsText = styled.div`
-    color: var(--color-secondary);
-    font-size: 38px;
+    color: white;
+    font-size: 32px;
     font-weight: 600;
     font-family: var(--font-heading);
-    margin: 10px 0 0 25px;
+    margin: 5px 0 5px 15px;
+`;
+const Icon = styled.div`
+    color: white;
+    font-family: var(--font-heading);
+    margin-left: -5px;
+    margin-top: 5px;
 `;
 
 // Create our form
@@ -369,37 +375,66 @@ const GetDirectionsForm = styled.form`
 // Create our label styling
 const Label = styled.label`
     font-size: 1rem;
-    color: var(--color-secondary);
-    background-color: white;
+    color: white;
+    background-color: var(--color-primary);
     text-align: left;
     font-size: 24px;
     width: 100%;
-    padding: 5px 0 5px 0;
+    padding: 5px 5px 5px 10px;
 `;
 // Same for inpiut
 const Input = styled.input`
-    font-size: 16px;
+    font-size: 15px;
     width: 100%;
     height: 40px;
     border: none;
+    padding: 0 5px 0 10px;
+    ::placeholder {
+        color: var(--color-secondary);
+  }
 `;
 // Button for form submission
 const GetDirectionsSubmit = styled.button`
-  font-family: var(--font-heading);
-  font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
-  font-size: 24px;
-  border-radius: 5px;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-    transition: ease-in-out 100ms;
-    &:hover{
-      transform: scale(1.02);
-    }
-    &:active{
-        transform: scale(.8);
-        background-color: lightgray;
-    }
-`
+    font-family: var(--font-heading);
+    font-weight: bold;
+    color: white;
+    background-color: var(--color-secondary);
+    font-size: 24px;
+    border-right: none;
+    border-left: none;
+    border-top: 1px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
+    padding: 7px;
+    cursor: pointer;
+        transition: ease-in-out 100ms;
+        &:hover{
+        transform: scale(1.02);
+        }
+        &:active{
+            transform: scale(.8);
+            background-color: lightgray;
+        }
+`;
+const PopUp= styled.div`
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    border: 1px solid #E5E7E9;
+    border-radius: 15px;
+    position: absolute;
+      z-index: 1;
+      top: 240px;
+    font-size: 26px;
+    margin-left: -30px;
+    font-family: var(--font-heading);
+    background-color: white;
+
+    padding: 10px 20px;
+`;
+const FlexRow = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;  
+    width: 100%;
+`;

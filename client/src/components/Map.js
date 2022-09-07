@@ -196,9 +196,9 @@ const Map = () => {
             bikeStations.forEach((station) => {                
                 // Define a popup that will display the required station infomration
                 let popup = new mapboxgl.Popup()
-                    .setHTML(`<h3> Bikes ${station.bikes}</h3>`
-                            + `<h4> E-bikes ${station.e_bikes}</h4>`
-                            + `<div> Docks ${station.docks}</div>`
+                    .setHTML(`<h3> Bikes: ${station.bikes}</h3>`
+                            + `<h4> E-bikes: ${station.e_bikes}</h4>`
+                            + `<div> Docks: ${station.docks}</div>`
                             )
                     .addTo(mapRef.current);
                 // Add the marker to the map

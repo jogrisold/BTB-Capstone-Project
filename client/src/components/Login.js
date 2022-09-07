@@ -26,7 +26,12 @@ const Login = () => {
   const [userEmail, setUserEmail] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [inputType, setInputType] = useState("password");
+
+  // Some states to create a styled error message
+  const [errorMsg, setErrorMsg] = useState("");
   const [popUp, setPopUp] = useState(false);
+
+  // For navigation
   let navigate = useNavigate();
 
   //**************************************************************** */

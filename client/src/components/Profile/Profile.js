@@ -20,6 +20,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import CircularProgress from '@mui/material/CircularProgress';
 import ProfileHeader from "./ProfileHeader";
 import Settings from "./Settings";
+import UserData from "./UserData";
 
 
 // It's your profile! 
@@ -137,28 +138,17 @@ const Profile = () => {
             ? isLoading === false && userData !== null && userData !== undefined
                 //Then return their profile
                 ?   <>
-                    {editProfile 
-                    // Check if the editProfile button has been clicked,
-                    // If so, show the edit profile form
-                        ? 
-                        <>
-                            <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                            <Line></Line> 
-                            <UserProfileForm handleSubmit={updateUserProfile}/>
-                            </>
+                    <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
+                    <Line></Line> 
+                    {editProfile // Check if the editProfile button has been clicked,
+                        ? // If so, show the edit profile form
+                          <UserProfileForm handleSubmit={updateUserProfile}/>
                         : // If not, display the user data
-                        <>
-                            <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                            <Line></Line> 
-                            <FlexRow>
-                                <Name><Bold>Name:</Bold> {userData.given_name}</Name>
-                                <Surname>{userData.family_name}</Surname>
-                            </FlexRow>
-                            <Email><Bold> Email: </Bold> {userData.email}</Email>
-                            <Email><Bold> Home: </Bold> {userData.home}</Email>
-                            <Email><Bold> Work: </Bold> {userData.work}</Email>
+                        <> 
+                           <UserData />
                         </>
                     }
+                    
                     <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
                     <FlexHeader>
                         <H1>Previous Trips</H1>
@@ -218,7 +208,7 @@ const Login = styled.p`
     align-items: center;
     justify-content: center;
     height: 200px;
-`
+`;
 const LoginLink = styled(Link)`
    padding: 0 5px;
    font-weight: bold;
@@ -227,8 +217,7 @@ const LoginLink = styled(Link)`
    &:hover {
         color: var(--color-primary);
    }
-
-`
+`;
 const Wrapper= styled.div`
     display: flex;
     width: 80%;
@@ -236,47 +225,13 @@ const Wrapper= styled.div`
     align-items: left;
     margin-top: 100px;
 `;
-const Edit = styled.button`
-    border: none;
-    background-color: white;
-    margin: 0 0 -28px 0;
-    color: var(--color-secondary);
-`;
-const Name = styled.div`
-    font-size: 20px;
-`;
-const Surname = styled.div`
-    margin:  0 0 0 10px;
-    font-size: 20px;
-`;
-const Email = styled.div`
-    margin: 10px 0 10px 0;
-    font-size: 20px;
-`;
-const FlexCol = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`;
-const FlexRow = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: top;
-    align-items: top;
-    text-align: top;
-    margin: 10px 0 10px 0;
-`;
 const FlexHeader = styled.div`
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 `;
-const Bold = styled.span`
-    font-weight: 800;
-    margin-right: 2px;
-`;
+
 const Line = styled.div`
     border: 1px solid var(--color-secondary);
     margin: 10px 0 30px 0;

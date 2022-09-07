@@ -5,23 +5,13 @@
 // React dependencies
 import styled from "styled-components"
 import { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import { Link} from "react-router-dom";
 
 // Local component dependencies
 import { UserContext } from "../UserContext";
-import UserProfileForm from "./UserProfileForm";
-
-// Icons
-import { FiEdit } from "react-icons/fi";
-import { MdTripOrigin } from "react-icons/md";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { BsFolderPlus, BsThreeDotsVertical } from "react-icons/bs";
 
 // Circular Progress animation for loading
-import CircularProgress from '@mui/material/CircularProgress';
 import UserSettingsForm from "./UserSettingsForm";
-import ProfileHeader from "./ProfileHeader";
 import SettingsHeading from "./SettingsHeading";
 
 // It's your profile! 
@@ -82,17 +72,15 @@ const Settings = ({isLoading, setIsLoading}) => {
 
     return (
         <SettingsMain>
+            <SettingsHeading toggleEditSettings={toggleEditSettings}/>
+            <Line></Line> 
         {editSettings
             // If editSettings has been set to true (edit button clicked), display the settings form
         ?   <>
-            <SettingsHeading toggleEditSettings={toggleEditSettings}/>
-            <Line></Line> 
             <UserSettingsForm handleSubmit={updateUserSettings}/>
             </>
         :   // Otherwise, render the user settings from database
             <>
-            <SettingsHeading toggleEditSettings={toggleEditSettings}/>
-            <Line></Line> 
             {userData
                 // if the userData has been populated
             ?  Object.values(userData.settings).length > 0 
@@ -107,7 +95,6 @@ const Settings = ({isLoading, setIsLoading}) => {
                     <p>You don't have any settings yet.</p>
                     <Login>Click the edit settings icon above to edit your settings </Login>
                 </>
-                
             : <> User data did not load yet</>
             }
         

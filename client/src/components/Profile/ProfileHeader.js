@@ -1,16 +1,18 @@
-import { useContext } from "react";
+import { useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { UserContext } from "../UserContext";
 import styled from "styled-components";
 
 const ProfileHeader = ({toggleEditProfile}) =>{
-    // Nothing to see here, return the header element
+
+    const [color, setColor] = useState(true);
+
+    // Nothing to see here, return the header element   
     return(
         <FlexHeader>
         <H1>Profile</H1>
             <Edit>
                 <FiEdit 
-                    onClick={toggleEditProfile}
+                    onClick={()=>{toggleEditProfile(); setColor(!color)}}
                     size = {30}/>
             </Edit>
         </FlexHeader>

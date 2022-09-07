@@ -7,7 +7,7 @@ const UserData = () =>{
 
     return(
         <>
-             <FlexRow>
+            <FlexRow>
                 <Name><Bold>Name:</Bold> {userData.given_name}</Name>
                 <Surname>{userData.family_name}</Surname>
             </FlexRow>

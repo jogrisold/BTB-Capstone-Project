@@ -5,23 +5,20 @@
 // React dependencies
 import styled from "styled-components"
 import { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // Local component dependencies
 import { UserContext } from "../UserContext";
 import UserProfileForm from "./UserProfileForm";
 
-// Icons
-import { MdTripOrigin } from "react-icons/md";
-import { FaMapMarkerAlt } from "react-icons/fa";
-import { BsThreeDotsVertical } from "react-icons/bs";
+
 
 // Circular Progress animation for loading
 import CircularProgress from '@mui/material/CircularProgress';
 import ProfileHeader from "./ProfileHeader";
 import Settings from "./Settings";
 import UserData from "./UserData";
-
+import PreviousTrips from './PreviousTrips';
 
 // It's your profile! 
 const Profile = () => {
@@ -33,7 +30,6 @@ const Profile = () => {
     // Use context to bring in needed states
     const { 
         currentUser,
-        setCurrentUser,
         isLoggedIn,
         setOriginInput, 
         setDestinationInput, 
@@ -45,7 +41,7 @@ const Profile = () => {
     // State for conditional rendering of page whilst waiting on fetches to back end\
     const [isLoading, setIsLoading] = useState(true);
 
-    const navigate = useNavigate();
+    
     //**************************************************************** */
     // Functions
     //**************************************************************** */
@@ -67,9 +63,8 @@ const Profile = () => {
                     setUserData(data.data)      
                 })
             }, 2300)
-
-                // Render the page
-                setIsLoading(false);
+            // Render the page
+            setIsLoading(false);
         }
     }, [isLoading])
 
@@ -90,37 +85,15 @@ const Profile = () => {
           };
         // Send a patch request with the object stringified into JSON format
         fetch("/api/update-profile", {
-        method: 'PATCH',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProfile),
+            method: 'PATCH',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedProfile),
         })
-
         // Reset the loading state to recall the fetch
         setIsLoading(true);
         // Close the form
         setEditProfile(false);
         console.log(userData);
-    }
-
-    // Create a function to re-search a previous trip on the main page
-    const searchTrip = (origin, destination) => {
-        // Set the input values of the search bar
-        setOriginInput(origin);
-        setDestinationInput(destination);
-        // Reset the data for the route to avoid multiple trip distances
-        // being summed in TripDetails
-        setRoutesData([]);
-        // Navigate to the homepage
-        navigate("/");
-        // Fixes render issue of homepage displaying as scrolled halfway
-        // down on load
-        window.scrollTo({
-            top: 0,
-            left: 100,
-        });
-        // Set the state that calls the geoJSON fetch and
-        // corresponding routing functions
-        setSearchForRoute(true);
     }
 
     const toggleEditProfile = () => {
@@ -134,51 +107,27 @@ const Profile = () => {
     return (
         <Center>
         <Wrapper>
-        {isLoggedIn
-            ? isLoading === false && userData !== null && userData !== undefined
-                //Then return their profile
-                ?   <>
-                    <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                    <Line></Line> 
-                    {editProfile // Check if the editProfile button has been clicked,
-                        ? // If so, show the edit profile form
-                          <UserProfileForm handleSubmit={updateUserProfile}/>
-                        : // If not, display the user data
-                        <> 
-                           <UserData />
-                        </>
-                    }
-                    
-                    <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
-                    <FlexHeader>
-                        <H1>Previous Trips</H1>
-                    </FlexHeader>
-                    <Line></Line> 
-                    {userData // If the data has been fetched from the backend (i.e. userData.previous_searches is available)
-                        && userData.previous_searches.length > 0 // Check if the user has populated the previous_searches array
-                            ? // If so, return the previous searches
-                              userData.previous_searches.map((search)=>{
-                                return(
-                                    <Trip
-                                        onClick={()=>searchTrip(search.origin, search.destination)}>
-                                        <Origin><MdTripOrigin/>{search.origin}</Origin>
-                                        <Origin><BsThreeDotsVertical/></Origin>
-                                        <Origin><FaMapMarkerAlt/>{search.destination}</Origin>
-                                    </Trip>
-                                )
-                                })
-                            : // Otherwise, let the user know that they need to search first to populate the array
-                              <>You have not completed any previous trips</>
-                        }
-                </>
-                // Otherwise, display a loading animation
-                : <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
-                
-        : <>Please login to continue</>
-        }
-            
-    </Wrapper>
-    </Center>
+        {isLoggedIn && isLoading === false && userData !== null && userData !== undefined
+        // If the user is logged in, the fetch has finished loading, and userData 
+        // state has been correctly set.
+            ? // Then return the user profile   
+            <>
+                <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
+                <Line></Line> 
+                {editProfile // Check if the editProfile button has been clicked,
+                    ? // If so, show the edit profile form
+                      <UserProfileForm handleSubmit={updateUserProfile}/>
+                    : // If not, display the user data
+                     <UserData />
+                }
+                <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
+                <PreviousTrips />
+            </>
+            : // Otherwise, display a loading animation
+              <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
+        }   
+        </Wrapper>
+        </Center>
     )
 }
 
@@ -223,30 +172,14 @@ const Wrapper= styled.div`
     width: 80%;
     flex-direction: column;
     align-items: left;
-    margin-top: 100px;
-`;
-const FlexHeader = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    margin-top: 50px;
 `;
 
 const Line = styled.div`
     border: 1px solid var(--color-secondary);
     margin: 10px 0 30px 0;
 `;
-const Origin = styled.div`
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-`;
-const Trip = styled.div`
-    margin: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-`;
+
 const H1 = styled.h1`
     text-align: left;
     margin: 40px 0 10px 0;

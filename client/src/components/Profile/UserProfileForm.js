@@ -83,8 +83,8 @@ const Label = styled.label`
 const UserProfileSubmit = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-secondary);
   font-size: 24px;
   border-radius: 5px;
   border: none;
@@ -93,10 +93,12 @@ const UserProfileSubmit = styled.button`
     transition: ease-in-out 100ms;
     &:hover{
       transform: scale(1.02);
+      color: var(--color-quarternary);
+      background-color: #F0F3F4;
     }
     &:active{
         transform: scale(.8);
-        background-color: lightgray;
+        
     }
 `
 export default UserProfileForm;

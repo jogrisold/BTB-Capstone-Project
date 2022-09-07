@@ -132,10 +132,11 @@ const ProfileBtn = styled.button`
     transition: ease-in-out 200ms;
     &:hover {
         transform: scale(1.2);
-        color: var(--color-primary);
+        color: var(--color-quarternary);
     }
     &:active{
         transform: scale(.8);
+        color: var(--color-primary);
     }
 `;
 const LogIn = styled.button`

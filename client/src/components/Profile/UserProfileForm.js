@@ -63,19 +63,8 @@ const UserProfileForm = ({ handleSubmit }) => {
 
 // Create our form
 const ProfileForm = styled.form`
-
     display: flex;
     flex-direction: column;
-    width: 100%;
-`;
-
-// Create our label styling
-const Label = styled.label`
-    font-size: 1rem;
-    color: var(--color-secondary);
-    background-color: white;
-    text-align: left;
-    font-size: 24px;
     width: 100%;
 `;
 
@@ -84,21 +73,22 @@ const UserProfileSubmit = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
   color: white;
-  background-color: var(--color-secondary);
+  background-color: var(--color-quarternary);
   font-size: 24px;
   border-radius: 5px;
-  border: none;
+  border: 1px solid white;
+  border-radius: 10px;
+  margin: 10px 0 0 0;
   padding: 10px;
   cursor: pointer;
     transition: ease-in-out 100ms;
     &:hover{
-      transform: scale(1.02);
       color: var(--color-quarternary);
-      background-color: #F0F3F4;
+      background-color: white;
     }
     &:active{
         transform: scale(.8);
         
     }
-`
+`;
 export default UserProfileForm;

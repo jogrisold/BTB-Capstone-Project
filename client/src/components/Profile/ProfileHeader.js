@@ -9,7 +9,7 @@ const ProfileHeader = ({toggleEditProfile}) =>{
     // Nothing to see here, return the header element   
     return(
         <FlexHeader>
-        <H1>Profile</H1>
+            <H1>Profile</H1>
             <Edit>
                 <FiEdit 
                     onClick={()=>{toggleEditProfile(); setColor(!color)}}
@@ -24,8 +24,13 @@ export default ProfileHeader;
 const Edit = styled.button`
     border: none;
     background-color: white;
-    margin: 0 0 -28px 0;
-    color: var(--color-secondary);
+    color: white;
+    background-color: var(--color-secondary);
+    &:hover{
+        transform: scale(1.2);
+        color: var(--color-quarternary);
+        background-color: var(--color-secondary);
+    }
 `;
 const FlexHeader = styled.div`
     width: 100%;
@@ -35,6 +40,7 @@ const FlexHeader = styled.div`
 `;
 const H1 = styled.h1`
     text-align: left;
-    margin: 40px 0 10px 0;
+    margin: 10px 0 10px 0;
     font-size: 30px !important;
+    color: white;
 `;

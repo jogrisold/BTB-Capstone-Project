@@ -211,7 +211,7 @@ const SignUp = () => {
                 <Input
                   autoFocus
                   type="text"
-                  placeholder="First Name"
+                  placeholder="Bob"
                   value={userFirstName}
                   required={true}
                   onChange={(e) => setUserFirstName(e.target.value)}
@@ -219,7 +219,7 @@ const SignUp = () => {
                 <Label htmlFor='last-name'>Last Name</Label>
                 <Input
                   type="text"
-                  placeholder="Last Name"
+                  placeholder="Ross"
                   value={userLastName}
                   required={true}
                   onChange={(e) => setUserLastName(e.target.value)}
@@ -227,7 +227,7 @@ const SignUp = () => {
                 <Label htmlFor='email'>Email</Label>
                 <Input
                   type="email"
-                  placeholder="Email"
+                  placeholder="bob@bobross.com"
                   value={userEmail}
                   required={true}
                   onChange={(e) => setUserEmail(e.target.value)}
@@ -238,7 +238,7 @@ const SignUp = () => {
                 passwordInput function, called by clicking the button */}
                 <Input 
                   type={inputType} 
-                  placeholder="Password"
+                  placeholder="zXc#vM00001"
                   value={passwordInput} 
                   aria-describedby="password-constraints"
                   required = {true}
@@ -261,7 +261,7 @@ const SignUp = () => {
               <FlexRow>
                 <Input 
                   type={inputType} 
-                  placeholder="Confirm Password"
+                  placeholder="zXc#vM00001"
                   aria-describedby="password-constraints"
                   value={confirmPasswordInput} 
                   required = {true}  
@@ -277,7 +277,7 @@ const SignUp = () => {
                   : <AiOutlineEye size = {25}/>}
                 </TogglePassword>
              </FlexRow>
-              <SignUpSubmit type="submit">Sign Up</SignUpSubmit>
+              <SignUpSubmit type="submit">Sign Up!</SignUpSubmit>
             </SignUpForm>
           </Wrapper>
         </Center>
@@ -374,6 +374,9 @@ const Input = styled.input`
   border-radius: 5px;
   border: none;
   margin: 0 10px 10px 0;
+  ::placeholder {
+    color: var(--color-secondary);
+  }
 `;
 // Button for form submission
 const Submit = styled.button`

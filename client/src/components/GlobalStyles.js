@@ -22,8 +22,9 @@ const GlobalStyles = createGlobalStyle`
 
     // Set the page to fill the screen
     html, body {
-    max-width: 100vw;
-    height: 100vh;
+        max-width: 100vw;
+        height: 100vh;
+        background-color: var(--color-secondary);
     }
 
     // Adjust css for mobile-first design:

@@ -45,6 +45,7 @@ const PreviousTrips = () =>{
             <H1>Previous Trips</H1>
         </FlexHeader>
         <Line></Line> 
+        <Wrapper>
         {userData // If the data has been fetched from the backend (i.e. userData.previous_searches is available)
             && userData.previous_searches.length > 0 // Then check if the user has populated the previous_searches array
                 ? // If so, return the previous searches
@@ -52,7 +53,7 @@ const PreviousTrips = () =>{
                     return(
                         <Trip
                             onClick={()=>searchTrip(search.origin, search.destination)}>
-                            <Origin><MdTripOrigin/>{search.origin}</Origin>
+                            <Origin><MdTripOrigin />{search.origin}</Origin>
                             <Dots><BsThreeDotsVertical/></Dots>
                             <Destination><FaMapMarkerAlt/>{search.destination}</Destination>
                         </Trip>
@@ -60,41 +61,46 @@ const PreviousTrips = () =>{
                     })
                 : // Otherwise, let the user know that they need to search first to populate the array
                     <NoTrips>You have not completed any previous trips</NoTrips>
-            }
+        }
+        </Wrapper>
         </>
     )
 }
 
 export default PreviousTrips;
-
+const Wrapper= styled.div`
+    margin: 10px 0 20px 0;
+`;
 const Line = styled.div`
-    border: 1px solid var(--color-secondary);
+    border: 1px solid white;
     margin: 10px 0 30px 0;
 `;
 const Origin = styled.div`
     font-size: 12px;
     display: flex;
     align-items: center;
-    color: var(--color-secondary);
+    
+    color: white;
 `;
 const Dots = styled.div`
     font-size: 12px;
     display: flex;
     align-items: center;
-    color: var(--color-primary);
+    color: white;
+    margin: 1px 0 3px;
 `;
 const Destination = styled.div`
     font-size: 12px;
     display: flex;
     align-items: center;
-    color: var(--color-quarternary);
+    color: white;
 `;
 const Trip = styled.div`
     margin: 5px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin: 0 0 70px 0;
+    margin: 0 0 30px 0;
 `;
 const FlexHeader = styled.div`
     width: 100%;
@@ -106,6 +112,8 @@ const H1 = styled.h1`
     text-align: left;
     margin: 40px 0 10px 0;
     font-size: 30px !important;
+    color: white;
+    background-color: var(--color-secondary);
 `;
 const NoTrips = styled.div`
     margin: 0 0 70px 0;

@@ -96,15 +96,19 @@ const Login = () => {
     {popUp 
       ? <PopUp> 
           <FlexCol>
+            <Center>
             <H2>Wawaweewa!</H2>
+            </Center>
             <Text>
-              It seems like the Username and Password
-              you have entered do not match anything in our records.
-              Please try again.
+              Computer says the Username and Password
+              you have entered do not match our records.
+              Try again?
             </Text>
-            <Button 
-            onClick = {()=>setPopUp(false)}
-            type="ok">Ok</Button>
+            <Center>
+              <Button 
+              onClick = {()=>setPopUp(false)}
+              type="ok">Sounds good!</Button>
+            </Center>
           </FlexCol>
         </PopUp>
       : <></> 
@@ -125,7 +129,7 @@ const Login = () => {
               <Input
                 autoFocus
                 type="email"
-                placeholder="Email"
+                placeholder="jojo@jojo.jo"
                 value={userEmail}
                 required={true}
                 onChange={(e) => setUserEmail(e.target.value)}
@@ -134,7 +138,7 @@ const Login = () => {
               <FlexRow>
                 <Input 
                   type={inputType} 
-                  placeholder="Password"
+                  placeholder="OMG-itsDONE#WD16"
                   value={passwordInput} 
                   aria-describedby="password-constraints"
                   required = {true}
@@ -157,7 +161,7 @@ const Login = () => {
           <SignUpSection>
             <FlexRow>
               <NoAccount>Don't have an account? </NoAccount>
-              <NoAccount><SignUpLink href="/signup">Sign up </SignUpLink></NoAccount>
+              <NoAccount><SignUpLink href="/signup">Sign Up!</SignUpLink></NoAccount>
               
             </FlexRow>
           </SignUpSection>
@@ -175,18 +179,19 @@ export default Login;
 // This CSS is a repetition of SignUp:
 const PopUp= styled.div`
     display: flex;
-    width: 100%;
+    width: 90%;
     justify-content: center;
-    border: 1px solid black;
+    border: 1px solid #E5E7E9;
+    border-radius: 15px;
     position: absolute;
-    z-index: 1;
-    top: 240px;
+      z-index: 1;
+      top: 240px;
     font-size: 26px;
-    margin-left: -50px;
+    margin-left: -30px;
     font-family: var(--font-heading);
     background-color: white;
-    width: 450px;
-    padding: 20px;
+
+    padding: 10px 20px;
 `;
 const Center= styled.div`
     display: flex;
@@ -236,6 +241,9 @@ const Input = styled.input`
   border-radius: 5px;
   border: none;
   margin: 0 0 10px 0;
+  ::placeholder {
+    color: var(--color-secondary);
+  }
 
 `;
 const Button = styled.button`

@@ -140,6 +140,7 @@ const Center= styled.div`
     justify-content: center;
     font-size: 18px;
     font-family: var(--font-body);
+    color: white;
 `;
 const CenterCircular= styled.div`
     display: flex;
@@ -158,7 +159,7 @@ const LoginLink = styled(Link)`
    padding: 0 5px;
    font-weight: bold;
    text-decoration: none;
-   color: var(--color-secondary);
+   color: var(--color-quarternary);
    &:hover {
         color: var(--color-primary);
    }
@@ -170,20 +171,7 @@ const Wrapper= styled.div`
     align-items: left;
     margin-top: 50px;
 `;
-
 const Line = styled.div`
-    border: 1px solid var(--color-secondary);
+    border: 1px solid white;
     margin: 10px 0 30px 0;
-`;
-
-const H1 = styled.h1`
-    text-align: left;
-    margin: 40px 0 10px 0;
-    font-size: 30px !important;
-`;
-const Yes = styled.div`
-    color: black;
-`;
-const No = styled.div`
-    color: black;
 `;

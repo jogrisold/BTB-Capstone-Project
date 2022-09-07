@@ -85,14 +85,14 @@ const Settings = ({isLoading, setIsLoading}) => {
                 // if the userData has been populated
             ?  Object.values(userData.settings).length > 0 
                 // Check that they have created settings
-                ? <> Use bike path: 
+                ? <BikePath> Use bike path: 
                     {userData.settings.use_bike_paths 
                         ? <Yes> Yes</Yes>
                         : <No> No </No>
                         } 
-                </>
+                </BikePath>
                 : <>
-                    <p>You don't have any settings yet.</p>
+                    <Login>You don't have any settings yet.</Login>
                     <Login>Click the edit settings icon above to edit your settings </Login>
                 </>
             : <> User data did not load yet</>
@@ -111,110 +111,26 @@ export default Settings;
 // Styled Components
 //**************************************************************** */
 
-const Center= styled.div`
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    font-size: 18px;
-    font-family: var(--font-body);
-`;
-const CenterCircular= styled.div`
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    font-size: 18px;
-    font-family: var(--font-body);
-`;
 const Login = styled.p`
     display: flex;
     align-items: center;
     justify-content: center;
     height: 200px;
+    color: white;
 `
-const LoginLink = styled(Link)`
-   padding: 0 5px;
-   font-weight: bold;
-   text-decoration: none;
-   color: var(--color-secondary);
-   &:hover {
-        color: var(--color-primary);
-   }
 
-`
-const Wrapper= styled.div`
-    display: flex;
-    width: 80%;
-    flex-direction: column;
-    align-items: left;
-    margin-top: 100px;
-`;
-const Edit = styled.button`
-    border: none;
-    background-color: white;
-    margin: 0 0 -28px 0;
-    color: var(--color-secondary);
-`;
-const Name = styled.div`
-    font-size: 20px;
-`;
-const Surname = styled.div`
-    margin:  0 0 0 10px;
-    font-size: 20px;
-`;
-const Email = styled.div`
-    margin: 10px 0 10px 0;
-    font-size: 20px;
-`;
-const FlexCol = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`;
-const FlexRow = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: top;
-    align-items: top;
-    text-align: top;
-    margin: 10px 0 10px 0;
-`;
-const FlexHeader = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-`;
-const Bold = styled.span`
-    font-weight: 800;
-    margin-right: 2px;
-`;
 const SettingsMain = styled.div`
 
 `;
 const Line = styled.div`
-    border: 1px solid var(--color-secondary);
+    border: 1px solid white;
     margin: 10px 0 30px 0;
 `;
-const Origin = styled.div`
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-`;
-const Trip = styled.div`
-    margin: 5px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-`;
-const H1 = styled.h1`
-    text-align: left;
-    margin: 40px 0 10px 0;
-    font-size: 30px !important;
-`;
 const Yes = styled.div`
-    color: black;
 `;
 const No = styled.div`
-    color: black;
+
+`;
+const BikePath = styled.div`
+    color: white;
 `;

@@ -37,11 +37,6 @@ const Email = styled.div`
     margin: 10px 0 10px 0;
     font-size: 20px;
 `;
-const FlexCol = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`;
 const FlexRow = styled.div`
     width: 100%;
     display: flex;

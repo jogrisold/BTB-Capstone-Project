@@ -67,9 +67,11 @@ const Profile = () => {
         // Stop the page from refreshing
         e.preventDefault()
         console.log("submitted!")
+        console.log(profileData);
         // Create an object using the data held in the profileData 
         // state as set onChange in the Input elements of the form
         const updatedProfile = {
+            _id: currentUser._id,
             given_name: profileData.given_name,
             family_name: profileData.family_name,
             email: profileData.email,

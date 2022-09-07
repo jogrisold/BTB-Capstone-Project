@@ -138,25 +138,28 @@ const updateUserProfile = async (req, res) => {
     const db = client.db("BTB");
     // Check if the user exists in the database
     const checkUser = await db.collection("users")
-    .find({email: updatedUserProfile.email }).toArray();
+    .find({_id: updatedUserProfile._id }).toArray();
     // If that failed, exit  
     if(checkUser.length === 0){
-      sendResponse(res, 404, updatedUserProfile.email, "User not found");
+      sendResponse(res, 404, updatedUserProfile._id, "User not found");
     } 
     // Otherwise, update the profile
     const addRoute = await db.collection("users").findOneAndUpdate(
-      // Find the user by email
-      {email: updatedUserProfile.email}, 
+      // Find the user by _id
+      {_id: updatedUserProfile._id}, 
       // Update the data based on the input
       {$set: 
-        { given_name : updatedUserProfile.given_name, 
-        family_name : updatedUserProfile.family_name,
-        home : updatedUserProfile.home,
-        work : updatedUserProfile.work}
+        { 
+          given_name : updatedUserProfile.given_name, 
+          family_name : updatedUserProfile.family_name,
+          email: updatedUserProfile.email,
+          home : updatedUserProfile.home,
+          work : updatedUserProfile.work
+        }
       }
       )
     const updatedUser = await db.collection("users")
-    .find({email: updatedUserProfile.email }).toArray();
+    .find({_id: updatedUserProfile._id }).toArray();
       
     if(addRoute){
       return res

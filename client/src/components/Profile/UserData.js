@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 const UserData = () =>{
     const {userData} = useContext(UserContext);
-
+    console.log(userData);
     return(
         <>
             <FlexRow>

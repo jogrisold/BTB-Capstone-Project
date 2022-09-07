@@ -74,33 +74,32 @@ const SignUp = () => {
         "Content-Type": "application/json" 
       },
     };
-    console.log(options);
 
-    // Create a function that will send a .post request containing the user
-    // data, to be called only if the user passes the input handling below.
-    const addUser = (options) => {
-      fetch("/api/signup", options)
-        .then((res) => res.json())
-        .then((json) => {
-          const {status, message, error} = json;
-          if (status >= 400) {
-            // If there is an error, display a styled error message
-            setErrorMsg(message);
-            setPopUp(true);
-          } else if(status === 200){
-            // If the response is a success, log the new user in and 
-            // set the current user data for use in cart /profile,
-            // This will also refresh the returned elements to show
-            // a success message and a navlink to the main page
-            setIsLoggedIn(true);
-            setCurrentUser(json.data);
-            console.log(currentUser)
-          }
-        })
-        // Uncaught fetch errors
-        .catch((err) => console.log(err))
+  // Create a function that will send a .post request containing the user
+  // data, to be called only if the user passes the input handling below.
+  const addUser = (options) => {
+    fetch("/api/signup", options)
+      .then((res) => res.json())
+      .then((json) => {
+        const {status, message, error} = json;
+        if (status >= 400) {
+          // If there is an error, display a styled error message
+          setErrorMsg(message);
+          setPopUp(true);
+        } else if(status === 200){
+          // If the response is a success, log the new user in and 
+          // set the current user data for use in cart /profile,
+          // This will also refresh the returned elements to show
+          // a success message and a navlink to the main page
+          setIsLoggedIn(true);
+          setCurrentUser(json.data);
+        }
+      })
+      // Uncaught fetch errors
+      .catch((err) => console.log(err))
       // })
     };
+    console.log(currentUser)
 
     //**************************************************************** */
     // Input Handling
@@ -211,7 +210,7 @@ const SignUp = () => {
                 <Input
                   autoFocus
                   type="text"
-                  placeholder="Bob"
+                  placeholder="First Name"
                   value={userFirstName}
                   required={true}
                   onChange={(e) => setUserFirstName(e.target.value)}
@@ -219,7 +218,7 @@ const SignUp = () => {
                 <Label htmlFor='last-name'>Last Name</Label>
                 <Input
                   type="text"
-                  placeholder="Ross"
+                  placeholder="Last Name"
                   value={userLastName}
                   required={true}
                   onChange={(e) => setUserLastName(e.target.value)}
@@ -227,7 +226,7 @@ const SignUp = () => {
                 <Label htmlFor='email'>Email</Label>
                 <Input
                   type="email"
-                  placeholder="bob@bobross.com"
+                  placeholder="Email"
                   value={userEmail}
                   required={true}
                   onChange={(e) => setUserEmail(e.target.value)}
@@ -238,7 +237,7 @@ const SignUp = () => {
                 passwordInput function, called by clicking the button */}
                 <Input 
                   type={inputType} 
-                  placeholder="zXc#vM00001"
+                  placeholder="Password"
                   value={passwordInput} 
                   aria-describedby="password-constraints"
                   required = {true}
@@ -261,7 +260,7 @@ const SignUp = () => {
               <FlexRow>
                 <Input 
                   type={inputType} 
-                  placeholder="zXc#vM00001"
+                  placeholder="Confirm Password"
                   aria-describedby="password-constraints"
                   value={confirmPasswordInput} 
                   required = {true}  

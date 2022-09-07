@@ -85,12 +85,19 @@ const Settings = ({isLoading, setIsLoading}) => {
                 // if the userData has been populated
             ?  Object.values(userData.settings).length > 0 
                 // Check that they have created settings
-                ? <BikePath> Use bike path: 
-                    {userData.settings.use_bike_paths 
-                        ? <Yes> Yes</Yes>
-                        : <No> No </No>
-                        } 
-                </BikePath>
+                ?<>
+                {userData.settings.use_bike_paths 
+                    ? <FlexRow>
+                        <BikePath> Use bike paths: </BikePath>
+                        <Yes> Yes</Yes>
+                      </FlexRow>
+                    :<FlexRow>
+                       <BikePath> Use bike paths: </BikePath>
+                       <No> No </No>
+                     </FlexRow>
+                    } 
+                </>
+                
                 : <>
                     <Login>You don't have any settings yet.</Login>
                     <Login>Click the edit settings icon above to edit your settings </Login>
@@ -117,7 +124,13 @@ const Login = styled.p`
     justify-content: center;
     height: 200px;
     color: white;
-`
+`;
+const FlexRow = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+`;
 
 const SettingsMain = styled.div`
 
@@ -127,9 +140,10 @@ const Line = styled.div`
     margin: 10px 0 30px 0;
 `;
 const Yes = styled.div`
+    margin:  0 0 0 10px;
 `;
 const No = styled.div`
-
+    margin:  0 0 0 10px;
 `;
 const BikePath = styled.div`
     color: white;

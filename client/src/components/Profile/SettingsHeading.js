@@ -1,5 +1,5 @@
 
-import { FiEdit } from "react-icons/fi";
+import { FiSettings } from "react-icons/fi";
 import styled from "styled-components";
 
 const SettingsHeading = ({toggleEditSettings}) =>{
@@ -8,7 +8,7 @@ const SettingsHeading = ({toggleEditSettings}) =>{
         <FlexHeader>
         <H1>Settings</H1>
             <Edit>
-                <FiEdit 
+                <FiSettings
                     onClick={toggleEditSettings}
                     size = {30}/>
             </Edit>

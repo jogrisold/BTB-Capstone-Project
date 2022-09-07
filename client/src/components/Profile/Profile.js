@@ -39,6 +39,8 @@ const Profile = () => {
     const [editProfile, setEditProfile] = useState(false);
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
+
+    console.log(currentUser);
     useEffect(()=>{
         // If the user is logged in and they are not editing
         // their profile

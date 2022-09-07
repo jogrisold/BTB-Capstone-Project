@@ -11,8 +11,6 @@ import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import UserProfileForm from "./UserProfileForm";
 
-
-
 // Circular Progress animation for loading
 import CircularProgress from '@mui/material/CircularProgress';
 import ProfileHeader from "./ProfileHeader";
@@ -31,20 +29,14 @@ const Profile = () => {
     const { 
         currentUser,
         isLoggedIn,
-        setOriginInput, 
-        setDestinationInput, 
-        setSearchForRoute,
-        setRoutesData,
-        editProfile, setEditProfile, userData, setUserData
+        editProfile, 
+        setEditProfile, 
+        userData, 
+        setUserData
     } = useContext(UserContext);
 
     // State for conditional rendering of page whilst waiting on fetches to back end\
     const [isLoading, setIsLoading] = useState(true);
-
-    
-    //**************************************************************** */
-    // Functions
-    //**************************************************************** */
 
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
@@ -96,6 +88,7 @@ const Profile = () => {
         console.log(userData);
     }
 
+    // Function to toggle the view of the profile form
     const toggleEditProfile = () => {
         if(editProfile){
             setEditProfile(false);
@@ -105,29 +98,32 @@ const Profile = () => {
     }
 
     return (
-        <Center>
+    <Center>
         <Wrapper>
-        {isLoggedIn && isLoading === false && userData !== null && userData !== undefined
-        // If the user is logged in, the fetch has finished loading, and userData 
-        // state has been correctly set.
-            ? // Then return the user profile   
-            <>
-                <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
-                <Line></Line> 
-                {editProfile // Check if the editProfile button has been clicked,
-                    ? // If so, show the edit profile form
-                      <UserProfileForm handleSubmit={updateUserProfile}/>
-                    : // If not, display the user data
-                     <UserData />
-                }
-                <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
-                <PreviousTrips />
-            </>
-            : // Otherwise, display a loading animation
-              <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
-        }   
+            {isLoggedIn // If the user is logged in
+                ? isLoading === false && userData !== null && userData !== undefined
+                    // Check if the fetch has finished loading, and userData state has been correctly set.
+                    ? // If so, return the user profile   
+                      <>
+                      <ProfileHeader toggleEditProfile = {toggleEditProfile}/>
+                      <Line></Line> 
+                      {editProfile // Check if the editProfile button has been clicked,
+                          ? // If so, show the edit profile form
+                              <UserProfileForm handleSubmit={updateUserProfile}/>
+                          : // If not, display the user data
+                              <UserData />
+                      }
+                      <Settings isLoading = {isLoading} setIsLoading = {setIsLoading}/>
+                      <PreviousTrips />
+                      </>
+                    : // Otherwise, display a loading animation
+                      <><Center><CenterCircular><CircularProgress/></CenterCircular></Center></>
+                
+                : // Otherwise, direct the user to log in to see profile
+                <Login>Please <LoginLink to ={"/login"}>login</LoginLink>  to continue</Login>
+            }   
         </Wrapper>
-        </Center>
+    </Center>
     )
 }
 

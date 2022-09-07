@@ -387,8 +387,8 @@ const Submit = styled.button`
 const SignUpSubmit = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-quarternary);
   font-size: 24px;
   border-radius: 5px;
   border: none;
@@ -423,11 +423,15 @@ const Text = styled.div`
 `;
 // Styling for toggling password visible 
 const TogglePassword = styled.button`
-    height: 43px;
-    width: 43px;
-    border-radius: 10px;
+    height: 40px;
+    width: 40px;
+    border-left: 1px solid var(--color-secondary) !important;
     background-color: white;
     padding: 4px 0 0 1px;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    margin: 1px 0 0 -60px;
 `;
 // Standard flex column
 const FlexCol = styled.div`

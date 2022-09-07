@@ -91,37 +91,33 @@ const Login = () => {
   // Nothing new here: it's basically an edited Signup return
   return (
     <>
+    <Center>
+    <Wrapper>
     {popUp 
-    ? (<Center>
-        <PopUp> 
-        <FlexCol>
-        <H2>Ooopsie daisie!</H2>
-        <Text>
-          Sorry,
-          It seems like the Username and Password
-          you have entered do not match. 
-          Please try again
-        </Text>
-        <Button 
-        onClick = {()=>setPopUp(false)}
-        type="ok">Ok</Button>
-        </FlexCol>
+      ? <PopUp> 
+          <FlexCol>
+            <H2>Wawaweewa!</H2>
+            <Text>
+              It seems like the Username and Password
+              you have entered do not match anything in our records.
+              Please try again.
+            </Text>
+            <Button 
+            onClick = {()=>setPopUp(false)}
+            type="ok">Ok</Button>
+          </FlexCol>
         </PopUp>
-      </Center>)
-      : (<></>) }
-      {isLoggedIn ? (
-        <Center>
-        <Wrapper>
-          <H1>You are logged in!</H1>
+      : <></> 
+    }
+      {isLoggedIn 
+      ? <>
+          <H1>Log in successful!</H1>
           <GoHome>
             <HomepageLink 
-            href="/">Go to Homepage</HomepageLink>
+            href="/">Let's go!</HomepageLink>
           </GoHome>
-          </Wrapper>
-        </Center>
-      ) : (
-        <Center>
-        <Wrapper>
+        </>
+      : <>
           <H1>Log In</H1>
           <LoginForm onSubmit={handleSubmit}>
             <LoginSection>
@@ -150,8 +146,9 @@ const Login = () => {
                     Warning: this will display your password on the screen."
                   onClick={togglePassword}>
                   { inputType ==="password"
-                  ? <AiOutlineEyeInvisible size = {25} />
-                  : <AiOutlineEye size = {25}/>}
+                    ? <AiOutlineEyeInvisible size = {25} />
+                    : <AiOutlineEye size = {25}/>
+                  }
                 </TogglePassword>
                 </FlexRow>
               <Button type="submit">Continue</Button>
@@ -159,13 +156,15 @@ const Login = () => {
           </LoginForm>
           <SignUpSection>
             <FlexRow>
-              <NoAccount>Don't have an account? <SignUpLink href="/signup">Sign up </SignUpLink></NoAccount>
+              <NoAccount>Don't have an account? </NoAccount>
+              <NoAccount><SignUpLink href="/signup">Sign up </SignUpLink></NoAccount>
               
             </FlexRow>
           </SignUpSection>
-        </Wrapper>
-        </Center>
-      )}
+        </>
+      }
+      </Wrapper>
+    </Center>
     </>
   );
 };
@@ -181,8 +180,9 @@ const PopUp= styled.div`
     border: 1px solid black;
     position: absolute;
     z-index: 1;
-    margin: 210px 0 0 0;
+    top: 240px;
     font-size: 26px;
+    margin-left: -50px;
     font-family: var(--font-heading);
     background-color: white;
     width: 450px;
@@ -241,8 +241,8 @@ const Input = styled.input`
 const Button = styled.button`
   font-family: var(--font-heading);
   font-weight: bold;
-  color: var(--color-quarternary);
-  background-color: whitesmoke;
+  color: white;
+  background-color: var(--color-quarternary);
   font-size: 20px;
   border-radius: 5px;
   border: none;
@@ -265,11 +265,16 @@ const LoginSection = styled.div`
   width: 100%;
 `;
 const SignUpSection = styled.div`
+  margin: 30px 0 10px 0;
 `;
 const SignUpLink = styled.a`
   margin-top: 10px;
   color: var(--color-quarternary);
-  font-size: 16px;
+  background-color: white;
+  font-size: 14px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: 900;
   font-weight: bold;
   text-decoration: none;
   &:hover{
@@ -285,9 +290,10 @@ const HomepageLink = styled.a`
   text-decoration: none;
 `;
 const NoAccount = styled.p`
-  margin-top: 10px;
+  
   color: white;
   font-size: 16px;
+  font-weight: 600;
 `;
 const FlexRow = styled.div`
     width: 100%;
@@ -305,9 +311,13 @@ const Text = styled.div`
   margin: 20px 0 20px 0 ;
 
 `;const TogglePassword = styled.button`
-    height: 43px;
-    width: 43px;
-    border-radius: 10px;
+    height: 40px;
+    width: 40px;
+    border-left: 1px solid var(--color-secondary) !important;
     background-color: white;
     padding: 4px 0 0 1px;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    margin: 1px 0 0 -60px;
 `;

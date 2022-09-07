@@ -1,10 +1,9 @@
-import { useState } from "react";
+// React essentials
 import { FiEdit } from "react-icons/fi";
 import styled from "styled-components";
 
+// Returns the header element at the top of the profile page
 const ProfileHeader = ({toggleEditProfile}) =>{
-
-    const [color, setColor] = useState(true);
 
     // Nothing to see here, return the header element   
     return(
@@ -12,7 +11,7 @@ const ProfileHeader = ({toggleEditProfile}) =>{
             <H1>Profile</H1>
             <Edit>
                 <FiEdit 
-                    onClick={()=>{toggleEditProfile(); setColor(!color)}}
+                    onClick={toggleEditProfile}
                     size = {30}/>
             </Edit>
         </FlexHeader>

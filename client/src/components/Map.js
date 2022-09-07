@@ -1,29 +1,26 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+// React essentials
+import{ useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
-
-// const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
 
 // required by mabox
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import NavSearch from "./NavSearch";
 import { UserContext } from "./UserContext";
 import TripDetails from "./TripDetails";
-import { Navigate, useNavigate } from "react-router";
 
 // my mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1Ijoiam9ncmlzb2xkIiwiYSI6ImNsNnV2Nm1zbTIxemIzanRlYXltNnhjYW0ifQ.wneEVyaaMSgq9bm_gD-Eug';
 
- 
 const Map = () => {
     // *****************************************************
     // States required by mapbox base
     // *****************************************************
     const mapContainer = useRef(null);
     const mapRef = useRef(null);
-    const [lng, setLng] = useState(-73.5674); // !!!! Need to gain these from user 
-    const [lat, setLat] = useState(45.5019); // !!!! location or input city form
+    // Set position of map to Montreal
+    const [lng, setLng] = useState(-73.5674); 
+    const [lat, setLat] = useState(45.5019); 
     const [zoom, setZoom] = useState(9);
-
     
     // *****************************************************
     // States for customization
@@ -38,28 +35,19 @@ const Map = () => {
     // Create a state to hold the markers added to the map to remove 
     // them on submission of addRoute
     const [currentMarkers, setCurrentMarkers] = useState([]);
-    
+    // State to hold bike station location data
     const [bikeLocations, setBikeLocations] = useState([]);
-    // Initialize an array to store information about each rout that is added
-
-
-    // set a state for origin and destination, or you could use a useContext file
+    // Required context states
     const {
-
-        isLoggedIn,
-        setIsLoggedIn,
         origin,
         destination,
-        routesData, 
         setRoutesData,
         stationStatus,
         setStationStatus,
         bikeStations, 
         setBikeStations,
         addStations, 
-        setAddStations
     } = useContext(UserContext)
-    // console.log('33: start of consts:' + bikeDataRetrieved, mapInit);
 
     // *****************************************************
     // useEffects required by mapbox base - DO NOT EDIT
@@ -173,18 +161,10 @@ const Map = () => {
             // Allow fullscreen mode    
             mapRef.current.addControl(new mapboxgl.FullscreenControl({container: mapContainer.current}));
 
-            //!!!!!!!!!!!!!!!!!!!  */
-            // TO DO: Write am if statement to only render the followingon desktop
-            // TO DO: if(screenwidth >700px){}
-            //!!!!!!!!!!!!!!!!!!! */
-
             // Add navigation + / - for easier desktop useability
             mapRef.current.addControl(new mapboxgl.NavigationControl());
         }
-        //  console.log('108: customization useEffect end, BikeDataRetrieved:' + bikeDataRetrieved, mapInit);
     },[mapInit]);
-    // console.log('122, directions: ' + directions.waypoints[0])
-    // console.log('109: just before bikestaions.map:' + bikeDataRetrieved, mapInit);
         
     // Add bike station markers
     useEffect(()=>{
@@ -240,9 +220,6 @@ const Map = () => {
     // Create a function to make a directions request
     const getRoute = async(start, finish, routeName, routeColor, profile, triptype) => {
         if(mapInit){
-
-            console.log("getroute starts")
-    
             // make a directions request using cycling profile
             // an arbitrary start, will always be the same
             // only the finish or finish will change
@@ -251,9 +228,7 @@ const Map = () => {
                     `https://api.mapbox.com/directions/v5/mapbox/${profile}/${start[0]},${start[1]};${finish[0]},${finish[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
                     { method: 'GET' }
                 );
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // Need errror handling here for cases where the fetch fails
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
                 const json = await query.json();
                
                 const data = json.routes[0];
@@ -297,22 +272,16 @@ const Map = () => {
                         }
                     });
                 }
-                console.log("getRoute end")
             } catch {
                 window.alert("You can't bike across water! Unless you're superman? In which case, just fly. Try again")
-                // window.location.reload();
             }
         }
-    // add turn instructions here at the destination - mapbox next steps
     }
-  
-
 
     // Define a function to add the route to the map 
     // as a mapbox layer
     const addRouteLayer = (layerOrigin, layerDestination, routeName, routeColor, profile, triptype, addStations) =>{
         if(mapInit){
-            console.log("addRouteLayer starts")
             if (addStations){
                 let originStationMarker = new mapboxgl.Marker()
                     originStationMarker.setLngLat(layerOrigin);
@@ -354,8 +323,6 @@ const Map = () => {
                     'circle-color': '#BFCCFF'
                 }
             });
-            console.log("addRouteLayer end")
-        // this is where the code from the next step will go
         }
         };
     
@@ -376,17 +343,17 @@ const Map = () => {
                 pitch: 0
             };
         
-                let isAtStart = true;
-                    
-                const target = isAtStart ? end : start;
-                isAtStart = !isAtStart;
-                    
-                mapRef.current.flyTo({
-                ...target, // Fly to the selected target
-                duration: 5000, // Animate over 10 seconds
-                essential: true // This animation is considered essential with
-                //respect to prefers-reduced-motion
-                });
+            let isAtStart = true;
+                
+            const target = isAtStart ? end : start;
+            isAtStart = !isAtStart;
+                
+            mapRef.current.flyTo({
+            ...target, // Fly to the selected target
+            duration: 5000, // Animate over 10 seconds
+            essential: true // This animation is considered essential with
+            //respect to prefers-reduced-motion
+            });
         }
     }
 
@@ -413,10 +380,6 @@ export default Map;
 const Wrapper = styled.div`
     
 `;
-const Mapbox = styled.div`
-    
-`;
-
 const MapContainer = styled.div`
     height: 900px;
 `;

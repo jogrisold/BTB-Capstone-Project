@@ -37,10 +37,9 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState(true);
     // State for toggling the view of the edit profile form
     const [editProfile, setEditProfile] = useState(false);
+
     // Use effect to load user data from database, in order to 
     // render updates to database live without need for page refresh
-
-    console.log(currentUser);
     useEffect(()=>{
         // If the user is logged in and they are not editing
         // their profile
@@ -66,8 +65,6 @@ const Profile = () => {
     const updateUserProfile = (e, profileData) => {
         // Stop the page from refreshing
         e.preventDefault()
-        console.log("submitted!")
-        console.log(profileData);
         // Create an object using the data held in the profileData 
         // state as set onChange in the Input elements of the form
         const updatedProfile = {
@@ -88,7 +85,6 @@ const Profile = () => {
         setIsLoading(true);
         // Close the form
         setEditProfile(false);
-        console.log(userData);
     }
 
     // Function to toggle the view of the profile form

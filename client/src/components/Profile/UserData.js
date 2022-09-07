@@ -1,7 +1,9 @@
+// React essentials
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
 import styled from "styled-components";
 
+// Displays the user data based on the fetch from the server
 const UserData = () =>{
     const {userData} = useContext(UserContext);
     console.log(userData);
@@ -20,12 +22,6 @@ const UserData = () =>{
 
 export default UserData;
 
-const Edit = styled.button`
-    border: none;
-    background-color: white;
-    margin: 0 0 -28px 0;
-    color: var(--color-secondary);
-`;
 const Name = styled.div`
     font-size: 20px;
 `;

@@ -3,16 +3,18 @@ import styled from 'styled-components';
 import { UserContext } from './UserContext';
 
 const DestinationTypeAhead = () => {
-
+    // Bring in user data to access the previous searches
     const {currentUser, destinationInput, setDestinationInput} = useContext(UserContext);
+    // State to hold changes in input
     const [destinationTypeAheadInputValue, setDestinationTypeAheadInputValue] = useState("");
+    // State to conditionally render based on whether an item in the list has been clicked on
     const [searchNotSelected, setSearchNotSelected] = useState(true);
 
     // Return results that match what the user types
     const previousSearches = currentUser.previous_searches.filter(search => {
-
         return search.destination.toLowerCase().includes(destinationTypeAheadInputValue.toLowerCase())
     })
+    
     // When a user clicks on a suggestion, navigate to the item details page and clear the input field
     const handleSuggestionClick = (destination) => {
         setDestinationTypeAheadInputValue(destination);

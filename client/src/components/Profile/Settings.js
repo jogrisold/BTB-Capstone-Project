@@ -5,7 +5,6 @@
 // React dependencies
 import styled from "styled-components"
 import { useContext, useState, useEffect } from "react";
-import { Link} from "react-router-dom";
 
 // Local component dependencies
 import { UserContext } from "../UserContext";
@@ -15,8 +14,9 @@ import UserSettingsForm from "./UserSettingsForm";
 import SettingsHeading from "./SettingsHeading";
 
 // It's your profile! 
-const Settings = ({isLoading, setIsLoading}) => {
+const Settings = ({setIsLoading}) => {
 
+    // Import user data from context to return user information
     const {userData} = useContext(UserContext);
 
     // Conditional rendering states for editing profile and settings
@@ -27,41 +27,35 @@ const Settings = ({isLoading, setIsLoading}) => {
     const updateUserSettings = (e, settingsData) => {
         // Check that the user data is available for 
         // retreival by id in the database 
-        console.log(settingsData);
         if(userData){
             // Stop the page from refreshing
             e.preventDefault()
-            console.log("submitted!")
-
+            // Define the settings
             const updatedSettings = {
                 use_bike_paths: settingsData.use_bike_paths,
             }
-
+            // Create a body to convert to JSON
             const bodyToSend = {
                 _id: userData._id,
                 settings: updatedSettings
             };
-    
+            // Send a patch request to the server with the 
+            // Updated settings information
             fetch("/api/update-settings", {
                 method: 'PATCH',
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(bodyToSend),
             })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-            });
         } else {
             window.alert("Please log in to submit settings")
         }
-
         // Reset the loading state to recall the fetch
         setIsLoading(true);
-
         // Close the form
         setEditSettings(false);
     }
 
+    // Function to toggle the conditional rendering of the settings
     const toggleEditSettings = () => {
         if(editSettings){
             setEditSettings(false);
@@ -80,23 +74,22 @@ const Settings = ({isLoading, setIsLoading}) => {
             <UserSettingsForm handleSubmit={updateUserSettings}/>
             </>
         :   // Otherwise, render the user settings from database
-            <>
-            {userData
-                // if the userData has been populated
-            ?  Object.values(userData.settings).length > 0 
-                // Check that they have created settings
-                ?<>
-                {userData.settings.use_bike_paths 
-                    ? <FlexRow>
+            <> {userData
+                    // if the userData has been populated
+                ?  Object.values(userData.settings).length > 0 
+                    // Check that they have created settings
+                    ?<>
+                    {userData.settings.use_bike_paths 
+                        ? <FlexRow>
+                            <BikePath> Use bike paths: </BikePath>
+                            <Yes> Yes</Yes>
+                        </FlexRow>
+                        :<FlexRow>
                         <BikePath> Use bike paths: </BikePath>
-                        <Yes> Yes</Yes>
-                      </FlexRow>
-                    :<FlexRow>
-                       <BikePath> Use bike paths: </BikePath>
-                       <No> No </No>
-                     </FlexRow>
-                    } 
-                </>
+                        <No> No </No>
+                        </FlexRow>
+                        } 
+            </>
                 
                 : <>
                     <Login>You don't have any settings yet.</Login>

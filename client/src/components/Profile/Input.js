@@ -1,5 +1,7 @@
+// Styled components
 import styled from "styled-components"
 
+// Simple input for re-use
 const Input = ({type, placeholder, name, required, handleChange}) => {
     return (
         <StyledInput 

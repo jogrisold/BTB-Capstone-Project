@@ -1,7 +1,8 @@
-
+// React essentials
 import { FiSettings } from "react-icons/fi";
 import styled from "styled-components";
 
+// Header for the settings section in profile
 const SettingsHeading = ({toggleEditSettings}) =>{
     // Nothing to see here, return the header element
     return(

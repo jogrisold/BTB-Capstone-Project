@@ -1,13 +1,15 @@
-import { useState, useContext } from "react";
+// React essentials
+import { useState } from "react";
 import styled from "styled-components";
+// Input component
 import Input from "./Input";
-import { UserContext } from "../UserContext";
 
+// Returns the form to edit the user profile information
 const UserProfileForm = ({ handleSubmit }) => {
-    // Use context to bring in the current user that is logged in
-    const {setCurrentUser} = useContext(UserContext);
+    // Create a state to hold the updated profile information
     const [profileData, setProfileData] = useState({});
 
+    // Handles the change in input based on key value pair
     const handleChange = (key, value) => {
         setProfileData({
         ...profileData,
@@ -17,49 +19,49 @@ const UserProfileForm = ({ handleSubmit }) => {
 
     return (
         <ProfileForm onSubmit={(e) => handleSubmit(e, profileData)}>
-        <Input
-            type="text"
-            placeholder="Given Name"
-            name={"given_name"}
-            required={true}
-            handleChange={handleChange}
-        />
-        <Input
-            type="text"
-            placeholder="Family Name"
-            name={"family_name"}
-            required={true}
-            handleChange={handleChange}
-        />
-        <Input
-            type="email"
-            placeholder="Email"
-            name={"email"}
-            required={true}
-            handleChange={handleChange}
-        />
-        <Input
-            type="home"
-            placeholder="Home Address"
-            required={true}
-            name={"home"}
-            handleChange={handleChange}
-        />
-        <Input
-            type="work"
-            placeholder="Work Address"
-            name={"work"}
-            required={true}
-            handleChange={handleChange}
-        />
-        
-        <UserProfileSubmit type="submit" >
-            Confirm
-        </UserProfileSubmit>
+            <Input
+                type="text"
+                placeholder="Given Name"
+                name={"given_name"}
+                required={true}
+                handleChange={handleChange}
+            />
+            <Input
+                type="text"
+                placeholder="Family Name"
+                name={"family_name"}
+                required={true}
+                handleChange={handleChange}
+            />
+            <Input
+                type="email"
+                placeholder="Email"
+                name={"email"}
+                required={true}
+                handleChange={handleChange}
+            />
+            <Input
+                type="home"
+                placeholder="Home Address"
+                required={true}
+                name={"home"}
+                handleChange={handleChange}
+            />
+            <Input
+                type="work"
+                placeholder="Work Address"
+                name={"work"}
+                required={true}
+                handleChange={handleChange}
+            />
+            <UserProfileSubmit type="submit" >
+                Confirm
+            </UserProfileSubmit>
         </ProfileForm>
     );
 };
 
+export default UserProfileForm;
 
 // Create our form
 const ProfileForm = styled.form`
@@ -88,7 +90,5 @@ const UserProfileSubmit = styled.button`
     }
     &:active{
         transform: scale(.8);
-        
     }
 `;
-export default UserProfileForm;

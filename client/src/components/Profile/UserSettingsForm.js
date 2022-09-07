@@ -1,7 +1,11 @@
+// React essentials
 import { useState, useContext } from "react";
 import styled from "styled-components";
-import Input from "./Input";
+
+// User context dependency
 import { UserContext } from "../UserContext";
+
+// React icons
 import { BsToggleOff } from "react-icons/bs";
 import { BsToggleOn } from "react-icons/bs";
 import { MdDirectionsBike } from "react-icons/md";
@@ -9,10 +13,14 @@ import { MdElectricBike } from "react-icons/md";
 
 const UserSettingsForm = ({ handleSubmit}) => {
     // Use context to bring in the current user that is logged in
-    const {userData, setUserData} = useContext(UserContext);
+    const {userData} = useContext(UserContext);
+    // Create a state to hold the new settings information entered by user
     const [settingsData, setSettingsData] = useState({});
+    // Create a state to toggle the conditional rendering
     const [useBikePaths, setUseBikePaths] = useState(userData.settings.use_bike_paths);
 
+    // Function that toggles conditional render and sets
+    // state for form submission
     const toggleUseBikePaths = (e) => {
         e.preventDefault()
         if(useBikePaths){
@@ -101,7 +109,6 @@ const ToggleBikePaths = styled.button`
     border: none;
     
 `;
-
 // Button for form submission
 const UserSettingsSubmit = styled.button`
   font-family: var(--font-heading);

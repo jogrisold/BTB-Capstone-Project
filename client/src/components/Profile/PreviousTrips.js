@@ -14,7 +14,7 @@ const PreviousTrips = () =>{
     // Import required context states
     const {userData, setOriginInput, setDestinationInput, setRoutesData, setSearchForRoute} = useContext(UserContext);
 
-
+    // For navigation to the main page on previous trip click
     const navigate = useNavigate();
 
     // Create a function to re-search a previous trip on the main page
@@ -49,7 +49,7 @@ const PreviousTrips = () =>{
         {userData // If the data has been fetched from the backend (i.e. userData.previous_searches is available)
             && userData.previous_searches.length > 0 // Then check if the user has populated the previous_searches array
                 ? // If so, return the previous searches
-                    userData.previous_searches.map((search)=>{
+                  userData.previous_searches.map((search)=>{
                     return(
                         <Trip
                             onClick={()=>searchTrip(search.origin, search.destination)}>
@@ -60,7 +60,7 @@ const PreviousTrips = () =>{
                     )
                     })
                 : // Otherwise, let the user know that they need to search first to populate the array
-                    <NoTrips>You have not completed any previous trips</NoTrips>
+                  <NoTrips>You have not completed any previous trips</NoTrips>
         }
         </Wrapper>
         </>

@@ -28,7 +28,6 @@ const Login = () => {
   const [inputType, setInputType] = useState("password");
 
   // Some states to create a styled error message
-  const [errorMsg, setErrorMsg] = useState("");
   const [popUp, setPopUp] = useState(false);
 
   // For navigation
@@ -75,13 +74,11 @@ const Login = () => {
         if (status >= 400) {
           // If there is an error, display an error message
           setPopUp(true);
-
         } else if(status === 200){
           // If the response is a success, set the user login state 
           // set the current user data for use in cart and profile
           // and navigate to the homepage so the user can begin shopping
           setIsLoggedIn(true);
-          console.log(json.data);
           setCurrentUser(json.data);
           navigate("/");
         } 

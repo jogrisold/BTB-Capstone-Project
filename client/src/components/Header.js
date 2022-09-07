@@ -24,14 +24,9 @@ const Header = () => {
     //**************************************************************** */
 
     // Use context to access states initialized in UserContext
-    // search, SetSearch: for conditional rendering of the search form
-    // isLoggedIn : for conditional rendering of the login/logout buttons
     const {
-        search, 
-        setSearch,
         isLoggedIn, 
         setIsLoggedIn,
-        currentUser, 
         setCurrentUser
     } = useContext(UserContext);
    
@@ -46,7 +41,6 @@ const Header = () => {
         navigate(`/${routename}`)
     }
 
-    
     // Create a function to handle click of logot button
     const handleClickLogOut = () => {
         setCurrentUser(false); // ?? backend ??

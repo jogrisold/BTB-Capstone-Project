@@ -3,7 +3,8 @@ import{ useRef, useEffect, useState, useContext } from "react";
 import styled from "styled-components";
 
 // required by mabox
-import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
+import mapboxgl from '!mapbox-gl'; 
+
 import NavSearch from "./NavSearch";
 import { UserContext } from "./UserContext";
 import TripDetails from "./TripDetails";

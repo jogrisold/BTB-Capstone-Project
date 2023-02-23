@@ -333,7 +333,7 @@ const HomepageLink = styled(NavLink)`
   justify-content: center;
   text-align: center;
     &:hover {
-        color: var(--color-quarternary);
+      color: var(--color-quarternary);
     }
 `;
 // Styled div to contain the link
@@ -357,11 +357,11 @@ const SignUpText = styled.div`
 `;
 // Create our label styling
 const Label = styled.label`
-    font-size: 1rem;
-    color: white;
-    text-align: left;
-    font-size: 24px;
-    width: 100%;
+  font-size: 1rem;
+  color: white;
+  text-align: left;
+  font-size: 24px;
+  width: 100%;
 `;
 // Same for inpiut
 const Input = styled.input`
@@ -400,38 +400,38 @@ const SignUpSubmit = styled.button`
       transform: scale(1.02);
     }
     &:active{
-        transform: scale(.8);
-        background-color: lightgray;
+      transform: scale(.8);
+      background-color: lightgray;
     }
 `
 
 // Styling for message on form submission
 const H1 = styled.h1`
-    text-align: left;
-    padding: 0 0 30px 0;
-    font-size: 36px;
-    color:white;
+  text-align: left;
+  padding: 0 0 30px 0;
+  font-size: 36px;
+  color:white;
 `;
 // Styling for message on form submission
 const H2 = styled.h1`
-    text-align: center;
-    padding: 0 0 40px 0;
-    font-size: 36px;
+  text-align: center;
+  padding: 0 0 40px 0;
+  font-size: 36px;
 `;
 const Text = styled.div`
   margin: 20px 0 20px 0 ;
 `;
 // Styling for toggling password visible 
 const TogglePassword = styled.button`
-    height: 40px;
-    width: 40px;
-    border-left: 1px solid var(--color-secondary) !important;
-    background-color: white;
-    padding: 4px 0 0 1px;
-    border-top: none;
-    border-right: none;
-    border-bottom: none;
-    margin: 1px 0 0 -60px;
+  height: 40px;
+  width: 40px;
+  border-left: 1px solid var(--color-secondary) !important;
+  background-color: white;
+  padding: 4px 0 0 1px;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  margin: 1px 0 0 -60px;
 `;
 // Standard flex column
 const FlexCol = styled.div`
@@ -442,8 +442,8 @@ const FlexCol = styled.div`
 `;
 // Standard flex row
 const FlexRow = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;

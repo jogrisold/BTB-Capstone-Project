@@ -12,7 +12,7 @@ import { UserContext } from "../UserContext";
 import UserProfileForm from "./UserProfileForm";
 
 // Circular Progress animation for loading
-import CircularProgress from '@mui/material/CircularProgress';
+//import CircularProgress from '@mui/material/CircularProgress';
 import ProfileHeader from "./ProfileHeader";
 import Settings from "./Settings";
 import UserData from "./UserData";
